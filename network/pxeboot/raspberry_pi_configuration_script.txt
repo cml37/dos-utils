@@ -1,0 +1,72 @@
+===================================================================================================
+Install and configure dnsmasq
+===================================================================================================
+
+sudo apt-get install -y dnsmasq 
+sudo nano /etc/dnsmasq.conf
+
+Add these lines: 
+
+# Disable DHCP server
+port=0
+# Choose interface
+interface=wlan0
+# Set up range of DHCP addresses to assign and set the lease time to 6 hours
+# CHANGE THIS TO ADDRESSES ON YOUR NETWORK
+dhcp-range=192.168.1.200,192.168.1.202,6h
+# Map the MAC address to a specific DHCP address
+# CHANGE THIS TO YOUR MAC ADDRESS
+dhcp-host=AA:BB:CC:DD:EE:FF,192.168.1.200
+# Specify which command to run on connect/disconnect
+dhcp-script=/bin/echo
+# Specify the pxelinux service
+pxe-service=x86PC, "PXE Boot Menu", pxelinux
+# Specify what to use for DHCP boot
+dhcp-boot=pxelinux.0
+# Enable the tftp server and specify its root
+enable-tftp
+tftp-root=/var/lib/tftpboot
+
+Create a config directory and restart the service
+
+sudo mkdir -p /var/lib/tftpboot/pxelinux.cfg
+sudo systemctl restart dnsmasq
+
+===================================================================================================
+Install and configure pxelinux
+===================================================================================================
+
+sudo apt-get install -y pxelinux
+sudo nano /var/lib/tftpboot/pxelinux.cfg/default
+
+Add these lines:
+
+ENU TITLE Network Boot Menu
+DEFAULT menu.c32
+LABEL Windows 3.11
+  LINUX memdisk
+  INITRD dosboot.img
+  APPEND raw
+
+sudo ln -s /usr/lib/syslinux/modules/bios/{ldlinux,menu,libcom32,libutil}.c32 /var/lib/tftpboot/
+sudo ln -s /usr/lib/syslinux/memdisk /var/lib/tftpboot/memdisk
+sudo ln -s /usr/lib/PXELINUX/pxelinux.0 /var/lib/tftpboot/pxelinux.0
+
+===================================================================================================
+Configure samba to ease file copying to raspberry pi
+===================================================================================================
+
+sudo apt-get install samba samba-common-bin
+
+sudo chmod 777 /var/lib/tftpboot
+
+sudo nano /etc/samba/smb.conf
+
+Add these lines:
+
+[data]
+        path = /var/lib/tftpboot
+        read only = no
+        guest ok = yes
+        guest account = root
+              
