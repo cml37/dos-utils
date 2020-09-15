@@ -1,7 +1,7 @@
 # mTCP Client Configuration / Raspberry Pi Server Configuration
 
 ## Project
-Link to MTCP Project: http://www.brutman.com/mTCP/
+Link to mTCP Project: http://www.brutman.com/mTCP/
 
 ## Sample Files
 In this directory, you will find several sample files for getting started with mTCP.  The files have been divided into two categories
