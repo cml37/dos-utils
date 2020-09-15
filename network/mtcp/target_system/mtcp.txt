@@ -1,0 +1,26 @@
+Add your packet driver to autoexec.bat (here's an example for the Xircom Pocket Ethernet III)
+C:\xircom\pktdrv\pe3pd
+
+Download mTCP from http://www.brutman.com/mTCP/ 
+Unzip mtcp to a directory called "mtcp"
+
+Create a file under mtcp called tcp.cfg with contents similar to these to match your network:
+PACKETINT 0x60
+IPADDR 192.168.1.100
+NETMASK 255.255.255.0
+GATEWAY 192.168.1.1
+NAMESERVER 192.168.1.1
+MTU 1500
+
+Create a file under mtcp called config.bat:
+set MTCPCFG=C:\mtcp\tcp.cfg
+
+Create a file under mtcp called telnet.bat:
+@echo off
+call config.bat
+telnet.exe raspberrypi
+
+Create a file under mtcp called ftp.bat:
+@echo off
+call config.bat
+ftp.exe raspberrypi

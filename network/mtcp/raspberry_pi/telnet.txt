@@ -1,0 +1,3 @@
+Commands:
+
+sudo apt-get install telnetd
