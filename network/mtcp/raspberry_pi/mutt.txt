@@ -11,7 +11,7 @@ touch ~/.mutt/certificates
 
 touch ~/.mutt/muttrc
 
-vim ~/.mutt/muttrc and add the below contents
+nano ~/.mutt/muttrc and add the below contents
 
 # ================  IMAP ====================
 set imap_user = yourusername@gmail.com
