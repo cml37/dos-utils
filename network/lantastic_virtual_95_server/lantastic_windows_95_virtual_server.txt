@@ -1,3 +1,5 @@
+NOTE: This procedure is a work in progress and is unproven.  Some connectivity with LANTASTIC has been established, but the solution is not complete
+
 =========================
 Items to Locate
 =========================
@@ -68,7 +70,7 @@ Setup and install network
     To switch floppy disks
       Use CTRL+ALT+2 to switch to the Qemu monitor
       change floppy0 D:\qemu\disk02.img
-      Use CTRL+ALT+2 to switch back
+      Use CTRL+ALT+1 to switch back
       
  Configure network
    Launch LANTastic and you should be all set
