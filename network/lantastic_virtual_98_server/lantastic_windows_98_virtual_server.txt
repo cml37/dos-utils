@@ -1,0 +1,74 @@
+=========================
+Items to Locate
+=========================
+Qemu: https://www.qemu.org/download/#windows
+OpenVPN Windows Installer: https://openvpn.net/community-downloads/
+WinImage: http://www.winimage.com/download.htm
+
+Bootable ISO Image for DOS 6.22: https://www.allbootdisks.com/downloads/ISO/AllBootDisks_ISO_Image_Downloads25/DOS6.22_bootdisk.iso
+LANtastic 7 installer
+
+Windows 95 Installer
+HP Standard Port Monitor: http://freeware.epsc.wustl.edu/Win/HPDrivers/hpspm98.exe
+
+
+=========================
+Installations
+=========================
+Install Qemu
+Install OpenVPN TAP Adapter (unclick EVERYTHING but the TAP driver)
+Install WinImage
+
+Rename bootable ISO to dos622.iso and place under D:\Qemu
+Move LANTastic install disks to D:\Qemu
+
+
+=========================
+Configure TAP Adapter
+=========================
+Rename TAP adapter to tap
+Create bridge between TAP adapter and wired network card
+
+
+=========================
+Configure Virtual Machine
+=========================
+Create a QEMU Image
+  mkdir D:\qemu
+  qemu-img create -f vmdk D:\Qemu\dos.vmdk 500M
+
+
+=========================
+Launch Virtual Machine
+=========================
+
+Configure image 
+  Launch with network card configured, set to boot from ISO file 
+    qemu-system-i386.exe -netdev tap,ifname=tap,id=net0 -device pcnet,netdev=net0 D:\Qemu\dos.vmdk -cdrom D:\Qemu\dos622.iso -boot order=d
+  Perform FDISK
+  Reboot
+  Format C: /s
+
+Use WinImage to inject the following into the image:
+  Windows 95 installer files
+  HP Standard Port Monitor
+
+Launch Qemu and install Windows 95
+  qemu-system-i386.exe -netdev tap,ifname=tap,id=net0 -device pcnet,netdev=net0 D:\Qemu\dos.vmdk -drive format=raw,if=floppy,media=disk,file=D:\qemu\disk01.img
+
+Fix issues with Windows 95 installation
+  Device manager, for yellow exclamation plug and play BIOS, update 
+    Follow these instructions, but you don't need to "actually install" the USB tablet
+      https://computernewb.com/wiki/Install_QEMU_Tablet_Driver_on_Windows_98)
+
+Setup and install network
+  Install TCP/IP drivers
+  Install HP Standard Port Monitor
+  Install LANTastic from Drive A:
+    To switch floppy disks
+      Use CTRL+ALT+2 to switch to the Qemu monitor
+      change floppy0 D:\qemu\disk02.img
+      Use CTRL+ALT+2 to switch back
+      
+ Configure network
+   Launch LANTastic and you should be all set
