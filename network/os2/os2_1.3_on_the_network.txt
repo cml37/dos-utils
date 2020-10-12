@@ -1,0 +1,220 @@
+====================================
+Items to Locate
+====================================
+Oracle VM VirtualBox (suggested version 6.0.18 or lower) https://download.virtualbox.org/virtualbox/6.0.18/VirtualBox-6.0.18-136238-Win.exe
+WinImage: http://www.winimage.com/download.htm
+
+Microsoft OS/2 1.30.1
+Microsoft OS/2 LAN Manager 2.2c Workstation
+AMD PCNET drivers for VirtualBox: https://forum.winworldpc.com/discussion/9215/ms-lan-manager-2-1-for-os-2-would-be-of-great-value
+IBM TCP/IP for OS/2 1.3.1
+
+====================================
+Installations
+====================================
+Install Oracle VM VirtualBox
+Install WinImage
+
+====================================
+Create and Configure Virtual Machine
+====================================
+Create an OS/2 virtual machine in VirtualBox
+New
+Name: OS/2
+Memory size: 32MB
+Hard Disk: Create a virtual hard disk now
+Hard disk file type: VMDK (this is important so that WinImage can open your hard disk file!!)
+Storage on physical hard disk: Dynamically allocated
+File location and size: 
+  default location is fine
+  for size, make it around 250 MB (definite no bigger than 512MB)
+
+Once created
+ Settings
+ Network
+ Adapter 1
+   Enable Network Adapter
+   Attached to: Bridged Adapter
+   Name: (choose your "real" network adapter... wireless is fine)
+ Settings
+ Storage
+ Controller: IDe
+  Remove the CD ROM Drive
+ 
+====================================
+Launch Virtual Machine and Install OS/2
+====================================
+Insert Microsoft OS/2 1.30.1 "Install A" floppy dis into the the virtual floppy drive
+Click start on the virtual machine
+
+After system boots:
+  Press Enter 4 times!
+  Accept Predefined Primary Partition
+  Send a Virtual CTRL+ALT+DELETE (Host + r)
+  
+System will Reboot
+  When prompted, insert disk 1 and press Enter
+  Choose FAT for the file system
+  Accept Predefined System Configuration
+  Yes to confirm display adapter of VGA
+  Change mouse to Microsoft Mouse, PS/2 Version
+  Accept Configuration
+  When prompted, insert disk 2 and press Enter
+  When prompted, insert disk 3 and press Enter
+  When prompted, insert disk 4 and press Enter
+  When prompted, insert disk 5 and press Enter
+  When prompted, insert disk "Install B" and press Enter
+  When prompted, insert disk "Install A" and press Enter
+  When prompted, insert disk "Support" and press Enter
+  When prompted, insert disk Presentation Manager Device "Driver 1" and press Enter
+  Choose "Do not install a default printer"
+  Choose "no" when asked about having a Device Support Disk
+  Eject the floppy disk from the virtual drive and do a Host + r to reboot
+    
+====================================
+Install Microsoft LAN Manager
+====================================
+First, use WinImage to take the AMD PCNET drivers for VirtualBox and make a disk
+  Unzip the drivers to a folder
+  Launch WinImage
+    File -> New -> 1.44MB 
+    Image -> Inject a Folder -> Select your unzipped drivers folder -> Yes
+    File -> Save As -> change type to Image file *.ima -> name: pcnet.ima
+  Exit WinImage
+  
+Now, install LAN Manager
+  Insert the LAN Manager "Setup" disk into the drive
+  Launch an OS/2 Window
+  A:
+  setup
+  Ok
+  Ok
+  Ok (default locations are fine)
+  When prompted, insert "Workstation 1" disk and press Enter
+  When prompted, insert "Workstation 2" disk and press Enter
+  When prompted for a driver, choose "Other Driver" and press enter
+  When prompted, insert the pcnet.ima disk into the virtual drive and press enter
+  Choose the one and only driver choice for the "PCNet Family" and press enter
+  Select MS TCP/IP and Netbeui and press enter
+  Select Ok and press enter
+  IP address: choose a static IP address on your network
+  Netmask: Set this for your network (usually 255.255.255.0)
+  Press enter
+  Computername: your choice
+  Domain: WORKGROUP (or your workgroup)
+  Ok
+  Save
+  When prompted, insert "Workstation 2" disk and press Enter
+  When prompted, insert "Drivers" disk and press Enter
+  Ok
+  Remove virtual disk from the drive
+ Desktop Manager -> Desktop -> Shutdown -> Shutdown
+ Reboot (Host + r)
+  
+Test LAN Manager install
+  After reboot, an OS/2 window for STARTUP.CMD will appear
+  Press Enter for username and password
+  Type "net use Z: \\computer\share" (using of course your computer name and share, I find that Raspberry PIs work great here)
+  Change to drive Z: and do a dir
+
+====================================
+IBM TCP/IP for OS/2 1.3.1
+====================================
+NOTE: LAN Manager and IBM TCP/IP for OS/2 do not play well together, despite conventional wisdom (your mileage may vary).  This procedure takes that into account
+
+Prepare and kick off installation for IBM TCP/IP for OS/2
+  Insert Disk 1 into the drive
+  md C:\tcpinst
+  A:
+  copy *.* C:\tcpinst
+  C:
+  cd tcpinst
+  tcpinst
+
+The installation will now proceed
+  Ok
+  Ok to select default paths
+  Ok to start installing files
+  When prompted, insert disk 2 and press Enter
+  When prompted, insert disk 3 and press Enter
+  When prompted, insert disk 4 and press Enter
+  When prompted for addresses
+    Host: Any name is fine
+    Domain: I just use WORKGROUP
+    ND0: 
+      Ip Address: Choose the same IP address that you chose for LAN Manager above
+    For the rest, defaults are fine
+    Ok
+  For each dialog that follows asking for configuration, just accept defaults:
+    Miscellaneous Applications
+     Ok
+    Server Programs
+     Ok
+    NetBIOS
+     Ok
+    InterDrive
+     Ok
+    Vmail
+     Ok
+    Sendmail
+     Ok
+     No    
+    Kernel
+     Ok
+    Kerberos
+     Ok
+    Bind
+     Ok
+    Configure PC/TCP DOS/Windows Applications
+     Ok
+  The installation is complete
+    Save
+    Ok
+    Ok when notified to reboot
+    Eject the virtual floppy from the drive
+    
+Now we need to make a few changes
+  cd \ to go back to root of C:
+  Launch the editor and edit startup.cmd
+    e startup.cmd
+      remove the netbind and tcpmgr start lines
+      File -> Save
+        Click type
+        Choose Plain text
+        Set
+      File -> new
+        Add two lines
+          net stop workstation /y
+          tcpmgr start
+      File -> Save
+        File name: starttcp.cmd
+        Ok
+
+Add support for TCP to the LAN Manager protocol.ini file
+  e C:\lanman\protocol.ini
+    Add this new section
+    
+    [SOCKET]
+    DRIVERNAME = $SOCKET
+    BINDINGS = "PCNTND_NIF"
+
+    File -> Save
+      Click type
+      Choose Plain text
+      Set
+
+At this point, reboot the system 
+  Desktop Manager -> Desktop -> Shutdown -> Shutdown
+  Host + r          
+  
+After reboot, press enter twice to put in the default username and password for LAN Manager          
+          
+Now if you want to use TCP/IP:
+  Launch an OS/2 window
+    starttcp
+  From there you can use telnet, tracerou, or any other utility under C:\pctcp\bin
+ 
+If you want to go back to using LAN Manager again, it will require a reboot
+  What I have found is that after the ifconfig command is launched, there is "no turning back"
+    It is launched via tcpmgr start, which calls C:\pctcp\bin\pctcp.cmd
+  Perhaps if there is a way to unload the driver, you could call a "net start workstation" later, but my attempts have been unsuccessful
