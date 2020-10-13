@@ -27,7 +27,7 @@ Hard disk file type: VMDK (this is important so that WinImage can open your hard
 Storage on physical hard disk: Dynamically allocated
 File location and size: 
   default location is fine
-  for size, make it around 250 MB (definite no bigger than 512MB)
+  for size, make it around 250 MB (definitely no bigger than 512MB)
 
 Once created
  Settings
@@ -44,7 +44,7 @@ Once created
 ====================================
 Launch Virtual Machine and Install OS/2
 ====================================
-Insert Microsoft OS/2 1.30.1 "Install A" floppy dis into the the virtual floppy drive
+Insert Microsoft OS/2 1.30.1 "Install A" floppy disk into the the virtual floppy drive
 Click start on the virtual machine
 
 After system boots:
@@ -120,7 +120,7 @@ Test LAN Manager install
 ====================================
 IBM TCP/IP for OS/2 1.3.1
 ====================================
-NOTE: LAN Manager and IBM TCP/IP for OS/2 do not play well together, despite conventional wisdom (your mileage may vary).  This procedure takes that into account
+NOTE: LAN Manager and IBM TCP/IP for OS/2 do not play well together, despite conventional wisdom (your mileage may vary).  This procedure takes that into account.
 
 Prepare and kick off installation for IBM TCP/IP for OS/2
   Insert Disk 1 into the drive
@@ -142,7 +142,7 @@ The installation will now proceed
     Host: Any name is fine
     Domain: I just use WORKGROUP
     ND0: 
-      Ip Address: Choose the same IP address that you chose for LAN Manager above
+      IP Address: Choose the same IP address that you chose for LAN Manager above
     For the rest, defaults are fine
     Ok
   For each dialog that follows asking for configuration, just accept defaults:
