@@ -1,0 +1,380 @@
+====================================
+Items to Locate
+====================================
+Oracle VM VirtualBox 
+ * If you want working sound: ideally use 5.1.38, but Windows 10 is NOT going to let you install that
+   * https://download.virtualbox.org/virtualbox/5.1.38/VirtualBox-5.1.38-122592-Win.exe
+ * As such, I suggest version 6.0.18 or lower to avoid virtualization issues that could result in "trap" errors
+   * https://download.virtualbox.org/virtualbox/6.0.18/VirtualBox-6.0.18-136238-Win.exe
+WinImage: http://www.winimage.com/download.htm
+
+Bootable MS-DOS ISO Image: https://www.allbootdisks.com/download/iso.html
+Microsoft Windows 3.1 Install Disks (DO NOT USE Windows For Workgroups 3.11!!!)
+IBM MPTS (Instead of using your original install disks, use the FixPack Version here (download all DSK files): ftp://service.boulder.ibm.com/ps/products/mpts/fixes/english-us/wr08423_conv/ )
+IBM TCP/IP 2.0 for OS/2
+IBM LAN Server 3.0
+IBM OS2 2.1 Install CD
+IBM OS/2 Warp 3.0 Connect Installation CD (We will be extracting IBM Peer from this CD to install in OS/2 2.1) 
+AMD PCNET drivers for VirtualBox: https://forum.winworldpc.com/discussion/9215/ms-lan-manager-2-1-for-os-2-would-be-of-great-value
+
+====================================
+Installations
+====================================
+Install Oracle VM VirtualBox
+Install WinImage
+
+====================================
+Create and Configure Virtual Machine
+====================================
+Create an OS/2 virtual machine in VirtualBox
+New
+Name: OS/2
+Memory size: 32MB
+Hard Disk: Create a virtual hard disk now
+Hard disk file type: VMDK (this is important so that WinImage can open your hard disk file!!)
+Storage on physical hard disk: Dynamically allocated
+File location and size: 
+  default location is fine
+  for size, make it around 500 MB
+
+Once created
+ Settings
+ Network
+ Adapter 1
+   Enable Network Adapter
+   Attached to: Bridged Adapter
+   Name: (choose your "real" network adapter... wireless is fine)
+ System
+  Acceleration
+  Uncheck "Enable Nested Paging"
+ 
+====================================
+Launch Virtual Machine and Install OS/2
+====================================
+Insert the DOS 6.22 ISO into the virtual CD-ROM drive
+Click start on the virtual machine
+
+After system boots:
+  Perform FDISK
+    Choose "1" to create DOS partition
+    Choose "1" to create primary partition
+    Choose "Y" to choose maximum space
+  Reboot
+  Format C: /s
+  copy A:\xcopy.exe C:\
+  Remove DOS 6.22 ISO from the virtual CD ROM drive
+  Insert the IBM OS/2 2.1 ISO into the virtual drive
+  C:
+  copy R:\os2se20.src 
+  xcopy /s/e R:\os2se21 C:\os2se21
+  (D for directory when asked)
+  Remove the IBM OS/2 2.1 ISO from the virtual drive
+  Reboot the virtual machine using the "Host Key" + r (for me, the "Host Key" is "right control")
+  
+Install Windows 3.1
+  Insert disk 1 of the Windows 3.1 disks into the floppy drive
+  A:
+  setup
+  Enter
+  Enter
+  When prompted, insert disk 2 of the Windows 3.1 disks into the floppy drive and press Enter
+  When prompted, enter your name (and company if desired)
+  Continue
+  Continue
+  When prompted, insert disk 3 of the Windows 3.1 disks into the floppy drive and press Enter
+  When prompted, insert disk 4 of the Windows 3.1 disks into the floppy drive and press Enter
+  When prompted, insert disk 5 of the Windows 3.1 disks into the floppy drive and press Enter
+  When prompted, insert disk 6 of the Windows 3.1 disks into the floppy drive and press Enter
+  When prompted, choose "No Printer Attached" and click "Install"
+  Click "Skip Tutorial"
+  Click "Return to MS-DOS"
+  
+Extract DISK0.DSK and DISK1.DSK from the OS/2 installer ISO using WinImage
+  Launch WinImage
+    File -> Open -> OS/2 installer ISO 
+    Navigate to DISKIMGS\OS2\35
+    Drag and drop DISK0.DSK and DISK1.DSK to your desktop (or to a convenient folder)
+    Close WinImage
+
+Install OS/2 2.1
+  Insert DISK0.DSK into the virtual floppy drive
+  Reboot the virtual machine using the "Host Key" + r
+  Once the IBM screen appears, insert DISK1.DSK into the virtual floppy drive and press Enter
+  Enter
+  Enter
+  Enter
+  Enter to Accept the Drive
+  Enter to select "Do not format the partition"
+  Enter to acknowledge the dual boot warning
+  Remove the virtual disk from the floppy drive
+  Press Enter to reboot
+  Select "Install all features"
+  Click Ok
+  Click Ok
+  Choose "Do Not Install Default Printer"
+  Click Ok
+  Click Ok
+  Click Ok
+  Click Ok to Migrate Applications and Migrate CONFIG.SYS/AUTOEXEC.BAT
+  Click Find...
+  Click Migrate
+  Click Ok
+  Click Exit
+  Click Ok to update CONFIG.SYS and AUTOEXEC.BAT
+  Click Ok
+  When prompted, insert Windows 3.1 Disk 1 into the drive and press Enter
+  When prompted, insert Windows 3.1 Disk 2 into the drive and press Enter
+  When prompted, insert Windows 3.1 Disk 5 into the drive and press Enter
+  When prompted, insert Windows 3.1 Disk 6 into the drive and press Enter
+  Remove Windows Disk 6 from the virtual floppy drive
+  Click Ok to restart
+  Click Exit on the tutorial
+  
+====================================
+Install IBM TCP/IP 2.0 for OS/2
+====================================
+Insert Disk 1 into the virtual floppy drive
+Launch an OS/2 Command Window 
+  Double Click OS/2 System Icon on the desktop
+  Double Click Command Prompts
+  Double Click OS/2 Window
+A:
+tcpinst
+Select "Base TCP/IP for OS/2"
+***Uncheck LAPS Configuration
+When prompted, insert each requested disk into the virtual floppy drive and press Enter
+When prompted, click Ok to confirm that the installation finished
+  
+====================================
+Install IBM MPTS
+====================================
+
+First, we need to convert the first four of the DSK images that we downloaded from the FixPack
+  1-> W08423B1.DSK
+  2-> W08423B2.DSK
+  3-> W08423B3.DSK
+  4-> W08423B4.DSK
+
+For each image
+  Double click to open in WinImage
+  Then click File -> Save As -> mptsX (where X is 1 through 4) -> Save as type: Image File (*.ima)
+      W08423B1.DSK -> mpts1.ima
+      W08423B2.DSK -> mpts2.ima
+      W08423B3.DSK -> mpts3.ima
+      W08423B4.DSK -> mpts4.ima
+  Close WinImage
+
+Now we need to make a driver disk for our ethernet drivers
+  Use WinImage to take the AMD PCNET drivers for VirtualBox and make a disk
+    Unzip the drivers to a folder
+    Launch WinImage
+      File -> New -> 1.44MB 
+      Image -> Inject a Folder -> Select your unzipped drivers folder -> Yes
+      File -> Save As -> change type to Image file *.ima -> name: pcnet.ima
+    Exit WinImage
+
+  
+Insert mpts1.ima into the virtual floppy drive
+Launch an OS/2 Command Window 
+  Double Click OS/2 System Icon on the desktop
+  Double Click Command Prompts
+  Double Click OS/2 Window
+A:
+mpts
+Ok
+Install
+Ok to select target drive
+Ok to install newer version
+When prompted, insert mpts1.ima into the virtual floppy drive
+When prompted, insert mpts2.ima into the virtual floppy drive
+When prompted, insert mpts3.ima into the virtual floppy drive
+When prompted, insert mpts4.ima into the virtual floppy drive
+Ok to confirm completion
+Configure
+Configure
+Click the Other adapters button under Network Adapters
+Put the pcnet.ima disk into the virtual floppy drive
+Ok
+In the current configuration window, remove IBM TCP/IP
+In the current configuration window, remove 3Com EtherLink II (3c509) Family
+In the Network Adapters window, scroll down until you find AMD PCnet Ethernet Family Adapter
+ Select it and click Add
+In the protocols window, select each of the following and click Add
+  IBM TCP/IP
+  IBM OS/2 NETBIOS
+  IBM OS/2 NETBIOS OVER TCP/IP
+Highlight IBM OS/2 NETBIOS
+  Click Change number..
+  Click 1
+  Click Change
+Click Ok
+Click Close
+Click TCP/IP Configuratin
+Click Configure
+Click Configure
+Click Activate
+Set the following parameters
+  IP address: <static IP address on your network>
+  Subnet mask: 255.255.255.0
+  Broadcast: <first three octects of your IP address plus .255>
+  Destination: <IP address of your router>
+  Click Ok
+Click Close    
+Click Exit
+Click Exit
+Click Ok
+Click Exit
+  
+Test TCP/IP
+  Reboot 
+    Eject the floppy disk from the virutual floppy drive
+    Close any open OS/2 windows by typing "exit"
+    Right Click on the OS/2 Desktop and select Shutdown..
+    Click Ok
+    Reboot the virtual machine using the "Host Key" + r
+
+Launch an OS/2 command window
+Try to ping a location
+  ping <your host of choice>
+Try to telnet to a location
+  telnet <your host of choice>
+  
+====================================
+Install IBM LAN SERVER 3.0
+====================================
+Insert requester disk 1 into the virtual floppy drive (hint: may be named A1300R1.IMG)
+Launch an OS/2 command window
+A:
+laninst
+Ok
+Ok to confirm license
+Basic
+Requester Name: <your choice of hostname>
+Domain Name: <anything you want, we will get rid of this later>
+Ok
+When prompted, insert disk 2 into the virtual floppy drive and press Enter (hint: may be named A1300R2.IMG)
+When prompted, insert disk 3 into the virtual floppy drive and press Enter (hint: may be named A1300R3.IMG)
+When prompted to reboot
+  Eject the floppy disk from the virtual floppy drive
+  Close any open OS/2 windows by typing "exit"
+  Right Click on the OS/2 Desktop and select Shutdown..
+  Click Ok
+  Click Yes to terminate laninst.exe
+  Reboot the virtual machine using Host Key + r
+
+Launch an OS/2 command window
+mpts
+Ok
+Configure
+Configure
+Remove IBM OS/2 NETBIOS
+Yes
+Ok
+Close
+Exit
+Exit
+Ok
+Exit
+
+Now we get to hand edit and fix some configs
+  e \ibmlan\ibmlan.ini
+  Under [networks], change NETBEUI$,1 to TCPBEUI$,0
+  File -> Save -> Type... -> Plain Text -> Set
+  Double click "pencil" icon in top left of window to exit
+
+Shut down the virtual machine
+  Close any open OS/2 windows by typing "exit"
+  Right Click on the OS/2 Desktop and select Shutdown..
+  Click Ok
+  Shut down the virtual machine using VirtualBox
+    File -> Close -> Power off the machine
+
+====================================
+Install IBM PEER
+====================================
+Open the IBM OS/2 Warp 3.0 Connect Installation CD using WinImage
+Navigate to CID\IMG and find the IBMPEER folder in the right hand pane
+Drag and drop the folder to your desktop or a convenient place
+
+Open the VMWARE VMDK file for your Virtual Machine
+  File -> Open -> C:\users\<your user name>\VirtualBoxVMs\OS_2\OS_2.vmdk
+    Hint: put a *.* and press enter in the File Name window to make it easier to find the image once you have navigated to the folder
+  Image -> Create Folder -> Peer
+  Click on peer in the left hand window
+  Image -> Inject a Folder -> IBMPEER (the folder that we dragged and dropped above) -> Yes to inject
+  Close WinImage
+  
+Start up the Virtual Machine
+
+Once booted
+  Open an OS/2 Command window
+  cd \peer
+  peerrmt
+  Ok
+  Ok to Install/configure this workstation
+  Ok to upgrade requester
+  Yes to leave MPTS
+  Ok for Peer Workstation Name
+  Ok for Peer Workstation Description
+  Choose a domain and click Ok
+  Click Yes to overrwrite credentials
+  Click Ok to stop LAN software
+  Ok to update configuation files
+  Ok to acknowledge installation is complete
+
+Reboot the virtual machine
+  Close any open OS/2 windows by typing "exit"
+  Right Click on the OS/2 Desktop and select Shutdown..
+  Click Ok
+  Click Yes to terminate laninst.exe
+  Reboot the virtual machine using Host Key + r
+
+Create a user ID and password
+  Cancel
+  Ok
+
+Once the requester service finishes connecting, test things out!
+  Open an OS/2 window
+  net use Z: \\somehost\share
+  
+  
+====================================
+Install Multimedia Presentation Manager
+====================================
+Note: As noted in the Items to Locate section, sound will not work if using a VirtualBox newer than 5.1.38
+  
+Extract DISK1.DSK and DISK2.DSK disks for MMPM2 from the OS/2 installer ISO using WinImage
+  Launch WinImage
+    File -> Open -> OS/2 installer ISO 
+    Navigate to DISKIMGS\MMPM2\35
+    Drag and drop DISK1.DSK and DISK2.DSK to your desktop (or to a convenient folder)
+    Close WinImage
+
+Insert disk 1 into the virtual floppy drive and press Enter
+Launch an OS/2 command window
+A:
+minstall
+Ok
+Ok
+Choose Software Motion Video 
+Choose Sound Blaster
+Yes
+When prompted, insert disk 2 into the virtual floppy drive and press Enter
+Choose Sound Blaster Pro 16 and click Ok
+Click Ok
+Click Ok
+Click Ok
+Click Ok
+
+Reboot the virtual machine
+  Close any open OS/2 windows by typing "exit"
+  Right Click on the OS/2 Desktop and select Shutdown..
+  Click Ok
+  Click Yes to terminate laninst.exe
+  Reboot the virtual machine using Host Key + r
+
+
+At this point, you can test sound 
+  On the desktop, click on the Multimedia folder
+  Double click on Sound Bites
+  Double click on some of the midi and wav files, have a blast!!

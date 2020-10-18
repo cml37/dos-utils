@@ -38,7 +38,7 @@ Once created
    Name: (choose your "real" network adapter... wireless is fine)
  Settings
  Storage
- Controller: IDe
+ Controller: IDE
   Remove the CD ROM Drive
  
 ====================================
