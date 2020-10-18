@@ -101,7 +101,7 @@ Install OS/2 2.1
   Reboot the virtual machine using the "Host Key" + r
   Once the IBM screen appears, insert DISK1.DSK into the virtual floppy drive and press Enter
   Enter to continue the install
-  Enter to acknowlege the notice about Windows 3.1 installed on the system previously
+  Enter to acknowledge the notice about Windows 3.1 installed on the system previously
   Enter to acknowledge the navigation instructions
   Enter to Accept the Drive
   Enter to select "Do not format the partition"
@@ -221,7 +221,7 @@ Click Exit
   
 Test TCP/IP
   Reboot 
-    Eject the floppy disk from the virutual floppy drive
+    Eject the floppy disk from the virtual floppy drive
     Close any open OS/2 windows by typing "exit"
     Right Click on the OS/2 Desktop and select Shutdown..
     Click Ok
@@ -312,9 +312,9 @@ Once booted
   Ok for Peer Workstation Name
   Ok for Peer Workstation Description (can just leave it blank)
   Choose a domain and click Ok
-  Click Yes to overrwrite credentials
+  Click Yes to overwrite credentials
   Click Ok to stop LAN software
-  Ok to update configuation files
+  Ok to update configuration files
   Ok to acknowledge installation is complete
 
 Reboot the virtual machine
