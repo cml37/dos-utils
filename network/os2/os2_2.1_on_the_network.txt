@@ -100,19 +100,18 @@ Install OS/2 2.1
   Insert DISK0.DSK into the virtual floppy drive
   Reboot the virtual machine using the "Host Key" + r
   Once the IBM screen appears, insert DISK1.DSK into the virtual floppy drive and press Enter
-  Enter
-  Enter
-  Enter
+  Enter to continue the install
+  Enter to acknowlege the notice about Windows 3.1 installed on the system previously
+  Enter to acknowledge the navigation instructions
   Enter to Accept the Drive
   Enter to select "Do not format the partition"
   Enter to acknowledge the dual boot warning
-  Remove the virtual disk from the floppy drive
+  When the first stage of the install finishes, remove the virtual disk from the floppy drive
   Press Enter to reboot
   Select "Install all features"
   Click Ok
   Click Ok
   Choose "Do Not Install Default Printer"
-  Click Ok
   Click Ok
   Click Ok
   Click Ok to Migrate Applications and Migrate CONFIG.SYS/AUTOEXEC.BAT
@@ -141,8 +140,17 @@ Launch an OS/2 Command Window
 A:
 tcpinst
 Select "Base TCP/IP for OS/2"
-***Uncheck LAPS Configuration
-When prompted, insert each requested disk into the virtual floppy drive and press Enter
+Uncheck "Install/run LAN Adapter and Protocol Support (LAPS)"
+Set the LAN0 network configuration
+  Host Name: <your choice>
+  Subnet Mask: 255.255.255.0 (typically)
+  IP Address: <static address on  your network>
+  Router IP Address: <your router IP address>
+Click Install
+When prompted, insert disk 2 into the virtual floppy drive and press Enter
+When prompted, insert disk 3 into the virtual floppy drive and press Enter
+When prompted, insert disk 4 into the virtual floppy drive and press Enter
+When presented with the warning about INET.SYS and IFNDIS.SYS, click Ok (we will fix this in a later step)
 When prompted, click Ok to confirm that the installation finished
   
 ====================================
@@ -184,8 +192,6 @@ mpts
 Ok
 Install
 Ok to select target drive
-Ok to install newer version
-When prompted, insert mpts1.ima into the virtual floppy drive
 When prompted, insert mpts2.ima into the virtual floppy drive
 When prompted, insert mpts3.ima into the virtual floppy drive
 When prompted, insert mpts4.ima into the virtual floppy drive
@@ -195,8 +201,6 @@ Configure
 Click the Other adapters button under Network Adapters
 Put the pcnet.ima disk into the virtual floppy drive
 Ok
-In the current configuration window, remove IBM TCP/IP
-In the current configuration window, remove 3Com EtherLink II (3c509) Family
 In the Network Adapters window, scroll down until you find AMD PCnet Ethernet Family Adapter
  Select it and click Add
 In the protocols window, select each of the following and click Add
@@ -209,17 +213,7 @@ Highlight IBM OS/2 NETBIOS
   Click Change
 Click Ok
 Click Close
-Click TCP/IP Configuratin
-Click Configure
-Click Configure
-Click Activate
-Set the following parameters
-  IP address: <static IP address on your network>
-  Subnet mask: 255.255.255.0
-  Broadcast: <first three octects of your IP address plus .255>
-  Destination: <IP address of your router>
-  Click Ok
-Click Close    
+Click No (we have already set TCP/IP configuration elsewhere, and it will register on next boot)
 Click Exit
 Click Exit
 Click Ok
@@ -267,7 +261,8 @@ mpts
 Ok
 Configure
 Configure
-Remove IBM OS/2 NETBIOS
+Click on IBM OS/2 NETBIOS
+Click Remove
 Yes
 Ok
 Close
@@ -315,7 +310,7 @@ Once booted
   Ok to upgrade requester
   Yes to leave MPTS
   Ok for Peer Workstation Name
-  Ok for Peer Workstation Description
+  Ok for Peer Workstation Description (can just leave it blank)
   Choose a domain and click Ok
   Click Yes to overrwrite credentials
   Click Ok to stop LAN software
@@ -326,7 +321,6 @@ Reboot the virtual machine
   Close any open OS/2 windows by typing "exit"
   Right Click on the OS/2 Desktop and select Shutdown..
   Click Ok
-  Click Yes to terminate laninst.exe
   Reboot the virtual machine using Host Key + r
 
 Create a user ID and password
@@ -336,7 +330,8 @@ Create a user ID and password
 Once the requester service finishes connecting, test things out!
   Open an OS/2 window
   net use Z: \\somehost\share
-  
+  dir Z:
+  See files!!
   
 ====================================
 Install Multimedia Presentation Manager
@@ -358,6 +353,7 @@ Ok
 Ok
 Choose Software Motion Video 
 Choose Sound Blaster
+Install
 Yes
 When prompted, insert disk 2 into the virtual floppy drive and press Enter
 Choose Sound Blaster Pro 16 and click Ok
