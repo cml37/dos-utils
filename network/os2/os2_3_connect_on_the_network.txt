@@ -140,6 +140,8 @@ Configure DNS
   Click Add
   Enter your DNS server (typically your router)
   Click Add
+  Click on the Routing tab
+  Delete all routes except for the default route (I've found these "extra" routes to be problematic on real hardware)
   Double click on the top left icon to close the TCP/IP Configuration "notebook"
   Click Save
   Click Ok
@@ -167,6 +169,7 @@ Test network access
   (If prompted for a username and password, enter guest for user and leave password blank)
   dir Z:
   See files!!
+
   
 Test sound 
   On the desktop, click on the Multimedia folder
