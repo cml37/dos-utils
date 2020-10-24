@@ -1,0 +1,174 @@
+====================================
+Items to Locate
+====================================
+Oracle VM VirtualBox 
+ * If you want working sound: ideally use 5.1.38, but Windows 10 is NOT going to let you install that
+   * https://download.virtualbox.org/virtualbox/5.1.38/VirtualBox-5.1.38-122592-Win.exe
+ * As such, I suggest version 6.0.18 or lower to avoid virtualization issues that could result in "trap" errors
+   * https://download.virtualbox.org/virtualbox/6.0.18/VirtualBox-6.0.18-136238-Win.exe
+WinImage: http://www.winimage.com/download.htm
+
+IBM OS/2 Warp 3.0 Connect (Blue Spine) Installation CD
+AMD PCNET drivers for VirtualBox: https://forum.winworldpc.com/discussion/9215/ms-lan-manager-2-1-for-os-2-would-be-of-great-value
+
+====================================
+Installations
+====================================
+Install Oracle VM VirtualBox
+Install WinImage
+
+====================================
+Create and Configure Virtual Machine
+====================================
+Create an OS/2 virtual machine in VirtualBox
+New
+Name: OS/2
+Memory size: 32MB
+Hard Disk: Create a virtual hard disk now
+Hard disk file type: VMDK
+Storage on physical hard disk: Dynamically allocated
+File location and size: 
+  default location is fine
+  for size, make it around 500 MB
+
+Once created
+ Settings
+ Network
+ Adapter 1
+   Enable Network Adapter
+   Attached to: Bridged Adapter
+   Name: (choose your "real" network adapter... wireless is fine)
+ 
+====================================
+Launch Virtual Machine and Install OS/2
+====================================
+Make a driver disk for our ethernet drivers
+  Use WinImage to take the AMD PCNET drivers for VirtualBox and make a disk
+    Unzip the drivers to a folder
+    Launch WinImage
+      File -> New -> 1.44MB 
+      Image -> Inject a Folder -> Select your unzipped drivers folder -> Yes
+      File -> Save As -> change type to Image file *.ima -> name: pcnet.ima
+    Exit WinImage
+
+Install OS/2 3.0
+  Insert the IBM OS/2 3.0 Connect (Blue Spine) ISO into the virtual drive
+  Insert DISK0.DSK into the virtual floppy drive
+  Start the virtual machine
+  Once the IBM screen appears, insert DISK1.DSK into the virtual floppy drive and press Enter
+  Enter to continue the install
+  Enter on Welcome screen
+  Arrow down to choose "2. Advanced Installation"
+  Enter
+
+  Enter to Accept the predefined installation partition
+  Enter when partitioning is complete
+  Insert DISK0.DSK into the virtual floppy drive
+  Enter
+  Once the IBM screen appears, insert DISK1.DSK into the virtual floppy drive and press Enter
+  Enter on Welcome screen
+  Arrow down to choose "2. Advanced Installation"
+  Enter
+  Enter to Accept the drive
+  Arrow down to choose "2. FAT file system"
+  Enter
+  When prompted, remove the disk from the virtual disk drive and press enter
+  Press Enter to reboot
+  When presented with system configuration click on the icon next to CD-ROM Device Support
+  Select "Non-listed IDE CD-ROM"
+  Deselect "OTHER"
+  Click Ok
+  Click the icon next to Multimedia Device Support
+  Click on Sound Blaster 16
+  Click Add
+  Click Ok
+  Click Ok
+  Select "Do not install default printer"
+  Click Ok
+  Click Install
+  Click Ok
+  Click "Yes" to install networking support
+  Click Ok
+  Click IBM client products
+  Click IBM TCP/IP for OS/2 3.0 (includes Internet access)
+  Click Ok
+  Click Other adapter..
+  Insert the pcnet.ima file that you created earlier into the virtual floppy drive
+  Click Ok
+  Change "Token Ring" to "Ethernet"
+  Click Ok
+  Click the "OS/2 Peer" tab
+  Workstation name: <your choice>
+  Workstation description: <can leave blank>
+  Protocol: NetBIOS over TCP/IP
+  Click the "TCP/IP" tab
+  Host name: <your choice>
+  IP address: 192.168.1.205
+  Subnet mask: 255.255.255.0
+  Router address: 192.168.1.1
+  Click Install
+  Click Ok
+  Click Ok
+  Click Install
+  Installation will now proceed, followed by a reboot and more automated installation steps
+  When OS/2 Warp Connect completes, Click Ok to restart
+  After a short pause, you will be presented with a dialogue to "Create a User ID and Password"
+    Click Cancel
+    Click Ok
+
+====================================
+Configure OS/2 Installation
+====================================
+On the desktop, there are two instances of MPTS
+  Pick one
+  Right click on the folder and choose Delete...
+  Click Delete
+  Click Yes
+
+Delete the "IBM Internet Connection for OS/2
+  Right click on the folder and choose Delete...
+  Click Delete
+  Click Yes to All
+  Click Yes to All
+
+Configure DNS
+  Double click on the OS/2 System folder
+  Double click on TCP/IP
+  Double click on TCP/IP Configuration
+  Click on the Hostnames tab
+  Click on <NO ENTRIES> item under the Nameserver addreses list
+  Click Add
+  Enter your DNS server (typically your router)
+  Click Add
+  Double click on the top left icon to close the TCP/IP Configuration "notebook"
+  Click Save
+  Click Ok
+  Click Ok on the add route notification
+  Click ok on the add route notification
+  Click no regarding sendmail
+  Click Yes to update config.sys
+  Click Shut down on the toolbar at the bottom of the screen
+  Click Ok
+  When presented with the "Shutdown is complete", press Host Key + r to reboot
+
+====================================
+Test OS/2 Installation
+====================================
+Test TCP/IP
+  Launch an OS/2 command window
+  Try to ping a location
+    ping <your host of choice>
+  Try to telnet to a location
+     telnet <your host of choice>
+  
+Test network access
+  Open an OS/2 window
+  net use Z: \\somehost\share
+  (If prompted for a username and password, enter guest for user and leave password blank)
+  dir Z:
+  See files!!
+  
+Test sound 
+  On the desktop, click on the Multimedia folder
+  Double click on Sound Bites
+  Double click on some of the midi and wav files, have a blast!!
