@@ -41,7 +41,7 @@ sudo nano /var/lib/tftpboot/pxelinux.cfg/default
 
 Add these lines:
 
-ENU TITLE Network Boot Menu
+MENU TITLE Network Boot Menu
 DEFAULT menu.c32
 LABEL Windows 3.11
   LINUX memdisk
