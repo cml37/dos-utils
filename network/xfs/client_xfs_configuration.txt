@@ -1,0 +1,81 @@
+------------------------------------------------------------------
+Configuring XFS
+------------------------------------------------------------------
+NOTE: This procedure will not work on 8088 systems (a NEC V20 or higher is required)
+
+Obtain the XFS 1.91 DOS client: 
+http://omolini.steptail.com/mirror/winsite/winsite-mar96-3/info/pc/win3/winsock/xfs191.zip/index.html
+
+Unzip the above contents to a directory called xfs
+
+Locate a packet driver for your network card
+Copy the packet driver to the xfs directory
+
+In the xfs directory, modify the "hosts" file
+ * Set the gateway, broadcast and netmask addresses to those of your network
+ * Add an IP address and alias for the Raspberry Pi server
+ * Add an IP address and alias for your client computer (just pick a new address on your network)
+ 
+ Example Config file:
+  
+ 192.168.1.1     gateway
+ 192.168.1.255   broadcast
+ 255.255.255.0   netmask
+ 
+ 192.168.1.105   pi
+ 192.168.1.111   client
+
+In the xfs directory, modify the "init" file
+  * add an init line to initialize the client, i.e.
+    init client sm=255.255.255.0 gw=192.168.1.1 csum=off
+  * add a line to specify the pcnfsd server, which will be the "server" that you placed in the "hosts" file, i.e. 
+    pcnfsd server
+  * Add a line to mount any shares, specifying a drive letter, the "server" name, and the full path on the server of the share, i.e. 
+    mount E: server:/mnt/nfsshare
+    (NOTE: if you want to user a drive letter that is further in the alphabet, add LASTDRIVE=Z to your config.sys)
+  * If you'd like, map a printer to lpt2, using the printer name as specified on the "server", i.e.
+    mount lpt2 server:myprinter
+  * If you'd like, add a show line to display information about connections, i.e. 
+    show
+    
+  Here's my complete init file:  
+    init client sm=255.255.255.0 gw=192.168.1.1 csum=off
+    pcnfsd server
+    mount E: server:/mnt/nfsshare
+    mount lpt2 server:myprinter
+    show
+
+In the xfs directory, modify xfs.bat
+ * The first line should reference your packet driver, along with a command to initialize the packet vector to 0x60 (this command will vary by manufacturer)
+ * The next line should be xfskrnl 0x60
+ * And the last line should be xfstool @init (this references and executes the file you created in the previous step
+ 
+ Here's my complete xfs.bat file
+  rtspkt 0x60
+  xfskrnl 0x60
+  xfstool @init
+
+Using AMD PCNET III packet drivers with VirtualBox?
+  * You can find packet drivers here: https://www.lazybrowndog.net/freedos/virtualbox/downloads/drivers/pcntpk.zip
+  * Your first line of xfs.bat will look something like this: pcntpk INT=0x60
+
+If you want to run on a newer system (i.e on a VM or a system > 200 Mhz), you need to patch C:\xfs\xfstool.exe
+  Download and extract this utility
+   https://www.kennedysoftware.ie/patchcrt.htm
+  Run the utility
+    patchcrt
+    (press escape)
+    C:\xfs\xfstool.exe
+  
+Run and connect!
+  cd xfs
+  xfs.bat  
+  
+If you want to mount a new directory or printer, or execute a command to "show connections", you can do this from the command line, i.e.:
+  * xfstool mount Q: server:/some/other/path
+  * xfstool mount lpt3 server:anotherprinter
+  * xfstool umount lpt2
+  * xfstool show
+
+If you want to make a new directory or printer permanent, add it to the C:\xfs\init file without the "xsftool" portion of the command 
+  * See configuration performed in an above step for examples

@@ -1,0 +1,68 @@
+------------------------------------------------------------------
+Configuring NFS
+------------------------------------------------------------------
+Follow this tutorial step by step: 
+https://pimylifeup.com/raspberry-pi-nfs/
+
+Once complete, follow this tutorial to enable NFS V2 which is required for using the xfs MS-DOS client:
+https://www.nixcraft.com/t/how-to-enable-nfs-v2-on-ubuntu-18-04lts/2857
+
+------------------------------------------------------------------
+Configuring PCNFSD
+------------------------------------------------------------------
+Download this file to your Raspberry Pi:
+http://ftp.armlinux.org.uk/pub/linux/Networking/attic/Other/pcnfsd/linux_pcnfsd2.tgz
+
+Untar the file
+  sudo tar xzf linux_pcnfsd2.tgz
+  
+Change into the directory
+  cd linux_pcnfsd2
+
+Modify Makefile.linux to change this line:
+  LIBS= #-lrpc
+to this:
+  LIBS= -lcrypto
+
+Build pcnfsd
+  sudo make -f Makefile.linux
+
+Install pcnfsd
+  sudo make install -f Makefile.linux
+  (you will get an error about the man page installation, but that is ok)
+ 
+Configure pcnfsd to run at startup
+  sudo nano /etc/rc.local
+  Add this line before the "exit 0" at the bottom of the file: 
+    /etc/rpc.pcnfsd
+
+------------------------------------------------------------------
+Configuring A Printer
+------------------------------------------------------------------
+Create a directory and share to support spooling
+  sudo mkdir /var/spool/pcnfs
+
+mkdir /mnt/spool
+  sudo chown pi:pi /var/spool/pcnfs
+ 
+modify /etc/exports
+  sudo nano /etc/exports
+  Add this line:
+    /var/spool/pcnfs *(rw,all_squash,insecure,async,no_subtree_check,anonuid=1000,anongid=1000)
+
+TODO: fix the below!!!
+Create /etc/pcnfsd.conf and configure your printer (here's an example for where a printer named "test" is a "fake" printer that just calls a command to create a text file)
+  printer test - echo hi > /tmp/hi.txt
+
+Restart nfs
+  sudo systemctl restart nfs-kernel-server
+  
+
+------------------------------------------------------------------
+Starting pcnfsd
+------------------------------------------------------------------
+
+Start pcnfsd for the first time!
+  sudo /etc/rpc.pcnfsd
+
+At this point, your can execute printer commands from your xfs client!!
