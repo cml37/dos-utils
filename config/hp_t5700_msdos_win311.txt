@@ -231,6 +231,9 @@ Install Windows 3.11 video drivers
   Type win to load windows
   (If prompted for a password, click ok, then yes, then ok)
   Launch ATI DeskTop
+  Click on DPMS
+  Uncheck DPMS Enabled (this isn't particularly handled well with this driver/card combo)
+  Ok
   Click on FlexDesk+
   Colors: 65K
   Screen size: as you like (I go with 1024x768)
