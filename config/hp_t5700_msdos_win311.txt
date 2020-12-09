@@ -29,7 +29,7 @@ Partition and Format your DOS disk
 Download unetbootin: http://unetbootin.github.io/
 Download DOS 6.22 floppy image: https://www.allbootdisks.com/downloads/Disks/MS-DOS_Boot_Disk_Download47/Diskette%20Images/Dos6.22.img
 
-Insert a chose USB stick into your computer
+Insert a USB stick into your computer
 
 Run run unetbootin
 -- Select Diskimage radio button
@@ -66,7 +66,7 @@ NOTE: THIS SECTION IS ONLY REQUIRED IF THERE WERE ISSUES ENCOUTERED IN THE PREVI
 
 Download this Windows 95 image: https://www.allbootdisks.com/downloads/Disks/Windows_95_Boot_Disk_Download48/Diskette%20Images/Windows95b.img
 
-Insert a chose USB stick into your computer
+Insert a USB stick into your computer
 
 Run run unetbootin
 -- Select Diskimage radio button
