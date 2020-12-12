@@ -9,7 +9,7 @@ Preconditions
 Enable Device support in BIOS
   On system start, press F10 (couldn't hurt to press it several times!!)
   Arrow down to Integrated Peripherals
-  Enter
+  Press Enter
   Ensure that the following are Enabled (if not enabled, press Enter, arrow down to Enabled, and then press Enter to Accept)
     Integrated Audio
     Network Controller
@@ -17,6 +17,11 @@ Enable Device support in BIOS
     USB Keyboard Support
     USB Mouse Support
   Press Escape when done enabling all items above
+  Arrow up to Advanced BIOS Features
+  Press Enter
+  Ensure the following are set
+    First Boot Device: USB
+    Second Boot Device: ATA Flash
   Arrow over to Save & Exit Setup
   Press Enter
   Press y
@@ -31,7 +36,7 @@ Download DOS 6.22 floppy image: https://www.allbootdisks.com/downloads/Disks/MS-
 
 Insert a USB stick into your computer
 
-Run run unetbootin
+Run unetbootin
 -- Select Diskimage radio button
 -- Change dropdown to floppy
 -- Click ...
@@ -39,6 +44,19 @@ Run run unetbootin
 -- Click Ok
 
 Boot the thumb drive in the thin client
+
+Run fdisk
+Press 5 to change current fixed disk drive
+Press Enter
+Press 2
+Press Enter
+Press 4 to display partition information
+Press Enter
+Remember partition types!
+Press Esc
+Press 3 to delete partition, press Enter, select partition type, follow prompts to delete partition, repeat as needed
+Press Esc to exit fdisk
+reboot
 
 Run this command to get information about the disk number and size.  Make a note of it
   fdisk /status
@@ -50,7 +68,7 @@ Run fdisk command to create a primary partition on the disk
 reboot
 
 Format drive C:
-  format C: /q/u/s
+  format C: /u/s
 
 Take out USB stick and test reboot!!
 
@@ -135,6 +153,8 @@ Take the USB stick out and boot to DOS!!
 Configuring DOS Sound
 --------------------------------------------------------------
 NOTE WELL: If you end up installing Windows 3.11, YOU MUST ENSURE THAT YOU USE THE DOS EMM386.EXE DRIVER or the VIA DOS "ENABLER" WILL FREEZE ON BOOT!!!
+
+run viasbcfg
 
 cd 68mu220b\dos
 install
@@ -263,7 +283,7 @@ NOTE: For true MIDI support, you are probably best off installing a later versio
   Click Add
   Click Ok to choose "Unlisted or Updated Driver"
   Browse...
-  C:\simdidr3
+  C:\smididr3
   Click Ok
   Click Ok
   Click Ok
