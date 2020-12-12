@@ -1,7 +1,7 @@
 --------------------------------------------------------------
 HP Compaq T5700 Thin Client DOS/Windows 3.11 Setup Procedures
 --------------------------------------------------------------
-
+Video walkthrough of the below procedure: https://www.youtube.com/watch?v=q6MalHwflgk
 
 --------------------------------------------------------------
 Preconditions
