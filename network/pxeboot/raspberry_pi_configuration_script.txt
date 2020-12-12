@@ -1,3 +1,5 @@
+For a video walkthrough of the below procedure, see https://www.youtube.com/watch?v=8st2d6Ovuck
+
 ===================================================================================================
 Install and configure dnsmasq
 ===================================================================================================
