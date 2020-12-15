@@ -3,6 +3,9 @@ HP Compaq T5700 Thin Client DOS/Windows 3.11 Setup Procedures
 --------------------------------------------------------------
 Video walkthrough of the below procedure: https://www.youtube.com/watch?v=q6MalHwflgk
 
+Note: This procedure also works on an HP Compaq T5300 Thin Client!  
+      Just be very conservative in what you copy over since space is limited (or upgrade the DOM to a higher capacity).
+
 --------------------------------------------------------------
 Preconditions
 --------------------------------------------------------------
@@ -128,18 +131,20 @@ Driver goodies
   * Network 
     NDIS2 driver: https://www.helpjet.net/Fs-74456791-25837635-89225421-extract.html
     -- suggest unzipping this in the install directory on the USB stick
+    -- you only really need the lan\wfw311 directory out of this
     tcp32b: http://www.mywindowspage.com/index.php/download/tcp32b-exe/
   * Video: http://www.gaby.de/ftp/pub/win3x/drivers/w31-3098.exe
   * Sound:
     Speaker midi driver: http://turkeys4me.byethost4.com/files/SMIDIDR3.7z
     -- suggest unzipping this in the install directory on the USB stick
     -- You will need to unzip this twice!!
+    -- You don't need to copy the "src" directory, it can be safely deleted
 * DOS 
   * Via DOS drivers (download both the 68MU220b.zip and viafmtsr.zip files): https://www.vogons.org/viewtopic.php?p=615072#p615072
     -- suggest unzipping this in the install directory on the USB stick
   * VIA DOS "Enabler" (download VIASBCFG): https://www.vogons.org/viewtopic.php?p=844043#p844043
     -- suggest unzipping this in the install directory on the USB stick
-
+    -- you only really need the 68MU220b\DOS directory out of this
 Insert the USB stick into the thin client
 Boot with your image
 
@@ -204,6 +209,10 @@ Install Windows 3.11 and configure network
     Click Continue
     Uncheck Set Up Printers and Set Up Applications Already on Hard Disk(s)
     Click Continue
+    If space constrained, you can uncheck readme files and (if desired) screen savers
+    If space constrained, you can also check on "Select Files..." to the right of Accessories and pair down a bit
+      Here is a suggested list of applications: calculator, clock, media player, notepad, paintbrush, terminal
+      You may also wish to install the help files that accompany these applications, it's up to you
     Click Continue
     Click Networks...
     Click Install Microsoft Windows Network:
