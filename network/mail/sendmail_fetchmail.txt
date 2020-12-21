@@ -1,0 +1,62 @@
+---------------------------------------------------
+Configure email
+---------------------------------------------------
+TODO: Configure to use Maildir
+TODO: Below procedure doesn't work.  
+  Dec 21 08:54:14 zombiepi fetchmail[6144]: MDA error while fetching from xxx@gmail.com@imap.gmail.com
+
+Debugging: 
+  journalctl | grep fetchmail
+  cat /var/log/mail.log
+
+Install packages:
+  sudo apt-get update
+  sudo apt-get install dovecot-common fetchmail maildrop
+
+Perform setuid on maildrop:
+  sudo chmod +s /usr/bin/maildrop
+
+Configure dovecot:
+  sudo nano /etc/dovecot/dovecot.conf
+  add the below:
+
+protocols = imap imaps
+mail_location = mbox:~/mail:INBOX=/var/spool/mail/%u
+mail_privileged_group = mail
+auth default {
+  mechanisms = plain
+  passdb pam {
+    args = *
+  }
+}
+
+Restart dovecot:
+  sudo /etc/init.d/dovecot restart
+
+Configure fetchmail:
+  sudo nano /etc/fetchmailrc
+  Add the below:
+
+set daemon 60
+set syslog
+set postmaster "Postmaster"
+
+poll imap.gmail.com protocol IMAP 
+   user "xxxxxxx@gmail.com" is pi here
+   password 'mysecretpassword'
+   folder 'inbox'
+   fetchlimit 1
+   keep
+   ssl
+   mda "maildrop -d %T"
+
+Set permissions on fetchmail configs
+  sudo chown root: /etc/fetchmailrc
+  sudo chmod 600 /etc/fetchmailrc
+
+Set fetchmail to run on startup
+  sudo nano /etc/default/fetchmail
+  set START_DAEMON=yes
+
+Restart fetchmail
+  sudo service fetchmail restart
