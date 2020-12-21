@@ -1,62 +1,100 @@
 ---------------------------------------------------
-Configure email
+Configure Incoming email
 ---------------------------------------------------
-TODO: Configure to use Maildir
-TODO: Below procedure doesn't work.  
-  Dec 21 08:54:14 zombiepi fetchmail[6144]: MDA error while fetching from xxx@gmail.com@imap.gmail.com
+NOTE: Configuration is performed with the default Raspberry Pi user named "pi".
+      You are free to add other users and use them instead as you see fit.
 
-Debugging: 
+Debugging (if needed): 
   journalctl | grep fetchmail
   cat /var/log/mail.log
 
 Install packages:
   sudo apt-get update
-  sudo apt-get install dovecot-common fetchmail maildrop
+  sudo apt-get install dovecot-common dovecot-imapd fetchmail
 
-Perform setuid on maildrop:
-  sudo chmod +s /usr/bin/maildrop
+Build and install maildrop from source:
+  wget https://sourceforge.net/projects/courier/files/maildrop/3.0.1/maildrop-3.0.1.tar.bz2/download
+  mv download maildrop-3.0.1.tar.bz2
+  bunzip2 maildrop-3.0.1.tar.bz2
+  tar xf maildrop-3.0.1.tar
+  sudo apt-get install libpcre3-dev libidn11-dev libcourier-unicode-dev 
+  cd maildrop-3.0.1
+  ./configure
+  sudo make install
+
+Configure maildir usage and logging for:
+  sudo nano /etc/maildroprc
+  uncomment DEFAULT="$HOME/Maildir" 
+
+Create a maildir directory for the pi user:
+  maildirmake ~/Maildir
 
 Configure dovecot:
   sudo nano /etc/dovecot/dovecot.conf
   add the below:
 
-protocols = imap imaps
-mail_location = mbox:~/mail:INBOX=/var/spool/mail/%u
-mail_privileged_group = mail
-auth default {
-  mechanisms = plain
-  passdb pam {
-    args = *
-  }
-}
+    protocols = imap
+    mail_location = maildir:~/Maildir
+    mail_privileged_group = mail
+    auth_mechanisms = plain
+    passdb {
+      driver = pam
+      args = *
+    }
+    disable_plaintext_auth=no
+    ssl=yes
 
 Restart dovecot:
   sudo /etc/init.d/dovecot restart
 
+Check status of dovecot to make sure it is running:
+  sudo /etc/init.d/dovecot status
+
 Configure fetchmail:
   sudo nano /etc/fetchmailrc
-  Add the below:
+  Add the below, adjusting the username and password to be your username and password:
 
-set daemon 60
-set syslog
-set postmaster "Postmaster"
+    set daemon 60
+    set syslog
+    set postmaster "Postmaster"
 
-poll imap.gmail.com protocol IMAP 
-   user "xxxxxxx@gmail.com" is pi here
-   password 'mysecretpassword'
-   folder 'inbox'
-   fetchlimit 1
-   keep
-   ssl
-   mda "maildrop -d %T"
+    poll imap.gmail.com protocol IMAP 
+       user "xxxxxxx@gmail.com" is pi here
+       password 'mysecretpassword'
+       folder 'inbox'
+       fetchall
+       keep
+       ssl
+       mda "maildrop -d %T"
 
-Set permissions on fetchmail configs
+Set permissions on fetchmail configs:
   sudo chown root: /etc/fetchmailrc
   sudo chmod 600 /etc/fetchmailrc
 
-Set fetchmail to run on startup
+Set fetchmail to run on startup:
   sudo nano /etc/default/fetchmail
   set START_DAEMON=yes
 
-Restart fetchmail
+Restart fetchmail:
   sudo service fetchmail restart
+    
+From there you can configure your mail client!
+  user name: pi
+  server name: <hostname of your pi>
+  password: <your raspberry pi password for the pi user>
+  port: 143
+  Connection security: None
+  
+---------------------------------------------------
+Configure Outgoing email
+---------------------------------------------------
+#TODO: can't run ssmtp as a daemon.  Do we really want to do this?
+sudo apt-get install ssmtp
+sudo nano /etc/ssmtp/ssmtp.conf
+  Change these fields to reflect your email address and outgoing email server:
+    root=myemailaddress@gmail.com
+    mailhub=smtp.gmail.com:587
+  Add these fields:
+    AuthUser=mygmailusername
+    AuthPass=mypassword
+    UseSTARTTLS=YES
