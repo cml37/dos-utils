@@ -156,7 +156,7 @@ Edit tcp.cfg and add some IRCJR specific parameters:
  IRCJR_NAME <any old name>
 
 Launch IRCJr, passing in your virtual host name
-  Example: ircjr chatpi.<your_suffix>
+  Example: ircjr chatpi
 
 You'll now be connected to BitlBee.  Add an account for you and associate the MAXS user with your account
   register
