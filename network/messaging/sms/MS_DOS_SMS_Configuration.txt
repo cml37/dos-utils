@@ -20,11 +20,21 @@ The virtual server name MUST have a suffix, or it won't work with MAXS Android C
         C:\Users\chris>ping chatpi
         Pinging chatpi.lan [192.168.1.150] with 32 bytes of data:
     * In this case, my suffix is .lan, and I will go with chatpi.lan for my virtual server name
-  * If your network doesn't add a suffix, you can "cheat" and modify host configuration files.  We'll go with ".local" as an example
+  * If your network doesn't add a suffix, you can try the default ".local" suffix, which should work
+    * To test, do a "ping chatpi.local" and see what comes back.  Example:
+        C:\Users\chris>ping chatpi.local
+        Pinging chatpi.local [abcd::abcd:ab1:abcd:50fc%6] with 32 bytes of data:
+    * In this case, my suffix is .local, and I will go with chatpi.local for my virtual server name
+  * If your network doesn't add a suffix, and ."local" doesn't resolve, you can usually "cheat" and try to use a custom suffix (we can try ".localnet")
     * sudo vi /etc/hosts
     * Add a line like this:
-      chatpi chatpi.local
-    * In this case, my suffix is .local, and I will go with chatpi.local for my virtual server name
+      127.0.0.1       chatpi.localnet
+    * If you plan to use windows clients, you might want to modify windows DNS settings as well
+      * Run notepad as administrator
+      * Open C:\windows\System32\drivers\etc\hosts
+      * Add a line like this, using the address of the Raspberry Pi (do a ping chatpi to get the address):
+        192.168.1.150   chatpi.localnet
+    * In this case, my suffix is .localnet, and I will go with chatpi.localnet for my virtual server name
   * If your are an advanced user and want to use a service like afraid.org to have a dynamic DNS entry, you are on your own :-) 
 
 Update sample configuration with your newly chosen virtual server name
