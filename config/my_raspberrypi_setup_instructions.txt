@@ -90,7 +90,7 @@ Ok
 Packages to install
 ------------------------------------------------------------------------------------------------------
 sudo apt-get update
-sudo apt-get install libpcap-dev supertux pingus libnss-winbind tcl
+sudo apt-get install libpcap-dev libnss-winbind tcl
   When asked about WINS, choose "Yes"
 sudo apt-get autoremove
 
