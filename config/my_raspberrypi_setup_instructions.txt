@@ -1,0 +1,106 @@
+------------------------------------------------------------------------------------------------------
+NOOBS
+------------------------------------------------------------------------------------------------------
+Use NOOBS to install raspbian
+1) Download NOOBS
+2) Use "Create and format hard disk partitions to remove existing partitions from the SD card and then add a new NTFS partition
+   A) This is important for the next step; otherwise if your SD card has an exFat partition, it will not get changed to FAT32 in the next step!!!
+3) Format SD card as FAT32 using http://web.archive.org/web/20200429161535/http://www.ridgecrop.demon.co.uk/index.htm?guiformat.htm
+4) Unzip NOOBS and copy to root of SDCard
+
+------------------------------------------------------------------------------------------------------
+Installation
+------------------------------------------------------------------------------------------------------
+Connect keyboard/mouse to Raspberry Pi
+Place SD card in Raspberry Pi and power on Raspberry Pi
+
+Noobs v3.5
+Check box for "Rasberry Pi OS Full (32-bit)"
+Click Install
+
+Confirm
+Yes
+
+(Once complete)
+OS(es) Installed Successfully
+Ok
+
+(The Raspberry Pi will reboot)
+
+------------------------------------------------------------------------------------------------------
+First Boot
+------------------------------------------------------------------------------------------------------
+Welcome to the Raspberry Pi Desktop!
+Next
+
+Set Country
+Country: United States
+Language: American English
+Timezone: New York
+Use US keyboard: checked
+Next
+
+Change Password
+Enter new Password: <password>
+Confirm new Password: <password>
+Next
+
+Set up screen
+Next
+
+Select WiFi Network
+<your network>
+Next
+
+Enter WiFi Password
+<your password>
+Next
+
+Update Software
+Next
+
+System is up to date
+Ok
+
+Setup Complete
+Restart
+
+------------------------------------------------------------------------------------------------------
+Configure Bootup to Wait for Network Configuration
+------------------------------------------------------------------------------------------------------
+Preferences | Raspberry Pi configuration
+Network at Boot: check "Wait for network"
+
+------------------------------------------------------------------------------------------------------
+Configure Pi Name
+------------------------------------------------------------------------------------------------------
+Preferences | Raspberry Pi configuration
+Hostname: <your choice or as specified in my other directions>
+
+------------------------------------------------------------------------------------------------------
+Enable SSH 
+------------------------------------------------------------------------------------------------------
+Preferences | Raspberry Pi configuration
+Interfaces: 
+  SSH => enabled
+Ok
+
+------------------------------------------------------------------------------------------------------
+Packages to install
+------------------------------------------------------------------------------------------------------
+sudo apt-get update
+sudo apt-get install libpcap-dev supertux pingus libnss-winbind tcl
+  When asked about WINS, choose "Yes"
+sudo apt-get autoremove
+
+------------------------------------------------------------------------------------------------------
+WINS Resolution (for accessing windows computers)
+------------------------------------------------------------------------------------------------------
+sudo nano /etc/nsswitch.conf
+hosts: .... dns wins
+
+------------------------------------------------------------------------------------------------------
+Disable logrotate since it has been known to cause Pi memory issues at the end of each month
+------------------------------------------------------------------------------------------------------
+sudo nano /etc/cron.daily/logrotate
+comment out all lines in file
