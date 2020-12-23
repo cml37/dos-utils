@@ -70,6 +70,7 @@ Configure Bootup to Wait for Network Configuration
 ------------------------------------------------------------------------------------------------------
 Preferences | Raspberry Pi configuration
 Network at Boot: check "Wait for network"
+Restart
 
 ------------------------------------------------------------------------------------------------------
 Configure Pi Name
