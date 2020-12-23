@@ -57,9 +57,11 @@ Create a certificate.  Be sure to use your virtual server name which has <your_s
 
    ssl = {
      key = "/var/lib/prosody/chatpi.<your_suffix>.key";
-     certificate = "/var/lib/prosody/.<your_suffix>.crt";
+     certificate = "/var/lib/prosody/chatpi.<your_suffix>.crt";
    }
 
+Restart the service
+  sudo service prosody restart
 
 ================================================================================================================
 Installing BitlBee
