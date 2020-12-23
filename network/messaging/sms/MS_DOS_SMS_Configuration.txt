@@ -1,37 +1,55 @@
-WARNING: This procedure has not be re-vetted yet, which is something I do with my procedures.  You can try it, but at your own risk!
+================================================================================================================
+Preconditions
+================================================================================================================
+You have set up a Raspberry Pi, enabled SSH, and set the pi hostname to "chatpi".  
+  See my instructions here for an example: https://github.com/cml37/dos-utils/blob/master/config/my_raspberrypi_setup_instructions.txt
 
 ================================================================================================================
 Installing Prosody
 ================================================================================================================
 Prosody is an XMPP server
 
-sudo apt-get install prosody
+Install prosody
+  sudo apt-get install prosody
 
-Some notes on DNS: https://prosody.im/doc/dns
--- I have a Google WiFi, so I was able to name my Raspberry Pi and take advantage of the .lan extension added by the network
--- You will want to make sure that you have a domain with a suffix, otherwise you won't be able to register an account in the MAXS Android Client
--- Good domain example: zombiepi.lan
--- Bad domain example: localhost, zombiepi
--- Your domain also has to be resolvable or it won't work!!
+At this point, you need to pick a virtual server name for your XMPP server.  
+The virtual server name MUST have a suffix, or it won't work with MAXS Android Client:
+(Some notes on DNS and Prosody for the insomniac: https://prosody.im/doc/dns)
+  * If your network automatically adds a DNS suffix (like Google Wifi), then this is easy: just go with chatpi.<your_suffix>
+    * To find the suffix, do a "ping chatpi" and see what comes back.  Example:
+        C:\Users\chris>ping chatpi
+        Pinging chatpi.lan [192.168.1.150] with 32 bytes of data:
+    * In this case, my suffix is .lan, and I will go with chatpi.lan for my virtual server name
+  * If your network doesn't add a suffix, you can "cheat" and modify host configuration files.  We'll go with ".local" as an example
+    * sudo vi /etc/hosts
+    * Add a line like this:
+      chatpi chatpi.local
+    * In this case, my suffix is .local, and I will go with chatpi.local for my virtual server name
+  * If your are an advanced user and want to use a service like afraid.org to have a dynamic DNS entry, you are on your own :-) 
 
-An example configuration: https://prosody.im/doc/example_config
+Update sample configuration with your newly chosen virtual server name
   sudo nano /etc/prosody/prosody.cfg.lua
-  Update virtualhost to be your domain name
+  Update virtualhost to be chatpi.<your_suffix> (i.e. chatpi.lan or chatpi.local based on our discussion above)
 
-Creating accounts https://prosody.im/doc/creating_accounts
--- Create an account for "you" (i.e. pi@zombiepi.lan)
--- Create an account for your MAXS Android client as well (i.e. maxs@zombiepi.lan)
+Create some accounts.  Be sure to use your virtual server name which has <your_suffix>!!
+(Reference: https://prosody.im/doc/creating_accounts)
+  Create an account for "you"
+   sudo prosodyctl adduser pi@chatpi.<your_suffix>  
+  Create an account for your MAXS Android client as well
+   sudo prosodyctl adduser maxs@chatpi.<your_suffix>  
 
-Creating certificates: https://prosody.im/doc/certificates
-  prosodyctl cert generate example.com
+Create a certificate.  Be sure to use your virtual server name which has <your_suffix>!!
+(Reference: certificates: https://prosody.im/doc/certificates)
+  sudo prosodyctl cert generate chatpi.<your_suffix>
   (just press enter for the prompts)
   sudo nano /etc/prosody/prosody.cfg.lua
-  add an SSL block similar to the below, pointing to your key and cert based on your domain name
+  add an SSL block similar to the below, pointing to your key and cert based on <your_suffix>
 
    ssl = {
-     key = "/var/lib/prosody/zombiepi.lan.key";
-     certificate = "/var/lib/prosody/zombiepi.lan.crt";
+     key = "/var/lib/prosody/chatpi.<your_suffix>.key";
+     certificate = "/var/lib/prosody/.<your_suffix>.crt";
    }
+
 
 ================================================================================================================
 Installing BitlBee
@@ -46,43 +64,62 @@ Start BitlBee
   sudo /etc/init.d/bitlbee restart
   If you want bitlbee to start on system reboot you can add the above "restart line to /etc/rc.local as well
 
+That's it!  If only everything in life were this simple...
+
 
 ================================================================================================================
 Installing MAXS
 ================================================================================================================
 MAXS is an XMPP Service that acts as client to XMPP Servers.
 Reference: http://projectmaxs.org/documentation/introduction.html
+Note: Verified with Android 9 and 10. THIS PROCEDURE APPEARS TO HAVE ISSUES WITH ANDROID 11
 
 Import CA certificate from the Raspberry Pi that was generated by Prosody
--- Get the certificate to your phone (you can launch a webmail/Gmail browser from Chromium and email it to your phone, then save to your device)
-  -- Location on Raspberry Pi: /var/lib/prosody/<your_host_name>.crt
-Settings -> Search for Install from device storage, select, choose done
+-- Get the certificate to your phone (you can launch a webmail/Gmail browser from Chromium and email it to your phone)
+  -- Location on Raspberry Pi: /var/lib/prosody/chatpi.<your_suffix>.crt
+-- Once delivered to your phone via email, click on the attachment, and this should prompt installation of the certificate
+  -- You have may to secure your device with screenlock if not already set
+  -- Give the cert a new, i.e. "chatpi", and then you should be set
 
-http://projectmaxs.org/documentation/quickstart.html
-Install F-Droid 
-Install MAXS Main via F-Droid and then launch the application
+Install F-Droid to assist with getting packages on your Android device
+  Open a browser on your Android device and navigate to f-droid.org
+  Download and install F-Droid
+  (chances are good that you will have to accept some security prompts to allow installation)
+
+Launch F-Droid on the Android device
+  Install MAXS Main via F-Droid 
+  Launch MAXS  Main (NOTE: YOU MUST LAUNCH IT AT LEAST ONCE BEFORE INSTALLING MODULES!!)
 
 After you have successfully launched MAXS main once you can now install additional modules that you will need for this exercise
-* MAXS Module ContactsRead
-* MAXS Module PhonestateRead
-* MAXS Module SmsNotify
-* MAXS Module SmsRead
-* MAXS Module SmsSend
-* MAXS Module SmsWrite
-* MAXS Transport XMPP
+  Launch F-Droid and install the following modules
+    * MAXS Module ContactsRead
+    * MAXS Module PhonestateRead
+    * MAXS Module SmsNotify
+    * MAXS Module SmsRead
+    * MAXS Module SmsSend
+    * MAXS Module SmsWrite
+    * MAXS Transport XMPP
 
 Launch MAXS Main 
-Address all warnings about permissions by granting permissions
-Close the application and make sure that MAXS Permission Integrity shows (OK) (I've found that you need to exit the application to get this to refresh)
-Click on Discover Components
-Click on Modules and make sure that the installed modules appear in the list
-Click on the More button next to XMPP Transport
+  Address all warnings about permissions by granting permissions
+  Close the application and make sure that MAXS Permission Integrity shows (OK) (I've found that you need to exit the application to get this to refresh)
+  Click on Discover Components
+  Click on Modules and make sure that the installed modules appear in the list
+  Click on the More button next to XMPP Transport
 
 Add a Master Address that will allow other users to send commands to the phone
-(NOTE: we've found that adding multiple Master Addresses can cause issues with SMS relay for incoming messages, your mileage may vary)
+  Based on earlier steps, this will be pi@chatpi.<your_suffix>
+   (NOTE: we've found that adding multiple Master Addresses can cause issues with SMS relay for incoming messages, your mileage may vary)
 
-Add a device account and password (this is the user that logs into the XMPP server)
-Return to the main screen and click "Start Service"
+Add a device account and password
+  Based on earlier steps, this would be pi@chatpi.<your_suffix>
+  After adding, click on Advanced Settings and turn off Hostname Verification
+  Also, if you had to create your own suffix, you need to change some other Advanced Settings
+    Click on Manual service settings to enable the settings
+    Then click on the "line" under Manual sevice settings called... wait for it... Manual service settings
+    Change host to be chatpi
+    Change XMPP Service name to be chatpi.<your_suffix>    
+  Return to the main screen and click "Start Service"
 Verify that you see "connected" in the status under XMPP Transport at the top
 
 If desired, configure MAXS to start on device boot and/or MAXS launch
@@ -90,8 +127,8 @@ If desired, configure MAXS to start on device boot and/or MAXS launch
   Start/Stop Options
   Check "Connect on completed boot"
   Check "Connect if MAXS is opened"
-
   
+
 ================================================================================================================
 Installing, configuring, and running IRCJr
 ================================================================================================================
@@ -103,15 +140,15 @@ Edit tcp.cfg and add some IRCJR specific parameters:
  IRCJR_USER <any old username>
  IRCJR_NAME <any old name>
 
-Launch IRCJr
-Example: ircjr zombiepi.lan
+Launch IRCJr, passing in your virtual host name
+  Example: ircjr chatpi.<your_suffix>
 
 You'll now be connected to BitlBee.  Add an account for you and associate the MAXS user with your account
   register
   /oper <nickname> <your_password>
-  account add jabber <maxs_xmpp_username>
-  /oper <maxs_xmpp_username> <acccount_password>
+  account add jabber pi@chatpi.<your_suffix>
+  /oper pi@chatpi.<your_suffix> <acccount_password>
   account on
 
 Send a test message (be sure to put two spaces after the contact name)
-  /msg send <maxs_xmpp_username> Contact Name  Hello!
+  /msg send maxs@chatpi.<your_suffix> <Phone Contact Name>  Hello!
