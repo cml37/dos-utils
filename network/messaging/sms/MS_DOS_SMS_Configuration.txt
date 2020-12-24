@@ -129,7 +129,7 @@ Add a Master Address that will allow other users to send commands to the phone
 Add a device account and password
   Based on earlier steps, this would be pi@chatpi.<your_suffix>
   After adding, click on Advanced Settings and turn off Hostname Verification
-  Also, if you had to create your own suffix, you need to change some other Advanced Settings
+  Also, if you had to create your own suffix (and perhaps if you used the .local suffix), you need to change some other Advanced Settings
     Click on Manual service settings to enable the settings
     Then click on the "line" under Manual sevice settings called... wait for it... Manual service settings
     Change host to be chatpi
