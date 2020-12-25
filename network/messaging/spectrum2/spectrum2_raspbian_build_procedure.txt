@@ -1,0 +1,53 @@
+------------------------------------------------------------------------------------------
+Update swap size (you're going to need it!)
+------------------------------------------------------------------------------------------
+sudo nano /etc/dphys-swapfile
+  Change CONF_SWAPSIZE to 1500
+sudo /etc/init.d/dphys-swapfile stop
+sudo /etc/init.d/dphys-swapfile start
+
+
+------------------------------------------------------------------------------------------
+Build communi from source
+------------------------------------------------------------------------------------------
+curl https://packages.spectrum.im/packages.key | sudo apt-key add -
+curl https://swift.im/keys/packages.key | sudo apt-key add -
+sudo apt-get install devscripts fakeroot libssl-dev libqt4-dev apt-transport-https
+echo "deb-src https://packages.spectrum.im/spectrum2/ buster main" | sudo tee /etc/apt/sources.list.d/spectrum.list
+sudo apt-get update
+sudo apt-get build-dep communi
+apt-get source communi
+cd communi-3.5.0 && DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -rfakeroot -us -uc  && cd .. && sudo dpkg -i libcommuni*.deb
+
+
+------------------------------------------------------------------------------------------
+Build swift from source
+------------------------------------------------------------------------------------------
+sudo apt-get install cmake libidn11-dev libxml2-dev libgconf2-dev liblua5.3-dev lua5.3-dev libavahi-client-dev libboost-dev libboost-all-dev libhunspell-dev libminiupnpc-dev libnatpmp-dev
+git clone git://swift.im/swift
+cd swift
+git checkout swift-4.x
+sudo ./scons V=1 swiften_dll=1 Swiften SWIFTEN_INSTALLDIR=/usr/local force-configure=1
+sudo ./scons V=1 swiften_dll=1 Swiften SWIFTEN_INSTALLDIR=/usr/local /usr/local
+cd ..
+
+
+------------------------------------------------------------------------------------------
+Build spectrum2 from source
+------------------------------------------------------------------------------------------
+sudo apt-get install libprotobuf-dev libpurple-dev libjsoncpp-dev libev-dev liblog4cxx-dev libcurl4-openssl-dev libmariadb-dev-compat libmariadb-dev libpopt-dev protobuf-c-compiler protobuf-compiler libevent-dev libsqlite3-dev libpqxx-dev
+git clone git://github.com/hanzz/spectrum2.git
+cd spectrum2
+cmake . -DCMAKE_BUILD_TYPE=Debug
+make
+sudo make install
+
+
+------------------------------------------------------------------------------------------
+Configure spectrum2 to your liking
+------------------------------------------------------------------------------------------
+Great place to start!
+https://spectrum.im/documentation/tutorials/beginners_guide.html
+sudo su
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+spectrum2 /etc/spectrum2/transports/twitter.cfg
