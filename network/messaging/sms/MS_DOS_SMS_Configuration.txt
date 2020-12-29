@@ -21,6 +21,8 @@ The virtual server name MUST have a suffix, or it won't work with MAXS Android C
         Pinging chatpi.lan [192.168.1.150] with 32 bytes of data:
     * In this case, my suffix is .lan, and I will go with chatpi.lan for my virtual server name
   * If your network doesn't add a suffix, you can try the default ".local" suffix, which should work
+    * NOTE: While this approach should work, it will result in multicast DNS resolution and is not guaranteed to be unique on a network
+      * As such, it's best to only use this method for initial testing and/or proof of concept, and then switch to another method
     * To test, do a "ping chatpi.local" and see what comes back.  Example:
         C:\Users\chris>ping chatpi.local
         Pinging chatpi.local [abcd::abcd:ab1:abcd:50fc%6] with 32 bytes of data:
