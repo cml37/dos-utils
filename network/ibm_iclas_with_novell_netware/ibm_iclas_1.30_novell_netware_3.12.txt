@@ -1,0 +1,485 @@
+References: 
+  https://sites.google.com/site/iclasschoolview/
+  https://virtuallyfun.com/wordpress/2011/03/25/amd-pcnet-with-netware-3-12/
+  https://www.ibm.com/support/pages/installing-novell-netware-v312-netfinity-3500
+
+=====================================================================
+Items to Locate
+=====================================================================
+Locate your licensed copy of Novell Netware 3.12 (3.5" disks)
+-- This should contain NetView Netware Management (sometimes called "NetWare Management Agent") and BASICMHS
+Locate your licensed copy of IBM Classroom LAN Administration System 1.x (This procedure tested with version 1.30)
+-- You will also need a patched copy of disk 4 which fixes a bug with the "CLSCLASS" program used to add/remove classrooms
+-- For licensed users, an archival "IBM Classroom LAN Administration System 1.30 Disk 4 Patch" version looks to be available on Vetusware
+Locate your licensed copy of PC DOS 6.3
+
+Obtain drivers:
+  AMD PCNet NetWare 3.12 Server drivers (odi_ahsm_svr3x.zip): https://virtuallyfun.com/wordpress/2011/03/25/amd-pcnet-with-netware-3-12/
+  -- unzip to folder named odi_ahsm_svr3x
+  NetWare Idle drivers (nw4-idle.nlm): https://virtuallyfun.com/wordpress/2011/03/25/amd-pcnet-with-netware-3-12/
+  AMD PCNet network card client drivers (lan.zip): https://www.helpjet.net/Fs-80528992-89055134-94629108.html
+  -- unzip to folder named lan
+  AMD PCNet client32 drivers (client32.zip) (we will only need this for an updated version of lsl.com): https://www.helpjet.net/Fs-43321125-89055134-88652830.html
+  -- unzip to folder named client32
+  Xircom PE3 Drivers (pe3drv.exe) (we will only use this to get a copy of netx and ipxodi): https://www.helpjet.net/Fs-72579889-75843699-73056547-extract.html
+
+Download Oracle VM VirtualBox (suggested version 6.0.18 or lower) https://download.virtualbox.org/virtualbox/6.0.18/VirtualBox-6.0.18-136238-Win.exe  
+Download WinImage
+Download MS-DOS 6.22 Boot ISO: https://www.allbootdisks.com/downloads/ISO/AllBootDisks_ISO_Image_Downloads25/DOS6.22_bootdisk.iso
+
+
+====================================
+Installations
+====================================
+Install Oracle VM VirtualBox
+Install WinImage
+
+
+=====================================================================
+Server Setup
+=====================================================================
+Create a new VirtualBox VM (name it Novell Server)
+  New
+  Name: Novell Server
+  Type: Other
+  Version: DOS
+  Memory size: 32MB
+  Hard Disk: Create a virtual hard disk now
+  Hard disk file type: VMDK (this is important so that WinImage can open your hard disk file!!)
+  Storage on physical hard disk: Dynamically allocated
+  File location and size: change size to 2GB
+
+Once created
+ Settings
+ Network
+ Adapter 1
+   Enable Network Adapter
+   Attached to: Bridged Adapter
+   Name: (if planning to host "real" machines, choose your wired network adapter... wireless will NOT work.  Otherwise, wireless is fine)
+
+Start the new VM
+Insert the DOS 6.22 ISO into the drive
+Use FDISK to create a 500MB partition (leaving 1.5GB free for a later Netware partition)
+  fdisk
+  1 to create DOS partition
+  1 to create primary DOS partition
+  N for max size and making active
+  500 for size
+  When done, esc to return to main menu
+  2 to make partition active
+  1 to select partition 1
+  Esc
+  Esc
+  Any key to reboot
+
+format C: /s
+eject the DOS 6.22 ISO
+reboot
+
+Insert NetWare installation disk into Drive A:
+A:
+install
+Press any key to continue
+Install New NetWare 3.12
+Enter
+Retain current disk partition
+Enter
+Server Name: ICLAS_DEMO
+Enter
+Internal Network Number: <Enter to select default>
+Enter to continue
+Insert disks as prompted 
+-- SYSTEM_1
+-- SYSTEM_2
+-- UNICODE
+When prompted, F10 to select local defaults
+Select DOS filename format (recommended)
+Enter
+Select "No" when asked if you want to specify any special startup set commands
+Enter
+Select "Yes" when asked about server.exe in autoexec.bat
+Enter
+Enter
+
+At this point, you will be placed into the system console
+load isadisk
+Enter
+Enter
+Enter
+load install
+Select Disk Options
+Enter
+Partition Tables
+Enter
+Create NetWare Partition
+Enter
+Escape
+Yes
+Esc, Esc to get back to main menu
+Volume Options
+Enter
+Press the INS key
+Esc
+Yes
+Esc to get back to main menu
+System Options
+Enter
+Copy System and Public Files
+Enter
+Esc
+Yes
+Enter
+Insert disks as prompted
+-- Install
+-- Unicode
+-- System 1
+-- System 2
+-- System 3
+-- System 4
+-- System 5
+-- System 6
+-- System 7
+-- System 8
+Esc when presented with "File Upload Complete"
+Create Autoexec.NCF file
+Enter
+Add this line to the bottom of the file
+  SET ALLOW UNENCRYPTED PASSWORDS = ON
+Esc
+Yes
+Enter
+Create Startup.NCF file
+Enter
+Enter
+Esc
+Yes
+Enter
+Return to Main Menu
+Enter
+Product Options
+Press Insert key
+Place NetWare Management Agent (1) disk into drive A:
+Enter
+Install on this Server
+Enter
+When prompted, insert NetWare Management Agent (2) into drive A:
+Esc
+When install is finished, press Esc
+Press Insert key
+Place Basic MHS (1) into drive A:
+Enter
+Yes
+Yes
+Yes
+Insert disk 2 and press any key
+Yes
+Yes
+Yes
+Yes
+Press any key
+Esc
+Exit
+Enter
+Yes
+Enter
+(this puts us back on the NetWare command line console)
+
+Shutdown the server
+down 
+exit
+
+Power off the virtual machine
+
+At this point, it's time to inject some files into the image
+Using WinImage
+  -- Open the VMDK file (C:\users\<your user name\VirtualBox VMS\Novell Server.vmdk)
+  -- From odi_ahsm_svr3x.zip inject all files to a directory named LAN in the image
+    -- Click on \ folder
+    -- Image | Create Folder | LAN
+    -- Click on LAN
+    -- Image | Inject a Folder | odi_ahsm_svr3x | Yes
+  -- Inject "Novell Netware 3.12 (3.5)\Novell Netware 3.12 (3.5)\LAN Drivers\312ptd.exe" into a directory named 312ptd in the image
+    -- Click on \ folder
+    -- Image | Create Folder | 312ptd
+    -- Click on 312ptd
+    -- Image | Inject | 312ptd.exe | Yes
+  -- Inject "Novell Netware 3.12 (3.5)\Novell Netware 3.12 (3.5)\LAN Drivers\odi33g\odi33g.exe" into a directory named odi33g in the image
+    -- Click on \ folder
+    -- Image | Create Folder | odi33g
+    -- Click on odi33g
+    -- Image | Inject | odi33g.exe | Yes
+  -- Inject "nw4-idle.nlm" into a directory named nw4idle in the image
+    -- Click on \ folder
+    -- Image | Create Folder | nw4idle
+    -- Click on nw4idle
+    -- Image | Inject | nw4-idle.nlm | Yes
+  -- Inject "Novell Netware 3.12 (3.5)\Novell Netware 3.12 (3.5)\LAN Drivers\312y2kp2.exe" into a directory named 312y2kp2 in the image
+    -- Click on \ folder
+    -- Image | Create Folder | 312y2kp2
+    -- Click 312y2kp2
+    -- Image | Inject | 312y2kp2.exe | Yes
+
+Exit WinImage
+
+Start up the Novell Server Virtual Machine
+Once started
+  ALT + ESC to get back to the main console
+  down 
+  exit
+
+Apply the 3.12 Update 
+  cd \312ptd
+  312ptd
+  y to extract
+  cd \server.312
+  server
+    ALT + ESC to get back to the main console
+  load C:\312ptd\312ptd\patch312
+  Copy OS Patches to Server
+  Location: C:\312ptd\312ptd
+  Enter
+  Enter
+  Esc
+  Yes
+  Enter  
+  down 
+  exit
+  
+Apply the 3.12 Y2K Patch
+  cd \312y2kp2
+  312y2kp2
+  y to extract
+  copy boot\*.* C:\server.312 (y to overwrite any files)
+  cd \server.312
+  lswap C:\server.312\loader.exe C:\server.312\server.exe
+
+Apply the ODI driver updates
+  cd \odi33g
+  odi33g
+  y to extract
+  copy server\33spec\ethertsm.nlm C:\server.312
+  copy server\33spec\312\msm31x.nlm C:\server.312
+  copy server\33spec\312\nbi31x.nlm C:\server.312
+
+Copy over LAN and Netware idle drivers
+  cd \lan
+  copy pcntnw*.* C:\server.312
+  cd \nw4idle
+  copy *.* C:\server.312
+
+Start the server
+  cd \server.312
+  server
+    ALT + ESC to get back to the main console
+
+Let's load LAN drivers
+  load C:\server.312\pcntnw.lan
+  Enter
+  Make a note of the PORT, INT, and SLOT values (i.e. PORT=3020, INT=9, SLOT=2
+  load edit SYS:\SYSTEM\AUTOEXEC.NCF
+    Add the following before the ; NETWARE BASICS MHS line
+      LOAD C:\SERVER.312\PCNTNW slot=<SLOT_VALUE_FROM_ABOVE> port=<PORT_VALUE_FROM_ABOVE> int=<INT_VALUE_FROM_ABOVE> frame=ETHERNET_802.2 name=IPX
+      BIND IPX TO PCNTNW NET=ED001
+      load c:\server.312\nw4-idle
+  Esc
+  Yes
+  down
+  exit
+  server
+    ALT + ESC to get back to the main console
+
+Let's see how we did
+  load monitor
+  LAN information
+  Enter
+  Enter
+  Make sure you have a Node Address (if you want to triple check, this should match your MAC address in virtualbox)
+
+  
+=====================================================================
+Client Setup
+=====================================================================
+Create a new VirtualBox VM (name it Novell Client)
+  New
+  Name: Novell Server
+  Type: Other
+  Version: DOS
+  Memory size: 16MB
+  Hard Disk: Create a virtual hard disk now
+  Hard disk file type: VMDK (this is important so that WinImage can open your hard disk file!!)
+  Storage on physical hard disk: Dynamically allocated
+  File location and size: defaults are fine
+
+Once created
+ Settings
+ Network
+ Adapter 1
+   Enable Network Adapter
+   Attached to: Bridged Adapter
+   Name: (if planning to host "real" machines, choose your wired network adapter... wireless will NOT work.  Otherwise, wireless is fine)
+
+Insert PC DOS 6.3 disk 1 into the drive
+Start VM
+Allocate all free hard disk space for PC DOS
+Enter
+Format Partition
+Enter
+Enter
+Enter
+Enter
+Insert disks as prompted
+-- Disk 2
+-- Disk 4
+-- Disk 5
+Remove disk and restart
+File | Exit to exit the shell
+
+dos\edlin autoexec.bat
+6d (this deletes the dosshell line
+e to exit edlin
+
+Power down the Novell Client virtual machine
+
+At this point, it's time to inject some files into the image
+Using WinImage
+  -- Open the vmdk file (C:\users\<your user name\VirtualBox VMS\Novell Client.vmdk)
+  -- From lan\netware\dos, inject pcntnw.com into a directory named net
+    -- Click on \ folder
+    -- Image | Create Folder | net
+    -- Click on net
+    -- Image | Inject | pcntnw.com | Yes
+  -- from client32, inject lsl.com into a directory named net
+    -- Click on net
+    -- Image | Inject | lsl.com | Yes
+  -- inject pe3drv.exe into a directory named pe3drv
+    -- Click on \ folder
+    -- Image | Create Folder | pe3drv
+    -- Click on pe3drv
+    -- Image | Inject | pe3drv.exe | Yes
+  -- Inject "Novell Netware 3.12 (3.5)\Novell Netware 3.12 (3.5)\LAN Drivers\312y2kp2.exe" into a directory named 312y2kp2 in the image
+    -- Click on \ folder
+    -- Image | Create Folder | 312y2kp2
+    -- Click 312y2kp2
+    -- Image | Inject | 312y2kp2.exe | Yes
+  -- Inject "Novell Netware 3.12 (3.5)\Novell Netware 3.12 (3.5)\LAN Drivers\lib312c\lib312c.exe" into a directory named lib312c in the image
+    -- Click on \ folder
+    -- Image | Create Folder | lib312c 
+    -- Click lib312c 
+    -- Image | Inject | lib312c.exe | Yes
+    
+Close WinImage
+
+Start up the Netware Client
+
+Set up ipxodi and netx drivers
+  cd \pe3drv
+  pe3drv
+  keep pressing "y" until extraction is done
+  copy odi\ipxodi.com C:\net
+  copy odi\netx.exe C:\net
+  
+Configure the Netware Client
+  cd \
+  dos\e autoexec.bat
+  add the following lines to the bottom of the file
+    set PATH=C:\net;%PATH%
+    lsl
+    pcntnw
+    ipxodi
+    netx
+    F:
+  F2 to save
+  F3 to exit
+
+Reboot the virtual machine
+
+From there you should be able to change to drive F: and login as supervisor!!
+F:
+login supervisor
+
+Apply lib312c patch
+  C:
+  cd\ lib312c
+  lib312c
+  y to extract
+  flag X:\system\*.NLM N
+  (press any key to continue as needed)
+  copy *.nlm X:\system
+  (A to overwrite all)
+  copy *.msg X:\system
+  flag X:\system\*.NLM RO SH
+  (press any key to continue as needed)
+
+Apply 312 y2k patch
+  C:\
+  cd \312y2kp2
+  312y2kp2
+  y to extract
+  flag X:\system\*.* N
+  (press any key to continue as needed)
+  flag X:\public\*.* N
+  (press any key to continue as needed)
+  copy SYS\public\*.* X:\public
+  (A to overwrite all)
+  copy SYS\system\*.* X:\system
+  (A to overwrite all)
+  flag X:\system\*.* RO SH
+  (press any key to continue as needed)
+  flag X:\public\*.* RO SH
+  (press any key to continue as needed)
+
+Restart the server on the Novell Server VM 
+  ALT + ESC to get back to the main console if needed
+  down 
+  exit
+  server 
+    ALT + ESC to get back to the main console
+  
+
+=====================================================================
+ICLAS Setup
+=====================================================================
+Reboot the NetWare Client VM
+
+Login 
+  login supervisor
+
+Insert Disk 1 of IBM ICLAS into drive A:
+A:g
+Press any key
+Press esc when asked to insert a DOS disk
+Cycle through disks
+  After inserting each disk, continually press the spacebar key until prompted for next disk
+  !!!!!!BE SURE TO USED THE PATCHED VERSION OF DISK 4!!!!!!
+  This is required due to the way that the "flag" command works during the install, and it basically waits for user input
+ 
+When done, on server:
+  ALT + ESC to get back to the main console if needed
+  down 
+  exit 
+  server
+
+Remove floppy disk from drive
+Reboot client
+
+Copy over DOS files used by ICLAS
+  F:\
+  login supervisor
+  X:
+  cd \public\dos
+  mkdir V6.00
+  cd V6.00
+  copy C:\dos\*.* 
+
+Update autoexec.bat
+  C:\dos\e C:\autoexec.bat
+  add these two lines to the bottom
+    set V=C:\
+    g 
+  F2 to save
+  F3 to exit
+  
+Reboot client
+
+Login to ICLAS for the first time
+  login as sysop without a password!
