@@ -275,7 +275,7 @@ Start the server
 Let's load LAN drivers
   load C:\server.312\pcntnw.lan
   Enter
-  Make a note of the PORT, INT, and SLOT values (i.e. PORT=3020, INT=9, SLOT=2
+  Make a note of the PORT, INT, and SLOT values (i.e. PORT=D020, INT=9, SLOT=2
   load edit SYS:\SYSTEM\AUTOEXEC.NCF
     Add the following before the ; NETWARE BASICS MHS line
       LOAD C:\SERVER.312\PCNTNW slot=<SLOT_VALUE_FROM_ABOVE> port=<PORT_VALUE_FROM_ABOVE> int=<INT_VALUE_FROM_ABOVE> frame=ETHERNET_802.2 name=IPX
