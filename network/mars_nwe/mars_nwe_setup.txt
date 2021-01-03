@@ -2,10 +2,10 @@
 Build Mars NWE from Source
 ==================================================
 sudo apt-get install libgdbm-dev
-wget ftp://ftp.koansoftware.com/public/opensource/mars_nwe/mars_nwe-0.99.pl21.tgz
-tar xzf mars_nwe-0.99.pl21.tgz
-cd mars_nwe
-wget https://raw.githubusercontent.com/cml37/dos-utils/master/network/mars_nwe/patch/mars_fix.diff
-patch -i mars_fix.diff
+wget http://ftp.disconnected-by-peer.at/ncpfs/mars_nwe-0.99.pl23.tar.bz2
+bunzip2 mars_nwe-0.99.pl23.tar.bz2
+tar xzf mars_nwe-0.99.pl23.tar
+cd mars_nwe-0.99.pl23
+cmake .
 make
 make install
