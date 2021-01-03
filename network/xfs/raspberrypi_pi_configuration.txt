@@ -11,7 +11,7 @@ https://www.nixcraft.com/t/how-to-enable-nfs-v2-on-ubuntu-18-04lts/2857
 Configuring PCNFSD
 ------------------------------------------------------------------
 Download this file to your Raspberry Pi:
-http://ftp.armlinux.org.uk/pub/linux/Networking/attic/Other/pcnfsd/linux_pcnfsd2.tgz
+http://ftp.linux.org.uk/pub/linux/Networking/attic/Other/pcnfsd/linux_pcnfsd2.tgz
 
 Untar the file
   sudo tar xzf linux_pcnfsd2.tgz
@@ -22,7 +22,7 @@ Change into the directory
 Modify Makefile.linux to change this line:
   LIBS= #-lrpc
 to this:
-  LIBS= -lcrypto
+  LIBS= -lcrypt
 
 Build pcnfsd
   sudo make -f Makefile.linux
