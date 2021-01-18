@@ -123,6 +123,12 @@ Change fetchmail user to root (otherwise the MDA will fail, and setuid doesn't w
 Restart fetchmail:
   sudo systemctl daemon-reload
   sudo service fetchmail restart
+
+At this point I strongly suggest having a look to see if there are any errors in your configuration
+  journalctl | grep fetchmail
+  (wait at least 60 seconds) 
+  (ensure that there are no authentication errors or I/O errors)
+  (if errors, retrace your steps above)
     
 From there you can configure your mail client!
   user name: pi
