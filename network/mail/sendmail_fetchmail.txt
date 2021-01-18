@@ -1,6 +1,12 @@
----------------------------------------------------
+================================================================================================================
+Preconditions
+================================================================================================================
+You have set up a Raspberry Pi and enabled SSH.
+  See my instructions here for an example: https://github.com/cml37/dos-utils/blob/master/config/my_raspberrypi_setup_instructions.txt
+
+================================================================================================================
 Configure Incoming email
----------------------------------------------------
+================================================================================================================
 NOTE: Configuration is performed with the default Raspberry Pi user named "pi".
       You are free to add other users and use them instead as you see fit.
       Also, this procedure assumes that 2 factor authentication is not set up on your Gmail account
@@ -124,9 +130,9 @@ From there you can configure your mail client!
   port: 143
   Connection security: None
  
----------------------------------------------------
+================================================================================================================
 Configure Outgoing email
----------------------------------------------------
+================================================================================================================
 NOTE: This procedure assumes that 2 factor authentication is not set up on your Gmail account
 
 Install modules
@@ -172,3 +178,10 @@ Run this command to create/fix aliases
 
 Restart postfix
   sudo systemctl restart postfix
+  
+From there you can configure your mail client!
+  user name: pi
+  server name: <hostname of your pi>
+  password: <your raspberry pi password for the pi user>
+  port: 25
+  Connection security: None
