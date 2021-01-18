@@ -9,7 +9,9 @@ Configure Incoming email
 ====================================================================
 NOTE: Configuration is performed with the default Raspberry Pi user named "pi".
       You are free to add other users and use them instead as you see fit.
-      Also, this procedure assumes that 2 factor authentication is not set up on your Gmail account
+      Also, this procedure assumes that 2 factor authentication is not set up 
+      on your Gmail account, that you have enabled support for less secure applications 
+      in Gmail, and that you have enabled imap access in Gmail
 
 Debugging (if needed): 
   journalctl | grep fetchmail
@@ -30,7 +32,7 @@ Build and install maildrop from source:
   sudo make install
 
 Configure maildir usage and logging for:
-  sudo nano /etc/maildroprc and add the below:
+  sudo nano /etc/maildroprc and add the below line (no spaces at beginning of the line):
   DEFAULT="$HOME/Maildir" 
   
 At this point, you could also add additional filtering rules in your maildroprc file to handle spam, routing, etc. 
@@ -99,10 +101,9 @@ Configure fetchmail:
        user "xxxxxxx@gmail.com" is pi here
        password 'mysecretpassword'
        folder 'inbox'
-       fetchall
        keep
        ssl
-       mda "maildrop -d %T"
+       mda "/usr/local/bin/maildrop -d %T"
 
 Set permissions on fetchmail configs:
   sudo chown root: /etc/fetchmailrc
@@ -137,11 +138,15 @@ NOTE: This procedure assumes that 2 factor authentication is not set up on your 
 
 Install modules
   sudo apt-get install postfix libsasl2-modules
+  
+  When prompted
+    Choose Internet Site and press enter
+    Leave the System mail name as default and press enter
 
 Create a password file with your username and password
   sudo nano -B /etc/postfix/sasl/sasl_passwd
-    Add this line, substituting in your username and password
-      [smtp.gmail.com]:587 username@gmail.com:password
+    Add this line, substituting in your username and password (and no whitespace at the beginning of the line):
+   [smtp.gmail.com]:587 username@gmail.com:password
 
 Now, let's protect that password file and also create a database for postfix that has your password in it
   sudo chmod u=rw,go= /etc/postfix/sasl/sasl_passwd
@@ -157,11 +162,11 @@ Now let's create a postfix config file
       relayhost = [smtp.gmail.com]:587
     search for 
       mynetworks = 
-    add your network and a netmask to the end of the list of networks
+    add your network and a netmask to the end of the list of networks (this allows for relaying of messages)
       mynetworks = <existing text> 192.168.1.0/24
     when complete, my networks line looked like this
       mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 192.168.1.0/24
-    Also, add all of the below to the bottom of the file
+    Also, add all of the below to the bottom of the file (no whitespace at the beginning of the lines)
       # Enable authentication using SASL.
       smtp_sasl_auth_enable = yes
       # Use transport layer security (TLS) encryption.
