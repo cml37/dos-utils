@@ -31,7 +31,7 @@ Build and install maildrop from source:
   ./configure
   sudo make install
 
-Configure maildir usage and logging for:
+Configure maildir usage:
   sudo nano /etc/maildroprc and add the below line (no spaces at beginning of the line):
   DEFAULT="$HOME/Maildir" 
   
@@ -125,7 +125,7 @@ Restart fetchmail:
   sudo service fetchmail restart
 
 At this point I strongly suggest having a look to see if there are any errors in your configuration
-  journalctl | grep fetchmail
+  journalctl -f | grep fetchmail
   (wait at least 60 seconds) 
   (ensure that there are no authentication errors or I/O errors)
   (if errors, retrace your steps above)
