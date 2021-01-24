@@ -1,12 +1,48 @@
 ==================================================
+Introduction
+==================================================
+This procedure will take you through setting up a Mars NWE server on a Raspberry Pi,
+as well as setting up an MS-DOS NetWare Client
+
+In order for Mars NWE to work, it's necessary to use an "older kernel version" on the 
+Raspberry Pi that supports IPX.
+
+This procedure will demonstrate how to build and install an older Raspbian Linux kernel,
+as well as how to build/install and configure Mars NWE
+
+
+==================================================
+Prerequisites
+==================================================
+You have set up a Raspberry Pi and enabled SSH.
+  See my instructions here for an example: https://github.com/cml37/dos-utils/blob/master/config/my_raspberrypi_setup_instructions.txt
+  Also, be sure to set up "Wait for network" at boot!
+
+For the client, find and download the following:
+  AMD PCNet network card client drivers (lan.zip): https://www.helpjet.net/Fs-80528992-89055134-94629108.html
+  -- unzip to folder named lan
+  AMD PCNet client32 drivers (client32.zip) (we will only need this for an updated version of lsl.com): https://www.helpjet.net/Fs-43321125-89055134-88652830.html
+  -- unzip to folder named client32
+  Xircom PE3 Drivers (pe3drv.exe) (we will only use this to get a copy of netx and ipxodi): https://www.helpjet.net/Fs-72579889-75843699-73056547-extract.html
+
+Also, locate your licensed copy of MS-DOS 6.22 install disks
+
+
+==================================================
 Build Linux Kernel 4.14.X
 ==================================================
+Before installing Mars NWE, we need to install a compatible kernel.
+The last known kernel version to support IPX was 4.14.
+As such, that's what we will be building here.  Here are the steps:
+
 git clone https://github.com/raspberrypi/linux.git --single-branch --branch rpi-4.14.y
 
 cd linux
 
+# Note - the below assumes Raspberry Pi Model 3B+.  
+# For different models, your config options may be different
+# (please see https://www.raspberrypi.org/documentation/linux/kernel/building.md)
 make bcm2709_defconfig
-vi .config
 
 apt-get install libncurses-dev
 make menuconfig
@@ -14,7 +50,7 @@ make menuconfig
 Networking Support <enter>
 Networking Options <enter>
 The IPX Protocol => M
-IPX: Full internal IPX network => *
+IPX: Full internal IPX network => (unchecked)
 Exit
 Exit
 Exit
@@ -34,24 +70,154 @@ vi /boot/config.txt
 ==================================================
 Build Mars NWE from Source
 ==================================================
-sudo apt-get install libgdbm-dev cmake
-wget http://ftp.disconnected-by-peer.at/ncpfs/mars_nwe-0.99.pl23.tar.bz2
-bunzip2 mars_nwe-0.99.pl23.tar.bz2
-tar xf mars_nwe-0.99.pl23.tar
-cd mars_nwe-0.99.pl23
-cmake .
-make
-sudo make install
+Install support libraries
+  sudo apt-get install libgdbm-dev cmake
 
-sudo mkdir -p /var/log/mars_nwe
-sudo mkdir -p /var/run/mars_nwe
-sudo nwserv
+Download and build Mars NWE
+  wget http://ftp.disconnected-by-peer.at/ncpfs/mars_nwe-0.99.pl23.tar.bz2
+  bunzip2 mars_nwe-0.99.pl23.tar.bz2
+  tar xf mars_nwe-0.99.pl23.tar
+  cd mars_nwe-0.99.pl23
+  cmake .
+  make
+  sudo make install
 
-sudo vi /usr/local/etc/mars_nwe/nwserv.conf
+Configure Mars NWE
+  sudo vi /usr/local/etc/mars_nwe/nwserv.conf
 
-        4   0x22    eth0    auto 1
-        7    8
+    Change section 1 to read like this (basically, change the umask)
+          1       SYS             /var/mars_nwe/SYS/                kt   777 777
+    Completely comment out section 3
+          (comment out section 3)
+    Change section 4 to read linke this, comment out any extra lines
+          4   0x22    eth0    802.3 1
+    Change section 8 to read linke this, comment out any extra lines
+          7    8
+    Change section 9 to read linke this, comment out any extra lines
+          9    0777    0777 
+    If you want extra debugging on the netware server (nwserv), change this line in section 101
+          101    99               # debug NWSERV
 
-sudo ip link set wlan0 down
+Some commentary on configuration
+  Although Novell uses 802.2 for NetWare 3.12, I found, at least when running as a virtual machine, that file copies, etc. are
+  unreliable and time out, and as such, switched to 802.3, which seems to have cleared up the problem
 
-<TODO NEED TO COMPLETE PROCEDURE, ADD ICLAS>
+Add these lines to /etc/rc.local above the exit 0 line to support startup of Mars NWE on system reboot
+  mkdir -p /var/log/mars_nwe
+  mkdir -p /var/run/mars_nwe
+  nwserv
+
+At this point, reboot the Rasbperry Pi
+
+Troubleshooting
+  Have a look at routes here, if more than two routes, there may be issues
+   sudo cat /proc/net/ipx/route
+
+  Killing nwserv and associated processes (there may be a better way)
+   sudo pkill -9 ncpserv
+   sudo pkill -9 nwserv
+   sudo pkill -9 nwbind
+   sudo pkill -9 nwconn
+   
+   
+==================================================
+Setting up a NetWare DOS Client
+==================================================
+Create a new VirtualBox VM
+  New
+  Name: Novell Client
+  Type: Other
+  Version: DOS
+  Memory size: 16MB
+  Hard Disk: Create a virtual hard disk now
+  Hard disk file type: VMDK (this is important so that WinImage can open your hard disk file!!)
+  Storage on physical hard disk: Dynamically allocated
+  File location and size: defaults are fine
+
+Once created
+ Settings
+ Network
+ Adapter 1
+   Enable Network Adapter
+   Attached to: Bridged Adapter
+   Name: <choose your network card adapter>
+
+Insert the MS-DOS 6.22 install disk 1 into the disk drive
+  Select Virtual Machien
+  Click Settings
+  Storage
+  Add disk 1 as a floppy
+  Ok
+  
+Start the virtual machine
+
+MS-DOS 6.22 Setup
+ Enter
+ Configure Unallocated Disk Space
+ Enter
+ Enter to restart
+ Enter to select "The settings are correct"
+ Enter to select C:\DOS
+ Insert Disks as prompted and press enter
+ When requested, remove the floppy disk and press enter
+ Press Enter to restart
+ 
+Power down the Novell Client virtual machine
+
+At this point, it's time to inject some files into the image
+Using WinImage
+  -- Open the vmdk file (C:\users\<your user name\VirtualBox VMS\Novell Client.vmdk)
+  -- From lan\netware\dos, inject pcntnw.com into a directory named net
+    -- Click on \ folder
+    -- Image | Create Folder | net
+    -- Click on net
+    -- Image | Inject | pcntnw.com | Yes
+  -- from client32, inject lsl.com into a directory named net
+    -- Click on net
+    -- Image | Inject | lsl.com | Yes
+  -- inject pe3drv.exe into a directory named pe3drv
+    -- Click on \ folder
+    -- Image | Create Folder | pe3drv
+    -- Click on pe3drv
+    -- Image | Inject | pe3drv.exe | Yes
+    
+Close WinImage
+
+Start up the Netware Client
+
+Set up ipxodi and netx drivers
+  cd \pe3drv
+  pe3drv
+  keep pressing "y" until extraction is done
+  copy odi\ipxodi.com C:\net
+  copy odi\netx.exe C:\net
+  
+Configure the Netware Client
+  cd \
+  dos\edit autoexec.bat
+  add the following lines to the bottom of the file:
+    PATH=C:\net;%PATH%
+    lsl
+    pcntnw
+    ipxodi
+    netx
+    F:
+  Save and exit
+  
+  dos\edit C:\net\net.cfg
+  add the following lines:
+    Link Driver PCNTNW
+      Frame ETHERNET_802.3
+  Save and exit
+
+Reboot the virtual machine
+
+From there you should be able to change to drive F: and login as supervisor!!
+  F:
+  login supervisor
+  password: top-secret (or another password if you happened to change it in the config file)
+
+What's next?  It's up to you:
+  Clone the virtual machine to have multiple clients?
+  Install some network shareable programs (WordPerfect 5.1?  Something else?)
+  Call it a day?
