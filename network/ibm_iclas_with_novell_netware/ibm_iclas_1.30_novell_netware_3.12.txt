@@ -450,8 +450,8 @@ Press any key
 Press esc when asked to insert a DOS disk
 Cycle through disks
   After inserting each disk, continually press the spacebar key until prompted for next disk
-  !!!!!!BE SURE TO USED THE PATCHED VERSION OF DISK 4!!!!!!
   This is required due to the way that the "flag" command works during the install, and it basically waits for user input
+  ALSO ==> !!!!!!BE SURE TO USED THE PATCHED VERSION OF DISK 4!!!!!!
  
 When done, on server:
   ALT + ESC to get back to the main console if needed
