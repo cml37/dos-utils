@@ -1,11 +1,57 @@
 ==================================================
+Build Linux Kernel 4.14.X
+==================================================
+git clone https://github.com/raspberrypi/linux.git --single-branch --branch rpi-4.14.y
+
+cd linux
+
+make bcm2709_defconfig
+vi .config
+
+apt-get install libncurses-dev
+make menuconfig
+
+Networking Support <enter>
+Networking Options <enter>
+The IPX Protocol => M
+IPX: Full internal IPX network => *
+Exit
+Exit
+Exit
+Yes
+
+make -j4 zImage modules dtbs
+sudo make modules_install
+sudo cp arch/arm/boot/dts/*.dtb /boot/
+sudo cp arch/arm/boot/dts/overlays/*.dtb* /boot/overlays/
+sudo cp arch/arm/boot/dts/overlays/README /boot/overlays/
+sudo cp arch/arm/boot/zImage /boot/kernel7-ipx.img
+
+vi /boot/config.txt
+  kernel=kernel7-ipx.img
+
+
+==================================================
 Build Mars NWE from Source
 ==================================================
-sudo apt-get install libgdbm-dev
+sudo apt-get install libgdbm-dev cmake
 wget http://ftp.disconnected-by-peer.at/ncpfs/mars_nwe-0.99.pl23.tar.bz2
 bunzip2 mars_nwe-0.99.pl23.tar.bz2
-tar xzf mars_nwe-0.99.pl23.tar
+tar xf mars_nwe-0.99.pl23.tar
 cd mars_nwe-0.99.pl23
 cmake .
 make
-make install
+sudo make install
+
+sudo mkdir -p /var/log/mars_nwe
+sudo mkdir -p /var/run/mars_nwe
+sudo nwserv
+
+sudo vi /usr/local/etc/mars_nwe/nwserv.conf
+
+        4   0x22    eth0    auto 1
+        7    8
+
+sudo ip link set wlan0 down
+
+<TODO NEED TO COMPLETE PROCEDURE, ADD ICLAS>
