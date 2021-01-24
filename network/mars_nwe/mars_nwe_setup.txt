@@ -66,8 +66,14 @@ sudo cp arch/arm/boot/dts/overlays/*.dtb* /boot/overlays/
 sudo cp arch/arm/boot/dts/overlays/README /boot/overlays/
 sudo cp arch/arm/boot/zImage /boot/kernel7-ipx.img
 
-vi /boot/config.txt
-  kernel=kernel7-ipx.img
+sudo nano /boot/config.txt
+  Add this line:
+    kernel=kernel7-ipx.img
+
+Reboot the Raspberry pi and verify new kernel version
+  sudo reboot
+  uname -r 
+   Should get back: 4.14.114-v7+ (or some variant of 4.14.x)
 
 
 ==================================================
@@ -86,35 +92,50 @@ Download and build Mars NWE
   sudo make install
 
 Configure Mars NWE
-  sudo vi /usr/local/etc/mars_nwe/nwserv.conf
+  sudo nano /usr/local/etc/mars_nwe/nwserv.conf
 
-    Change section 1 to read like this (basically, change the umask)
+    Change section 1 to read like this (basically, change the umask.  Not required but does relax permissions)
           1       SYS             /var/mars_nwe/SYS/                kt   777 777
-    Completely comment out section 3
-          (comment out section 3)
-    Change section 4 to read linke this, comment out any extra lines
+    Completely comment out section 3 (internal nets will break routing unfortunately)
+    Change section 4 to read like this, comment out any extra lines (see commentary below for rationale)
           4   0x22    eth0    802.3 1
-    Change section 8 to read linke this, comment out any extra lines
+    Change section 7 to read like this (this allows unsecure passwords)
           7    8
-    Change section 9 to read linke this, comment out any extra lines
+    Change section 9 to read like this, comment out any extra lines (basically, change the umask.  Not required but does relax permissions)
           9    0777    0777 
+    Change section 12 to read like this (this gives a password for the supervisor user of top-secret)
+          12  SUPERVISOR   root top-secret
     If you want extra debugging on the netware server (nwserv), change this line in section 101
           101    99               # debug NWSERV
 
-Some commentary on configuration
-  Although Novell uses 802.2 for NetWare 3.12, I found, at least when running as a virtual machine, that file copies, etc. are
-  unreliable and time out, and as such, switched to 802.3, which seems to have cleared up the problem
+Some commentary on configuration:
+  * Although Novell uses 802.2 for NetWare 3.12, I found, at least when running as a virtual machine, that file copies, etc. are
+    unreliable and time out, and as such, switched to 802.3, which seems to have cleared up the problem.
+  * Additionally, since there is no "flag" command like in proper NetWare, I found that relaxing the UMASK make things easier
+    for accessing files after installation (if security is a concern for you, well, then you probably shouldn't be using this
+    in the first place, but I digress..)
+  * And regarding the internal nets concept, the only explanation I have here is that Mars NWE is ancient and this is probably
+    a compatibility issue with modern kernels.  I beat my head against the wall for several hours figuring this one out.
 
 Add these lines to /etc/rc.local above the exit 0 line to support startup of Mars NWE on system reboot
-  mkdir -p /var/log/mars_nwe
-  mkdir -p /var/run/mars_nwe
-  nwserv
+  sudo nano /etc/rc.local
+  add the following above exit 0
+    mkdir -p /var/log/mars_nwe
+    mkdir -p /var/run/mars_nwe
+    nwserv
 
 At this point, reboot the Rasbperry Pi
-
+  reboot
+  
 Troubleshooting
   Have a look at routes here, if more than two routes, there may be issues
    sudo cat /proc/net/ipx/route
+
+  Have a look at logs here
+   cat /var/log/mars_nwe/nw.log
+   
+  Run ifconfig and look for ipx bindings.  Is it bound to eth0?
+    ifconfig | grep -B5 ipx
 
   Killing nwserv and associated processes (there may be a better way)
    sudo pkill -9 ncpserv
