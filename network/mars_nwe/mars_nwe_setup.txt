@@ -47,13 +47,13 @@ cd linux
 # (please see https://www.raspberrypi.org/documentation/linux/kernel/building.md)
 make bcm2709_defconfig
 
-apt-get install libncurses-dev
+sudo apt-get install libncurses-dev
 make menuconfig
 
 Networking Support <enter>
 Networking Options <enter>
-The IPX Protocol => M
-IPX: Full internal IPX network => (unchecked)
+(Press the Page Down Key around Six times :-)) 
+The IPX Protocol => (press spacebar to make "M" appear)
 Exit
 Exit
 Exit
