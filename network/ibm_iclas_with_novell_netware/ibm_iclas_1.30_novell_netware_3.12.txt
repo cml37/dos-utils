@@ -38,7 +38,7 @@ Install WinImage
 =====================================================================
 Server Setup
 =====================================================================
-Create a new VirtualBox VM (name it Novell Server)
+Create a new VirtualBox VM
   New
   Name: Novell Server
   Type: Other
@@ -299,9 +299,9 @@ Let's see how we did
 =====================================================================
 Client Setup
 =====================================================================
-Create a new VirtualBox VM (name it Novell Client)
+Create a new VirtualBox VM
   New
-  Name: Novell Server
+  Name: Novell Client
   Type: Other
   Version: DOS
   Memory size: 16MB
@@ -316,7 +316,7 @@ Once created
  Adapter 1
    Enable Network Adapter
    Attached to: Bridged Adapter
-   Name: (if planning to host "real" machines, choose your wired network adapter... wireless will NOT work.  Otherwise, wireless is fine)
+   Name: <choose your network card adapter>
 
 Insert PC DOS 6.3 disk 1 into the drive
 Start VM
