@@ -31,6 +31,9 @@ Also, locate your licensed copy of MS-DOS 6.22 install disks
 ==================================================
 Build Linux Kernel 4.14.X
 ==================================================
+WARNING: This part of the procedure takes considerable wallclock time to perform.  
+         Plan on having a long running SSH session!!
+
 Before installing Mars NWE, we need to install a compatible kernel.
 The last known kernel version to support IPX was 4.14.
 As such, that's what we will be building here.  Here are the steps:
