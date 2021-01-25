@@ -125,7 +125,7 @@ Add these lines to /etc/rc.local above the exit 0 line to support startup of Mar
     nwserv
 
 At this point, reboot the Rasbperry Pi
-  reboot
+  sudo reboot
   
 Troubleshooting
   Have a look at routes here, if more than two routes, there may be issues
@@ -164,7 +164,7 @@ Once created
  Adapter 1
    Enable Network Adapter
    Attached to: Bridged Adapter
-   Name: <choose your network card adapter>
+   Name: <choose your wired network card adapter>
 
 Insert the MS-DOS 6.22 install disk 1 into the disk drive
   Select Virtual Machien
