@@ -8,6 +8,11 @@ Items to Locate
 =====================================================================
 Locate your licensed copy of Novell Netware 3.12 (3.5" disks)
 -- This should contain NetView Netware Management (sometimes called "NetWare Management Agent") and BASICMHS
+-- You will also need the following Novell patches
+   -- 312ptd
+   -- odi33g
+   -- 312y2kp2
+   -- lib312c
 Locate your licensed copy of IBM Classroom LAN Administration System 1.x (This procedure tested with version 1.30)
 -- You will also need a patched copy of disk 4 which fixes a bug with the "CLSCLASS" program used to add/remove classrooms
 -- For licensed users, an archival "IBM Classroom LAN Administration System 1.30 Disk 4 Patch" version looks to be available on Vetusware
