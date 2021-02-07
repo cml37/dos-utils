@@ -7,6 +7,10 @@ as well as setting up an MS-DOS NetWare Client
 In order for Mars NWE to work, it's necessary to use an "older kernel version" on the 
 Raspberry Pi that supports IPX.
 
+Additionally, you will want to use a wired ethernet interface for the Raspberry Pi
+and any connecting clients.  This procedure uses a virtual machine for the NetWare client,
+but even so, a wired interface is required there.
+
 This procedure will demonstrate how to build and install an older Raspbian Linux kernel,
 as well as how to build/install and configure Mars NWE
 
