@@ -1,0 +1,145 @@
+====================================================================
+Preconditions
+====================================================================
+
+You have executed the email_bridge.txt procedure located here: https://github.com/cml37/dos-utils/blob/master/network/mail/email_bridge.txt
+
+WARNING: Minuet does not have a concept of "leave messages on server", so running Minuet will download ALL messages locally into Minuet!!
+
+
+====================================================================
+Configure Dovecot to support pop3
+====================================================================
+
+Install pop3 support module:
+  sudo apt-get install dovecot-pop3d
+
+Configure dovecot for pop3:
+  sudo nano /etc/dovecot/dovecot.conf
+  change
+    protocols = imap
+  to
+    protocols = imap pop3
+
+Restart dovecot:
+  sudo /etc/init.d/dovecot restart
+
+Check status of dovecot to make sure it is running:
+  sudo /etc/init.d/dovecot status
+
+
+====================================================================
+Configure a Floppy Disk With Needed Installers
+====================================================================
+
+Download the following items
+ AMD Packet driver for DOS: http://www.georgpotthast.de/sioux/pktdrv/pcntpk.zip
+ -- unzip to a directory call pcntpk
+ CuteMouse driver: https://sourceforge.net/projects/cutemouse/files/latest/download
+ -- unzip to a directory called mouse
+ Minuet installer: https://archive.org/download/minuet-evolt_browsers/1.0beta16/minuarc.exe
+
+Create a floppy disk image with the following using WinImage
+  -- File | New | 1.44 MB | Ok
+  -- From pcntpk, inject the AMD PCNET Packet Driver
+    -- Click on \ 
+    -- Image | Inject | pcntpk.com | Yes
+  -- Inject the Minuet installer
+    -- Click on \ 
+    -- Image | Inject | minuarc.exe | Yes
+  -- From mouse, inject the CuteMouse driver 
+    -- Click on \ 
+    -- Image | Inject | ctmouse.exe | Yes
+
+
+====================================================================
+Configure an MS-DOS Virtual Machine
+====================================================================
+
+Download the DOS 6.22 Boot ISO from allbootdisks.com: 
+  https://www.allbootdisks.com/downloads/ISO/AllBootDisks_ISO_Image_Downloads25/DOS6.22_bootdisk.iso
+
+Create a new VirtualBox VM
+  New
+  Name: Minuet
+  Type: Other
+  Version: DOS
+  Memory size: 16MB
+  Hard Disk: Create a virtual hard disk now
+  Hard Disk file type: VMDK
+  Storage on physical hard disk: Dynamically allocated
+  File location and size: defaults are fine
+
+Once created
+ Settings
+ Network
+ Adapter 1
+   Enable Network Adapter
+   Attached to: Bridged Adapter
+   Name: Choose your active network card
+
+Start the new VM
+Insert the DOS 6.22 ISO into the drive
+Use FDISK to set up the partition
+  fdisk
+  1 to create DOS partition
+  1 to create primary DOS partition
+  Y for max size and making active
+  Any key to reboot
+
+format C: /s
+
+Insert the floppy disk that you created above into the drive and perform the following:
+  mkdir C:\minuet
+  copy B:\minuarc.exe C:\minuet
+  copy B:\ctmouse.exe C:\
+  copy B:\pcntpk.com C:\
+
+Create and add items to autoexec.bat
+  A:\edit C:\autoexec.bat
+  Add the following lines
+    pcntpk INT=0x65
+    ctmouse
+  Save and exit
+  
+eject the DOS 6.22 ISO
+eject the floppy disk
+reboot the virtual machine
+
+Install minuet
+  cd minuet
+  minuarc 
+
+Run Minuet
+  minuet
+
+Configure Minuet 
+  Setup | Network
+    PC's IP Address: <pick a free address on your network>
+    Net Mask: <Your network's net mask
+    1st IP Address Gateway: <your gateway>
+    1st IP Address Name Server: <your DNS server>
+    Click Test (this will take a minute or two)
+    Review results and click Done
+    Click Ok
+  Setup | User
+    Email Address: <your email address>
+    Password: <pi user>@<pi name>
+    Reply to address: <your email address>
+    Your full name: <your name>
+    Subdirectory for mail: mail
+    Click Ok
+  Setup | Servers
+    Mail: Server Name: <pi name> 
+    Mail: Port: 110
+    Click Ok
+
+Fetch email using minuet!  
+  Press F2 for viewer
+  Press F3 to fetch
+  Press ESC when done to return to main screen
+
+Send email using minuet!
+  Press F3 for composer
+  Fill in To address, subject, and your message
+  F4 to send
