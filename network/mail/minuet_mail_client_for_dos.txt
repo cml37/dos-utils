@@ -50,7 +50,10 @@ Create a floppy disk image with the following using WinImage
   -- From mouse, inject the CuteMouse driver 
     -- Click on \ 
     -- Image | Inject | ctmouse.exe | Yes
-
+  -- File | Save As
+    -- Type: Image file (*.ima)
+    -- File Name: minuet.ima
+    -- Save
 
 ====================================================================
 Configure an MS-DOS Virtual Machine
