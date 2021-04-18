@@ -422,7 +422,7 @@ void Buffer_init(RESIDENT_DATA far* residentData) {
   residentData->Buffer_first = 0;
   residentData->Buffer_next = 0;
   residentData->Packet_int = 0x0;
-  residentData->data[0]=0;
+  residentData->data[0] = 0;
 }
 
 
