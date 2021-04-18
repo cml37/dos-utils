@@ -131,7 +131,7 @@ extern void Buffer_init( RESIDENT_DATA far* residentData);
 extern int8_t Packet_init( uint8_t packetInt, uint16_t udpDestPort, RESIDENT_DATA far* residentData );
 extern int8_t Packet_release_type( uint16_t Packet_handle, uint8_t Packet_int );
 extern void Buffer_startReceiving( RESIDENT_DATA far* residentData );
-extern void Buffer_stopReceiving( ); //TODO need a method to retrieve and change data in assembly
+extern void Buffer_stopReceiving( RESIDENT_DATA far* residentData );
 
 
 #endif /* HANDLERS_H_ */

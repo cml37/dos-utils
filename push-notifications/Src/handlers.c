@@ -180,6 +180,7 @@ static void Packet_process_internal( void ) {
       uint16_t   udpLen;
       char*      udpData;
       uint8_t    i;
+      uint8_t    ending_pos = 0;
 	  IP_HEADER  *ipHeader = ( IP_HEADER * )( packet + ETHERNET_HEADER_SIZE_BYTES );
 
       if ( ipHeader->protocol == UDP_PROTOCOL ) {
@@ -192,17 +193,16 @@ static void Packet_process_internal( void ) {
 	          udpLen  = ntohs( udpHeader->len );
 	          udpData = ( char* ) (packet + ETHERNET_HEADER_SIZE_BYTES + ipHeaderLen + sizeof( UDP_HEADER ) );
 
-              // Zero out all push notification display data
-              // TODO we should be more efficient here!
-	          for ( i = 0; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++ ) {
-				  g_residentData.data[i] = 0;
-			  }
-
-	          for ( i = 0; i < udpLen - 8; i++ ) {
-				  if ( i == PUSH_NOTIFICATION_BUFFER_SIZE - 1 ) {
+	          for ( i = 0; i < udpLen - sizeof( UDP_HEADER ); i++ ) {
+				  if ( i == PUSH_NOTIFICATION_BUFFER_SIZE ) {
 					  break;
 				  }
 				  g_residentData.data[i] = udpData[i];
+				  ending_pos = i;
+			  }
+
+			  for ( i = ending_pos; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++ ) {
+				  g_residentData.data[i] = ' ';
 			  }
 		  }
 	  }
@@ -274,20 +274,11 @@ static void PrintPushNotificationToScreen(char *data)
 {
 	uint16_t initialCursorLocation;
 	uint8_t  i = 0;
-	uint8_t  ending_pos = 0;
 	initialCursorLocation = GetCursorCoordinates();
 	SetCursorToPushNotificationLocation();
 
     for ( i = 0; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++ ){
-		if ( data[i] == NULL ) {
-			break;
-		}
 	    PrintCharacterWithTeletypeOutput( data[i] );
-	    ending_pos = i;
-	}
-
-	for ( i = ending_pos; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++ ) {
-	    PrintCharacterWithTeletypeOutput( ' ' );
 	}
 	SetCursorCoordinates(initialCursorLocation);
 }
@@ -337,9 +328,7 @@ static inline bool OurHandlerWasCalled(uint8_t tsrID)
 
 void Buffer_startReceiving( RESIDENT_DATA far* residentData ) { residentData->Buffer_fs_index = PACKET_BUFFERS; }
 
-void Buffer_stopReceiving( void  ) {
-    // TODO fix this method!
-	}
+void Buffer_stopReceiving( RESIDENT_DATA far* residentData ) {  residentData->Buffer_fs_index = 0; }
 
 
 // Packet_init

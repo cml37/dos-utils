@@ -40,9 +40,6 @@ int main(int argc, char* argv[])
 	tsrError		= FindLoadedInstanceOrNewID(pResidentData);
 	if ( PreviousInstanceFound(tsrError) )
 	{
-        Buffer_stopReceiving( ); //TODO FIX!!
-        Packet_release_type( pResidentData->Packet_handle, pResidentData->Packet_int ); //TODO UPDATE TO GET PARAMETERS
-
 		tsrError	= RemoveTsrFromMemory(pResidentData->tsrID);
 		if ( NoTsrErrors(tsrError) )
 		{
@@ -141,6 +138,9 @@ static TSR_ERROR RemoveTsrFromMemory(uint16_t tsrID)
 	multiplexIO.inTsrID	= tsrID;
 	pResidentDataInRam	= GetResidentDataFromLoadedInstance(&multiplexIO);
 	ReturnIfTsrError(multiplexIO.outTsrError);
+
+	Buffer_stopReceiving( pResidentDataInRam );
+	Packet_release_type( pResidentDataInRam->Packet_handle, pResidentDataInRam->Packet_int );
 
 	UnchainInterruptHandlers(&multiplexIO, pResidentDataInRam);
 	ReturnIfTsrError(multiplexIO.outTsrError);
