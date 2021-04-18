@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
         if ( NoTsrErrors(tsrError) )
         {
             RemovePushNotificationFromScreen();
-            puts("Done.");
+            puts("TSR Unloaded Successfully.");
         }
     }
     else if ( NoTsrErrors(tsrError) )
