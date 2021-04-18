@@ -119,6 +119,11 @@ _asm {
 };
 }
 
+// Buffer_free
+//
+// Use this function to return a buffer to the free stack.  Do this when
+// you are completely done with the buffer.
+
 static void Buffer_free( const uint8_t *buffer) {
 
   // This has to be protected because the packet driver can interrupt
@@ -130,7 +135,19 @@ static void Buffer_free( const uint8_t *buffer) {
   EnableInterrupts( );
 }
 
+// Packet_process_internal
+//
+// This is the code that takes the next packet off of the ring buffer and
+// passes it up the stack for processing.  Usually this is wrapped by a
+// macro.  This should not be called if there is nothing on the ring buffer
+// to process.
+//
+// The receiver adds to the ring buffer at Buffer_next, which is the head
+// of the ring buffer.  This code dequeues from the tail of the ring buffer
+// which is the oldest packet that has not been processed yet.
+
 static void Packet_process_internal( void ) {
+
   // Dequeue the first buffer in the ring.  If we got here then we know that
   // there is at least one packet in the buffer.  The user is responsible
   // for freeing the buffer using Buffer_free when they are done with it.
@@ -379,6 +396,12 @@ int8_t Packet_init( uint8_t packetInt, uint16_t udpDestPort, RESIDENT_DATA far* 
 
 }
 
+// Even though everything is initialized at the end of the function, we do
+// not setup the free buffer count to its true value until we are told to
+// do so later on.  This allows us to setup other data structures in higher
+// levels of the stack before turning on the flow of packets.  (Once we set
+// the number of free buffers to something other than 0, the packet driver
+// will be able to start using buffers.)
 
 void Buffer_init(RESIDENT_DATA far* residentData) {
 
