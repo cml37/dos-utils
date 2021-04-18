@@ -23,4 +23,4 @@ See the `send.py` script in the test directory.  Change the broadcast address to
 
 ## Known Issues
 1. Will not work with all programs resident (uses pretty primitive screen control)
-2. Does not appear to receive new packets after entering protected mode (i.e. Windows 3.11)
+2. Does not appear to receive new packets after entering and leaving protected mode (i.e. Windows 3.11)
