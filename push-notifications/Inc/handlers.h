@@ -37,8 +37,6 @@
 #define TICKS_BEFORE_DRAWING_THE_PUSH_NOTIFICATION       18    // 18 * 55ms = 1 second
 #define COLUMNS_ON_SCREEN                                80
 
-#define PACKET_RB_SIZE                                   PACKET_BUFFERS + 1
-#define PACKET_BUFFERS                                   2
 #define PACKET_BUFFER_LEN                                1514
 #define PUSH_NOTIFICATION_BUFFER_SIZE                    75
 
@@ -56,13 +54,9 @@ typedef struct ResidentData
     char                tsrIdString[TSR_IDENTIFICATION_STRING_LENGTH];
     TSR_HOOK            tsrHooks[NUMBER_OF_TSR_HOOKS];
     char                data[PUSH_NOTIFICATION_BUFFER_SIZE];
-    uint8_t             Buffer_first;   // Oldest packet in the ring, first to process
-    uint8_t             Buffer_next;    // Newest packet in the ring, add incoming here.
-    uint8_t             *Buffer[ PACKET_RB_SIZE ];
-    uint16_t            Buffer_len[ PACKET_RB_SIZE ];
-    uint8_t             *Buffer_fs[ PACKET_BUFFERS ];
-    uint8_t             Buffer_pool[ PACKET_BUFFERS ][ PACKET_BUFFER_LEN ];
-    uint8_t             Buffer_fs_index;
+    uint8_t             Perform_Packet_Processing;
+    uint8_t             Buffer[ PACKET_BUFFER_LEN ];
+    uint16_t            Buffer_len;
     const char          *PKT_DRVR_EYE_CATCHER;
     uint8_t             *Buffer_packetBeingCopied;
     uint16_t            Packet_handle;     // Provided by the packet driver

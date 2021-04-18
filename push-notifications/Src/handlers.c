@@ -66,36 +66,25 @@ RESIDENT_DATA g_residentData =
 // There are actually two calls; one call to get a buffer for the new packet
 // and one call to tell us when the packet has been copied into the buffer.
 //
-// If no buffers are available or the incoming packet is bigger than our buffer
-// size then tell the packet driver to drop the packet.  Otherwise, provide
-// the address of the next Buffer to use.
-//
 // Once the second call is made a new buffer is available to use for processing.
-// It is added to the the end of the ring buffer.
 
 static void __interrupt receiver( union INTPACK r ) {
 
   LoadCodeSegmentToDataSegment();
 
   if ( r.w.ax == 0 ) {
-
-    if ( (r.w.cx>PACKET_BUFFER_LEN) || (g_residentData.Buffer_fs_index == 0) ) {
+    if ( (r.w.cx>PACKET_BUFFER_LEN) || (g_residentData.Perform_Packet_Processing == 0) ) {
       r.w.es = r.w.di = 0;
     }
     else {
-      g_residentData.Buffer_fs_index--;
-      g_residentData.Buffer_packetBeingCopied = g_residentData.Buffer_fs[ g_residentData.Buffer_fs_index ];
-      r.w.es = FP_SEG( g_residentData.Buffer_fs[ g_residentData.Buffer_fs_index ] );
-      r.w.di = FP_OFF( g_residentData.Buffer_fs[ g_residentData.Buffer_fs_index ] );
+      r.w.es = FP_SEG( g_residentData.Buffer);
+      r.w.di = FP_OFF( g_residentData.Buffer);
     }
   }
   else {
-    g_residentData.Buffer[ g_residentData.Buffer_next ] = g_residentData.Buffer_packetBeingCopied;
-    g_residentData.Buffer_len[ g_residentData.Buffer_next ] = r.w.cx;
-
-    g_residentData.Buffer_next++;
-    if ( g_residentData.Buffer_next == PACKET_RB_SIZE ) g_residentData.Buffer_next = 0;
-
+    g_residentData.Buffer_len = r.w.cx;
+    Packet_process_internal();
+    PrintPushNotificationToScreen(g_residentData.data);
   }
 
   // Custom epilog code.  Some packet drivers can handle the normal
@@ -119,45 +108,10 @@ _asm {
 };
 }
 
-// Buffer_free
-//
-// Use this function to return a buffer to the free stack.  Do this when
-// you are completely done with the buffer.
-
-static void Buffer_free( const uint8_t *buffer) {
-
-  // This has to be protected because the packet driver can interrupt
-  // at any time to grab a packet from the free list.
-
-  DisableInterrupts( );
-  g_residentData.Buffer_fs[ g_residentData.Buffer_fs_index ] = ( uint8_t * )buffer;
-  g_residentData.Buffer_fs_index++;
-  EnableInterrupts( );
-}
-
 // Packet_process_internal
 //
-// This is the code that takes the next packet off of the ring buffer and
-// passes it up the stack for processing.  Usually this is wrapped by a
-// macro.  This should not be called if there is nothing on the ring buffer
-// to process.
-//
-// The receiver adds to the ring buffer at Buffer_next, which is the head
-// of the ring buffer.  This code dequeues from the tail of the ring buffer
-// which is the oldest packet that has not been processed yet.
 
 static void Packet_process_internal( void ) {
-
-  // Dequeue the first buffer in the ring.  If we got here then we know that
-  // there is at least one packet in the buffer.  The user is responsible
-  // for freeing the buffer using Buffer_free when they are done with it.
-  // Holding buffers too long will cause us to run out of free buffers,
-  // which then causes the packet driver to drop packets on the floor.
-  //
-  // Both the receiver function and this code operate on the ring buffer so
-  // we must disable interrupts for a little bit.  This is probably overkill
-  // as the receiver function adds new packets while this only takes off
-  // existing packets.
 
   uint8_t    *packet;
   uint16_t   packet_len;
@@ -165,12 +119,8 @@ static void Packet_process_internal( void ) {
   uint16_t   etherType;
   EthAddr_t  *fromEthAddr;
 
-  DisableInterrupts( );
-  packet = g_residentData.Buffer[ g_residentData.Buffer_first ];
-  packet_len = g_residentData.Buffer_len[ g_residentData.Buffer_first ];
-  g_residentData.Buffer_first++;
-  if ( g_residentData.Buffer_first == PACKET_RB_SIZE ) g_residentData.Buffer_first = 0;
-  EnableInterrupts( );
+  packet = g_residentData.Buffer;
+  packet_len = g_residentData.Buffer_len;
 
 
   // Packet routing.
@@ -223,9 +173,7 @@ static void Packet_process_internal( void ) {
               }
           }
       }
-  }
-
-  Buffer_free( packet );
+   }
 }
 
 int8_t Packet_release_type( uint16_t Packet_handle, uint8_t Packet_int ) {
@@ -257,10 +205,6 @@ static void __interrupt SystemTimerTickAtVector1Ch(union INTPACK registers)
 {
     LoadCodeSegmentToDataSegment();
     g_residentData.tickCounter++;
-
-    if ( g_residentData.Buffer_first != g_residentData.Buffer_next ) {
-      Packet_process_internal( );
-    }
 
     // Cannot use _chain_intr() because it is part of the libraries that
     // were removed from memory when we called _dos_keep().
@@ -343,9 +287,9 @@ static inline bool OurHandlerWasCalled(uint8_t tsrID)
 }
 
 
-void Buffer_startReceiving( RESIDENT_DATA far* residentData ) { residentData->Buffer_fs_index = PACKET_BUFFERS; }
+void Buffer_startReceiving( RESIDENT_DATA far* residentData ) { residentData->Perform_Packet_Processing = 1; }
 
-void Buffer_stopReceiving( RESIDENT_DATA far* residentData ) {  residentData->Buffer_fs_index = 0; }
+void Buffer_stopReceiving( RESIDENT_DATA far* residentData ) {  residentData->Perform_Packet_Processing = 0; }
 
 
 // Packet_init
@@ -396,31 +340,18 @@ int8_t Packet_init( uint8_t packetInt, uint16_t udpDestPort, RESIDENT_DATA far* 
 
 }
 
-// Even though everything is initialized at the end of the function, we do
-// not setup the free buffer count to its true value until we are told to
-// do so later on.  This allows us to setup other data structures in higher
-// levels of the stack before turning on the flow of packets.  (Once we set
-// the number of free buffers to something other than 0, the packet driver
-// will be able to start using buffers.)
 
 void Buffer_init(RESIDENT_DATA far* residentData) {
 
-  uint8_t i = 0;
-  for ( i=0; i < PACKET_BUFFERS; i++ ) {
-      residentData->Buffer_fs[i] = residentData->Buffer_pool[i];
-  }
-
-  // Initialize the fs_index to zero so that we don't start receiving
+  // Initialize Perform_Packet_Processing to zero so that we don't start receiving
   // data before the other data structures are ready.  This happens because
   // we have to initialize the packet driver to get our MAC address, but
   // we need the MAC address to initialize things like ARP.  This allows
   // us to initialize the packet driver without fear of receiving a packet.
   // (Any packet we get in this state will be tossed.)
 
-  residentData->Buffer_fs_index = 0;
+  residentData->Perform_Packet_Processing = 0;
   residentData->PKT_DRVR_EYE_CATCHER  = "PKT DRVR";
-  residentData->Buffer_first = 0;
-  residentData->Buffer_next = 0;
   residentData->Packet_int = 0x0;
   residentData->data[0] = 0;
 }
