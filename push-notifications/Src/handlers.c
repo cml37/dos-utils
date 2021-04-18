@@ -218,7 +218,7 @@ static void Packet_process_internal( void ) {
                   ending_pos = i;
               }
 
-              for ( i = ending_pos; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++ ) {
+              for ( i = ending_pos + 1; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++ ) {
                   g_residentData.data[i] = ' ';
               }
           }
