@@ -1,6 +1,7 @@
 # MS-DOS Push TSR
 
-Features code excerpts from Michael Brutman's mTCP: http://www.brutman.com/mTCP/
+* Features code excerpts from Michael Brutman's [mTCP](http://www.brutman.com/mTCP/)
+* Feature code excerpts from [this Open Watclock example](https://www.vcfed.org/forum/forum/technical-support/vintage-computer-programming/23586-tsr-programs-with-open-watcom?p=304280#post304280)
 
 ## Building
 1. Download and install Open Watcom
