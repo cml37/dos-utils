@@ -9,7 +9,7 @@
 //* Functions *//
 //*************//
 
-#pragma aux TsrResiC_JumpToInterruptHandler aborts;	// Jump instead of call this function
+#pragma aux TsrResiC_JumpToInterruptHandler aborts; // Jump instead of call this function
 extern void TsrResiC_JumpToInterruptHandler(INTERRUPT_HANDLER interruptHandler);
 
 

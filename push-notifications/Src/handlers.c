@@ -47,17 +47,17 @@ static inline bool OurHandlerWasCalled(uint8_t tsrID);
 //* Data *//
 //********//
 
-RESIDENT_DATA	g_residentData =
+RESIDENT_DATA g_residentData =
 {
-		0,							// RESIDENT_DATA.pspSegment
-		0,							// .tickCounter
-		0,							// .tsrID
-		TSR_IDENTIFICATION_STRING,	// .tsrIdString[]
-		{							// .tsrHooks[]
-			{ 0, (INTERRUPT_HANDLER_OFFSET)SystemTimerTickAtVector1Ch, SYSTEM_TIMER_TICK_INTERRUPT_1C, 0 },
-			{ 0, (INTERRUPT_HANDLER_OFFSET)DosIdleAtVector28h, DOS_IDLE_INTERRUPT_28h, 0 },
-			{ 0, (INTERRUPT_HANDLER_OFFSET)DosTsrMultiplexAtVector2Fh, DOS_TSR_MULTIPLEX_INTERRUPT_2F, 0 }
-		}
+        0,                            // RESIDENT_DATA.pspSegment
+        0,                            // .tickCounter
+        0,                            // .tsrID
+        TSR_IDENTIFICATION_STRING,    // .tsrIdString[]
+        {                             // .tsrHooks[]
+            { 0, (INTERRUPT_HANDLER_OFFSET)SystemTimerTickAtVector1Ch, SYSTEM_TIMER_TICK_INTERRUPT_1C, 0 },
+            { 0, (INTERRUPT_HANDLER_OFFSET)DosIdleAtVector28h, DOS_IDLE_INTERRUPT_28h, 0 },
+            { 0, (INTERRUPT_HANDLER_OFFSET)DosTsrMultiplexAtVector2Fh, DOS_TSR_MULTIPLEX_INTERRUPT_2F, 0 }
+        }
 };
 
 // The magic receiver function.
@@ -181,7 +181,7 @@ static void Packet_process_internal( void ) {
       char*      udpData;
       uint8_t    i;
       uint8_t    ending_pos = 0;
-	  IP_HEADER  *ipHeader = ( IP_HEADER * )( packet + ETHERNET_HEADER_SIZE_BYTES );
+      IP_HEADER  *ipHeader = ( IP_HEADER * )( packet + ETHERNET_HEADER_SIZE_BYTES );
 
       if ( ipHeader->protocol == UDP_PROTOCOL ) {
 
@@ -190,22 +190,22 @@ static void Packet_process_internal( void ) {
           udpDestPort = ntohs( udpHeader->dst );
 
           if ( udpDestPort == g_residentData.udpDestPort ) {
-	          udpLen  = ntohs( udpHeader->len );
-	          udpData = ( char* ) (packet + ETHERNET_HEADER_SIZE_BYTES + ipHeaderLen + sizeof( UDP_HEADER ) );
+              udpLen  = ntohs( udpHeader->len );
+              udpData = ( char* ) (packet + ETHERNET_HEADER_SIZE_BYTES + ipHeaderLen + sizeof( UDP_HEADER ) );
 
-	          for ( i = 0; i < udpLen - sizeof( UDP_HEADER ); i++ ) {
-				  if ( i == PUSH_NOTIFICATION_BUFFER_SIZE ) {
-					  break;
-				  }
-				  g_residentData.data[i] = udpData[i];
-				  ending_pos = i;
-			  }
+              for ( i = 0; i < udpLen - sizeof( UDP_HEADER ); i++ ) {
+                  if ( i == PUSH_NOTIFICATION_BUFFER_SIZE ) {
+                      break;
+                  }
+                  g_residentData.data[i] = udpData[i];
+                  ending_pos = i;
+              }
 
-			  for ( i = ending_pos; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++ ) {
-				  g_residentData.data[i] = ' ';
-			  }
-		  }
-	  }
+              for ( i = ending_pos; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++ ) {
+                  g_residentData.data[i] = ' ';
+              }
+          }
+      }
   }
 
   Buffer_free( packet );
@@ -238,17 +238,17 @@ int8_t Packet_release_type( uint16_t Packet_handle, uint8_t Packet_int ) {
 
 static void __interrupt SystemTimerTickAtVector1Ch(union INTPACK registers)
 {
-	LoadCodeSegmentToDataSegment();
-	g_residentData.tickCounter++;
+    LoadCodeSegmentToDataSegment();
+    g_residentData.tickCounter++;
 
     if ( g_residentData.Buffer_first != g_residentData.Buffer_next ) {
       Packet_process_internal( );
     }
 
-	// Cannot use _chain_intr() because it is part of the libraries that
-	// were removed from memory when we called _dos_keep().
-	// TsrResiC_JumpToInterruptHandler() must be at the end of ISR function!
-	TsrResiC_JumpToInterruptHandler(g_residentData.tsrHooks[SYSTEM_TIMER_TICK_1Ch].previousHandler);
+    // Cannot use _chain_intr() because it is part of the libraries that
+    // were removed from memory when we called _dos_keep().
+    // TsrResiC_JumpToInterruptHandler() must be at the end of ISR function!
+    TsrResiC_JumpToInterruptHandler(g_residentData.tsrHooks[SYSTEM_TIMER_TICK_1Ch].previousHandler);
 }
 
 
@@ -258,34 +258,34 @@ static void __interrupt SystemTimerTickAtVector1Ch(union INTPACK registers)
 
 static void __interrupt DosIdleAtVector28h(union INTPACK registers)
 {
-	LoadCodeSegmentToDataSegment();
-	if ( TimeToDrawPushNotification() )
-		PrintPushNotificationToScreen(g_residentData.data);
+    LoadCodeSegmentToDataSegment();
+    if ( TimeToDrawPushNotification() )
+        PrintPushNotificationToScreen(g_residentData.data);
 
-	TsrResiC_JumpToInterruptHandler(g_residentData.tsrHooks[DOS_IDLE_28h].previousHandler);
+    TsrResiC_JumpToInterruptHandler(g_residentData.tsrHooks[DOS_IDLE_28h].previousHandler);
 }
 
 static inline bool TimeToDrawPushNotification(void)
 {
-	return (g_residentData.tickCounter % TICKS_BEFORE_DRAWING_THE_PUSH_NOTIFICATION) == 0;
+    return (g_residentData.tickCounter % TICKS_BEFORE_DRAWING_THE_PUSH_NOTIFICATION) == 0;
 }
 
 static void PrintPushNotificationToScreen(char *data)
 {
-	uint16_t initialCursorLocation;
-	uint8_t  i = 0;
-	initialCursorLocation = GetCursorCoordinates();
-	SetCursorToPushNotificationLocation();
+    uint16_t initialCursorLocation;
+    uint8_t  i = 0;
+    initialCursorLocation = GetCursorCoordinates();
+    SetCursorToPushNotificationLocation();
 
     for ( i = 0; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++ ){
-	    PrintCharacterWithTeletypeOutput( data[i] );
-	}
-	SetCursorCoordinates(initialCursorLocation);
+        PrintCharacterWithTeletypeOutput( data[i] );
+    }
+    SetCursorCoordinates(initialCursorLocation);
 }
 
 void SetCursorToPushNotificationLocation(void)
 {
-	SetCursorCoordinates(COLUMNS_ON_SCREEN - PUSH_NOTIFICATION_BUFFER_SIZE - 1);
+    SetCursorCoordinates(COLUMNS_ON_SCREEN - PUSH_NOTIFICATION_BUFFER_SIZE - 1);
 }
 
 
@@ -295,34 +295,34 @@ void SetCursorToPushNotificationLocation(void)
 
 static void __interrupt DosTsrMultiplexAtVector2Fh(union INTPACK registers)
 {
-	LoadCodeSegmentToDataSegment();
-	if ( OurHandlerWasCalled(registers.h.ah) )
-	{
-		switch ( (MULTIPLEX_FUNCTION) registers.h.al )
-		{
-		case INSTALLATION_CHECK:
-			registers.w.di	= (uint16_t) g_residentData.tsrIdString;
-			registers.w.es	= GetCodeSegment();
-			registers.h.al	= 0xFF;			// TSR installed
-			return;
+    LoadCodeSegmentToDataSegment();
+    if ( OurHandlerWasCalled(registers.h.ah) )
+    {
+        switch ( (MULTIPLEX_FUNCTION) registers.h.al )
+        {
+        case INSTALLATION_CHECK:
+            registers.w.di    = (uint16_t) g_residentData.tsrIdString;
+            registers.w.es    = GetCodeSegment();
+            registers.h.al    = 0xFF;            // TSR installed
+            return;
 
-		case GET_RESIDENT_DATA_AND_PREPARE_FOR_UNLOAD:
-			registers.w.di	= (uint16_t) &g_residentData;
-			registers.w.es	= GetCodeSegment();
-			registers.h.al	= NO_ERROR;
-			return;
+        case GET_RESIDENT_DATA_AND_PREPARE_FOR_UNLOAD:
+            registers.w.di    = (uint16_t) &g_residentData;
+            registers.w.es    = GetCodeSegment();
+            registers.h.al    = NO_ERROR;
+            return;
 
-		default:
-			registers.h.al	= UNKNOWN_MULTIPLEX_FUNCTION;
-			return;
-		}
-	}
-	else TsrResiC_JumpToInterruptHandler(g_residentData.tsrHooks[DOS_TSR_MULTIPLEX_2Fh].previousHandler);
+        default:
+            registers.h.al    = UNKNOWN_MULTIPLEX_FUNCTION;
+            return;
+        }
+    }
+    else TsrResiC_JumpToInterruptHandler(g_residentData.tsrHooks[DOS_TSR_MULTIPLEX_2Fh].previousHandler);
 }
 
 static inline bool OurHandlerWasCalled(uint8_t tsrID)
 {
-	return g_residentData.tsrID == tsrID;
+    return g_residentData.tsrID == tsrID;
 }
 
 
@@ -384,7 +384,7 @@ void Buffer_init(RESIDENT_DATA far* residentData) {
 
   uint8_t i = 0;
   for ( i=0; i < PACKET_BUFFERS; i++ ) {
-	  residentData->Buffer_fs[i] = residentData->Buffer_pool[i];
+      residentData->Buffer_fs[i] = residentData->Buffer_pool[i];
   }
 
   // Initialize the fs_index to zero so that we don't start receiving
@@ -416,11 +416,11 @@ void Buffer_init(RESIDENT_DATA far* residentData) {
  */
 uint16_t GetSizeOfResidentSegmentInParagraphs(void)
 {
-	uint16_t	sizeInBytes;
+    uint16_t    sizeInBytes;
 
-	sizeInBytes	= (uint16_t) GetSizeOfResidentSegmentInParagraphs;
-	sizeInBytes	+= 0x100;	// Size of PSP (do not add when building .COM executable)
-	sizeInBytes	+= 15;		// Make sure nothing gets lost in partial paragraph
+    sizeInBytes    = (uint16_t) GetSizeOfResidentSegmentInParagraphs;
+    sizeInBytes    += 0x100;    // Size of PSP (do not add when building .COM executable)
+    sizeInBytes    += 15;       // Make sure nothing gets lost in partial paragraph
 
-	return sizeInBytes >> 4;
+    return sizeInBytes >> 4;
 }
