@@ -1,3 +1,24 @@
+
+/*
+   Portions and patterns taken from mTCP:
+   Copyright (C) 2005-2020 Michael B. Brutman (mbbrutman@gmail.com)
+   mTCP web page: http://www.brutman.com/mTCP
+
+   mTCP is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   mTCP is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with mTCP.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
 #include <stdbool.h>
 #include <dos.h>
 #include <string.h>
@@ -21,40 +42,6 @@ static void PrintPushNotificationToScreen(char *data);
 static void __interrupt DosTsrMultiplexAtVector2Fh(union INTPACK registers);
 static inline bool OurHandlerWasCalled(uint8_t tsrID);
 
-struct ipheader {
-
-    uint8_t  versHlen;       // vers:4, Hlen:4
-    uint8_t  service_type;
-    uint16_t total_length;
-
-    // Fragmentation support
-    //   flags 0 to 15
-    //   0: always 0
-    //   1: 0=May Fragment, 1=Don't Fragment
-    //   2: 0=Last Fragment, 1=More Fragments
-    //   3 to 15: Fragment offset in units of 8 bytes
-
-    uint16_t ident;
-    uint16_t flags;          // flags:3, frag_offset:13
-
-    uint8_t  ttl;
-    uint8_t  protocol;
-    uint16_t chksum;
-
-    uint8_t ip_src[4];
-    uint8_t ip_dest[4];
-};
-
-
-struct udpheader {
-
-	    // All of these need to be in network byte order.
-	    uint16_t src;
-	    uint16_t dst;
-	    uint16_t len;
-	    uint16_t chksum;
-
-};
 
 //********//
 //* Data *//
@@ -72,7 +59,6 @@ RESIDENT_DATA	g_residentData =
 			{ 0, (INTERRUPT_HANDLER_OFFSET)DosTsrMultiplexAtVector2Fh, DOS_TSR_MULTIPLEX_INTERRUPT_2F, 0 }
 		}
 };
-
 
 // The magic receiver function.
 //
@@ -139,34 +125,10 @@ static void Buffer_free( const uint8_t *buffer) {
   // at any time to grab a packet from the free list.
 
   DisableInterrupts( );
-  g_residentData.Buffer_fs[ g_residentData.Buffer_fs_index ] = (uint8_t *)buffer;
+  g_residentData.Buffer_fs[ g_residentData.Buffer_fs_index ] = ( uint8_t * )buffer;
   g_residentData.Buffer_fs_index++;
   EnableInterrupts( );
 }
-
-static void DecimalIntegerToBytes(uint16_t shortvalue, char* result)
-{
-    int temp,integer,count=0,i,cnd=0;
-     if(shortvalue>>15)
-     {
-     /*CONVERTING 2's complement value to normal value*/
-     integer=~integer+1;
-     for(temp=integer;temp!=0;temp/=10,count++);
-     result[0]=0x2D;
-     count++;
-     cnd=1;
-     }
-     else
-     for(temp=integer;temp!=0;temp/=10,count++);
-     for(i=count-1,temp=integer;i>=cnd;i--)
-     {
-
-        result[i]=(temp%10)+0x30;
-        temp/=10;
-     }
- }
-
-
 
 static void Packet_process_internal( void ) {
   // Dequeue the first buffer in the ring.  If we got here then we know that
@@ -180,12 +142,11 @@ static void Packet_process_internal( void ) {
   // as the receiver function adds new packets while this only takes off
   // existing packets.
 
-  uint8_t *packet;
-  uint16_t packet_len;
-  EtherType protocol;
-  uint16_t etherType;
-  EthAddr_t *fromEthAddr;
-  struct ipheader header;
+  uint8_t    *packet;
+  uint16_t   packet_len;
+  EtherType  protocol;
+  uint16_t   etherType;
+  EthAddr_t  *fromEthAddr;
 
   DisableInterrupts( );
   packet = g_residentData.Buffer[ g_residentData.Buffer_first ];
@@ -200,7 +161,6 @@ static void Packet_process_internal( void ) {
   // Bytes 13 and 14 (packet[12] and packet[13]) have the protocol type
   // in them.
   //
-  //   Arp: 0806
   //   Ip:  0800
   //
   // Compare 16 bits at a time.  Because we are on a little-endian machine
@@ -208,48 +168,69 @@ static void Packet_process_internal( void ) {
   // as 16 bit words.  (The registered EtherType word is already flipped
   // to be in network byte order.)
 
-  protocol = ((uint16_t *)packet)[6];
+  protocol    = ( ( uint16_t * ) packet )[6];
+  etherType   = ntohs( ( ( uint16_t * ) packet )[6] );
+  fromEthAddr = ( EthAddr_t * )( &packet[6] );
 
-  etherType = ntohs(((uint16_t *)packet)[6]);
-  fromEthAddr = (EthAddr_t *)(&packet[6]);
-
+  // If this is an IP Packet
   if ( etherType == 0x0800 ) {
+      UDP_HEADER *udpHeader;
+      uint8_t    ipHeaderLen;
+      uint16_t   udpDestPort;
+      uint16_t   udpLen;
+      char*      udpData;
+      uint8_t    i;
+	  IP_HEADER  *ipHeader = ( IP_HEADER * )( packet + ETHERNET_HEADER_SIZE_BYTES );
 
-      struct udpheader *udpheader;
-      uint8_t ipheaderlength;
-      uint16_t udpdestport;
-      uint16_t udpLen;
-      char* udpData;
-      uint8_t i;
-	  struct ipheader *ip = (struct ipheader *)(packet + 14);
+      if ( ipHeader->protocol == UDP_PROTOCOL ) {
 
-      if (ip->protocol == 17) {
+          ipHeaderLen = ( ( ipHeader->versHlen & 0xF ) << 2 );
+          udpHeader = ( UDP_HEADER * ) ( packet + ETHERNET_HEADER_SIZE_BYTES + ipHeaderLen );
+          udpDestPort = ntohs( udpHeader->dst );
 
-          ipheaderlength = ((ip->versHlen & 0xF) << 2);
-          udpheader = (struct udpheader *) (packet + 14 + ipheaderlength);
-          udpdestport = ntohs(udpheader->dst);
+          if ( udpDestPort == g_residentData.udpDestPort ) {
+	          udpLen  = ntohs( udpHeader->len );
+	          udpData = ( char* ) (packet + ETHERNET_HEADER_SIZE_BYTES + ipHeaderLen + sizeof( UDP_HEADER ) );
 
-          if (udpdestport == 20000) {
-	          udpLen  = ntohs( udpheader->len );
-	          udpData = (char*) (packet + 14 + ipheaderlength + 8);
-
-	          for (i = 0; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++) {
+              // Zero out all push notification display data
+              // TODO we should be more efficient here!
+	          for ( i = 0; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++ ) {
 				  g_residentData.data[i] = 0;
 			  }
 
-	          for (i = 0; i < udpLen - 8; i++) {
-				  if (i == PUSH_NOTIFICATION_BUFFER_SIZE-1) {
+	          for ( i = 0; i < udpLen - 8; i++ ) {
+				  if ( i == PUSH_NOTIFICATION_BUFFER_SIZE - 1 ) {
 					  break;
 				  }
 				  g_residentData.data[i] = udpData[i];
 			  }
 		  }
-
 	  }
   }
 
   Buffer_free( packet );
 }
+
+int8_t Packet_release_type( uint16_t Packet_handle, uint8_t Packet_int ) {
+
+  int8_t rc = -1;
+
+  union REGS inregs, outregs;
+  struct SREGS segregs;
+
+  inregs.h.ah = 0x3;
+  inregs.x.bx = Packet_handle;
+
+  int86x( Packet_int, &inregs, &outregs, &segregs );
+
+  if ( !outregs.x.cflag ) {
+    rc = 0;
+  }
+
+  return rc;
+}
+
+
 
 //***********************************//
 //* System Timer Tick Interrupt 1Ch *//
@@ -291,22 +272,22 @@ static inline bool TimeToDrawPushNotification(void)
 
 static void PrintPushNotificationToScreen(char *data)
 {
-	uint16_t	initialCursorLocation;
-	uint8_t i = 0;
-	uint8_t ending_pos = 0;
-	initialCursorLocation	= GetCursorCoordinates();
+	uint16_t initialCursorLocation;
+	uint8_t  i = 0;
+	uint8_t  ending_pos = 0;
+	initialCursorLocation = GetCursorCoordinates();
 	SetCursorToPushNotificationLocation();
 
-    for (i = 0; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++){
-		if (data[i] == NULL) {
+    for ( i = 0; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++ ){
+		if ( data[i] == NULL ) {
 			break;
 		}
-	    PrintCharacterWithTeletypeOutput(data[i]);
+	    PrintCharacterWithTeletypeOutput( data[i] );
 	    ending_pos = i;
 	}
 
-	for (i = ending_pos; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++) {
-	    PrintCharacterWithTeletypeOutput(' ');
+	for ( i = ending_pos; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++ ) {
+	    PrintCharacterWithTeletypeOutput( ' ' );
 	}
 	SetCursorCoordinates(initialCursorLocation);
 }
@@ -356,23 +337,28 @@ static inline bool OurHandlerWasCalled(uint8_t tsrID)
 
 void Buffer_startReceiving( RESIDENT_DATA far* residentData ) { residentData->Buffer_fs_index = PACKET_BUFFERS; }
 
+void Buffer_stopReceiving( void  ) {
+    // TODO fix this method!
+	}
+
+
 // Packet_init
 //
 // First make sure that there is a packet driver located where the caller
 // has specified.  If so, try to register to receive all possible EtherTypes
 // from it.
 
-int8_t Packet_init( uint8_t packetInt, RESIDENT_DATA far* residentData ) {
+int8_t Packet_init( uint8_t packetInt, uint16_t udpDestPort, RESIDENT_DATA far* residentData ) {
 
   union REGS inregs, outregs;
   struct SREGS segregs;
 
-  uint16_t far *intVector = (uint16_t far *)MK_FP( 0x0, packetInt * 4 );
+  uint16_t far *intVector = ( uint16_t far * ) MK_FP( 0x0, packetInt * 4 );
 
   uint16_t eyeCatcherOffset = *intVector;
-  uint16_t eyeCatcherSegment = *(intVector+1);
+  uint16_t eyeCatcherSegment = *( intVector+1 );
 
-  char far *eyeCatcher = (char far *)MK_FP( eyeCatcherSegment, eyeCatcherOffset );
+  char far *eyeCatcher = ( char far * ) MK_FP( eyeCatcherSegment, eyeCatcherOffset );
 
   eyeCatcher += 3; // Skip three bytes of executable code
 
@@ -398,6 +384,7 @@ int8_t Packet_init( uint8_t packetInt, RESIDENT_DATA far* residentData ) {
 
   residentData->Packet_int = packetInt;
   residentData->Packet_handle = outregs.x.ax;
+  residentData->udpDestPort = udpDestPort;
 
   return 0;
 
@@ -418,13 +405,12 @@ void Buffer_init(RESIDENT_DATA far* residentData) {
   // us to initialize the packet driver without fear of receiving a packet.
   // (Any packet we get in this state will be tossed.)
 
-  residentData->PKT_DRVR_EYE_CATCHER  = "PKT DRVR";
   residentData->Buffer_fs_index = 0;
+  residentData->PKT_DRVR_EYE_CATCHER  = "PKT DRVR";
   residentData->Buffer_first = 0;
   residentData->Buffer_next = 0;
   residentData->Packet_int = 0x0;
-  residentData->data[0]='A';
-  residentData->data[1]=0;
+  residentData->data[0]=0;
 }
 
 

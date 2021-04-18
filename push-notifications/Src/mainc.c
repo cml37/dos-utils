@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 #include <dos.h>
 #include "handlers.h"
 #include "biosndos.h"
@@ -9,7 +10,7 @@ static TSR_ERROR FindLoadedInstanceOrNewID(RESIDENT_DATA far* pResidentData);
 static inline bool PreviousInstanceFound(TSR_ERROR tsrError);
 static inline bool NoTsrErrors(TSR_ERROR tsrError);
 
-static TSR_ERROR InstallTsrToMemory(RESIDENT_DATA far* pResidentData);
+static TSR_ERROR InstallTsrToMemory(uint8_t packetInt, uint16_t udpDestPort, RESIDENT_DATA far* pResidentData);
 static void ReturnToDosWithResidentSegmentInRAM(void);
 
 static TSR_ERROR RemoveTsrFromMemory(uint16_t tsrID);
@@ -27,8 +28,11 @@ static char* GetTsrErrorString(TSR_ERROR tsrError);
 		return (tsrError)
 
 
-int main(void)
+int main(int argc, char* argv[])
 {
+    uint8_t packetInt;
+    uint16_t udpDestPort;
+
 	RESIDENT_DATA far*	pResidentData;
 	TSR_ERROR			tsrError;
 
@@ -36,7 +40,9 @@ int main(void)
 	tsrError		= FindLoadedInstanceOrNewID(pResidentData);
 	if ( PreviousInstanceFound(tsrError) )
 	{
-		printf("Previous instance found with ID %Xh.\nRemoving from memory... ", pResidentData->tsrID);
+        Buffer_stopReceiving( ); //TODO FIX!!
+        Packet_release_type( pResidentData->Packet_handle, pResidentData->Packet_int ); //TODO UPDATE TO GET PARAMETERS
+
 		tsrError	= RemoveTsrFromMemory(pResidentData->tsrID);
 		if ( NoTsrErrors(tsrError) )
 		{
@@ -46,7 +52,15 @@ int main(void)
 	}
 	else if ( NoTsrErrors(tsrError) )
 	{
-		tsrError	= InstallTsrToMemory(pResidentData);
+		if (argc != 3) {
+			puts("Usage: tsrpush.exe <Packet_Driver_Vector> <Listening_UDP_Port>");
+			puts("Example: tsrpush.exe 0x65 20000");
+			return -1;
+		}
+        sscanf( argv[1], "%x", &packetInt );
+        udpDestPort = atoi( argv[2] );
+
+		tsrError	= InstallTsrToMemory(packetInt, udpDestPort, pResidentData);
 		if ( NoTsrErrors(tsrError) ) {
 			Buffer_startReceiving(pResidentData);
 			ReturnToDosWithResidentSegmentInRAM();
@@ -85,8 +99,7 @@ static inline bool NoTsrErrors(TSR_ERROR tsrError)
 	return tsrError == NO_ERROR;
 }
 
-
-static TSR_ERROR InstallTsrToMemory(RESIDENT_DATA far* pResidentData)
+static TSR_ERROR InstallTsrToMemory(uint8_t packetInt, uint16_t udpDestPort, RESIDENT_DATA far* pResidentData)
 {
 	TSR_ERROR	tsrError = NO_ERROR;
     int rc;
@@ -94,7 +107,7 @@ static TSR_ERROR InstallTsrToMemory(RESIDENT_DATA far* pResidentData)
 
 	Buffer_init(pResidentData);
 
-    rc = Packet_init(0x60,pResidentData);
+    rc = Packet_init(packetInt, udpDestPort, pResidentData);
     if ( rc != 0 ) {
 	  tsrError = COULD_NOT_LOAD_PACKET;
     }
