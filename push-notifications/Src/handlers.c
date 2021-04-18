@@ -21,6 +21,40 @@ static void PrintPushNotificationToScreen(char *data);
 static void __interrupt DosTsrMultiplexAtVector2Fh(union INTPACK registers);
 static inline bool OurHandlerWasCalled(uint8_t tsrID);
 
+struct ipheader {
+
+    uint8_t  versHlen;       // vers:4, Hlen:4
+    uint8_t  service_type;
+    uint16_t total_length;
+
+    // Fragmentation support
+    //   flags 0 to 15
+    //   0: always 0
+    //   1: 0=May Fragment, 1=Don't Fragment
+    //   2: 0=Last Fragment, 1=More Fragments
+    //   3 to 15: Fragment offset in units of 8 bytes
+
+    uint16_t ident;
+    uint16_t flags;          // flags:3, frag_offset:13
+
+    uint8_t  ttl;
+    uint8_t  protocol;
+    uint16_t chksum;
+
+    uint8_t ip_src[4];
+    uint8_t ip_dest[4];
+};
+
+
+struct udpheader {
+
+	    // All of these need to be in network byte order.
+	    uint16_t src;
+	    uint16_t dst;
+	    uint16_t len;
+	    uint16_t chksum;
+
+};
 
 //********//
 //* Data *//
@@ -110,6 +144,29 @@ static void Buffer_free( const uint8_t *buffer) {
   EnableInterrupts( );
 }
 
+static void DecimalIntegerToBytes(uint16_t shortvalue, char* result)
+{
+    int temp,integer,count=0,i,cnd=0;
+     if(shortvalue>>15)
+     {
+     /*CONVERTING 2's complement value to normal value*/
+     integer=~integer+1;
+     for(temp=integer;temp!=0;temp/=10,count++);
+     result[0]=0x2D;
+     count++;
+     cnd=1;
+     }
+     else
+     for(temp=integer;temp!=0;temp/=10,count++);
+     for(i=count-1,temp=integer;i>=cnd;i--)
+     {
+
+        result[i]=(temp%10)+0x30;
+        temp/=10;
+     }
+ }
+
+
 
 static void Packet_process_internal( void ) {
   // Dequeue the first buffer in the ring.  If we got here then we know that
@@ -128,6 +185,7 @@ static void Packet_process_internal( void ) {
   EtherType protocol;
   uint16_t etherType;
   EthAddr_t *fromEthAddr;
+  struct ipheader header;
 
   DisableInterrupts( );
   packet = g_residentData.Buffer[ g_residentData.Buffer_first ];
@@ -155,15 +213,39 @@ static void Packet_process_internal( void ) {
   etherType = ntohs(((uint16_t *)packet)[6]);
   fromEthAddr = (EthAddr_t *)(&packet[6]);
 
-  if ( etherType == 0x0806 ) {
-	  g_residentData.data[0]='B';
-	  g_residentData.data[1]=0;
-  } else if ( etherType == 0x0800 ) {
-	  g_residentData.data[0]='C';
-	  g_residentData.data[1]=0;
-  } else if ( etherType == 0x86dd ) {
-	  g_residentData.data[0]='D';
-	  g_residentData.data[1]=0;
+  if ( etherType == 0x0800 ) {
+
+      struct udpheader *udpheader;
+      uint8_t ipheaderlength;
+      uint16_t udpdestport;
+      uint16_t udpLen;
+      char* udpData;
+      uint8_t i;
+	  struct ipheader *ip = (struct ipheader *)(packet + 14);
+
+      if (ip->protocol == 17) {
+
+          ipheaderlength = ((ip->versHlen & 0xF) << 2);
+          udpheader = (struct udpheader *) (packet + 14 + ipheaderlength);
+          udpdestport = ntohs(udpheader->dst);
+
+          if (udpdestport == 20000) {
+	          udpLen  = ntohs( udpheader->len );
+	          udpData = (char*) (packet + 14 + ipheaderlength + 8);
+
+	          for (i = 0; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++) {
+				  g_residentData.data[i] = 0;
+			  }
+
+	          for (i = 0; i < udpLen - 8; i++) {
+				  if (i == PUSH_NOTIFICATION_BUFFER_SIZE-1) {
+					  break;
+				  }
+				  g_residentData.data[i] = udpData[i];
+			  }
+		  }
+
+	  }
   }
 
   Buffer_free( packet );
@@ -211,6 +293,7 @@ static void PrintPushNotificationToScreen(char *data)
 {
 	uint16_t	initialCursorLocation;
 	uint8_t i = 0;
+	uint8_t ending_pos = 0;
 	initialCursorLocation	= GetCursorCoordinates();
 	SetCursorToPushNotificationLocation();
 
@@ -219,13 +302,18 @@ static void PrintPushNotificationToScreen(char *data)
 			break;
 		}
 	    PrintCharacterWithTeletypeOutput(data[i]);
+	    ending_pos = i;
+	}
+
+	for (i = ending_pos; i < PUSH_NOTIFICATION_BUFFER_SIZE; i++) {
+	    PrintCharacterWithTeletypeOutput(' ');
 	}
 	SetCursorCoordinates(initialCursorLocation);
 }
 
 void SetCursorToPushNotificationLocation(void)
 {
-	SetCursorCoordinates(COLUMNS_ON_SCREEN - PUSH_NOTIFICATION_BUFFER_SIZE);
+	SetCursorCoordinates(COLUMNS_ON_SCREEN - PUSH_NOTIFICATION_BUFFER_SIZE - 1);
 }
 
 

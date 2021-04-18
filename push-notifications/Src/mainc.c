@@ -94,7 +94,7 @@ static TSR_ERROR InstallTsrToMemory(RESIDENT_DATA far* pResidentData)
 
 	Buffer_init(pResidentData);
 
-    rc = Packet_init(0x65,pResidentData);
+    rc = Packet_init(0x60,pResidentData);
     if ( rc != 0 ) {
 	  tsrError = COULD_NOT_LOAD_PACKET;
     }
