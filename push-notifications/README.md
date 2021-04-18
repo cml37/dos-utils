@@ -24,3 +24,6 @@ See the `send.py` script in the test directory.  Change the broadcast address to
 ## Known Issues
 1. Will not work with all programs resident (uses pretty primitive screen control)
 2. Does not appear to receive new packets after entering and leaving protected mode (i.e. Windows 3.11)
+3. Does not support ARP, DNS, or TCP (only supports UDP and access via IP address)
+4. Only supports receiving broadcast packets and does not verify the broadcast sender (should update configuration to properly use mTCP's parseEnv, do away with passing in the packet driver interupt vector, and assign an IP address and verify broadcast address)
+5. Does not send a reply to acknowledge a UDP packet
