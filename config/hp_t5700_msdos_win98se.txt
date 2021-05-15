@@ -43,7 +43,7 @@ Run unetbootin
 -- Select Diskimage radio button
 -- Change dropdown to floppy
 -- Click ...
--- Select Windows98_SE.img
+-- Select Windows95b.img
 -- Click Ok
 
 Boot the thumb drive in the thin client
