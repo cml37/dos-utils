@@ -129,12 +129,12 @@ Driver goodies
 
 * Windows 3.11 
   * Network 
-    NDIS2 driver: https://www.helpjet.net/Fs-74456791-25837635-89225421-extract.html
+    NDIS2 driver (VIA Technologies, Inc. VT6102/VT6103 [Rhine-II]): https://www.helpjet.net/Fs-74456791-25837635-89225421-extract.html
     -- suggest unzipping this in the install directory on the USB stick
     -- you only really need the lan\wfw311 directory out of this
     tcp32b: http://www.mywindowspage.com/index.php/download/tcp32b-exe/
-  * Video: http://www.gaby.de/ftp/pub/win3x/drivers/w31-3098.exe
-  * Sound:
+  * Video (Advanced Micro Devices, Inc. [AMD/ATI] Rage XL PCI): http://www.gaby.de/ftp/pub/win3x/drivers/w31-3098.exe
+  * Sound (VIA Technologies, Inc. VT82C686 AC97 Audio Controller):
     Speaker midi driver: http://turkeys4me.byethost4.com/files/SMIDIDR3.7z
     -- suggest unzipping this in the install directory on the USB stick
     -- You will need to unzip this twice!!
