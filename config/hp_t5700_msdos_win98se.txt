@@ -1,0 +1,164 @@
+--------------------------------------------------------------
+HP Compaq T5700 Thin Client Windows 98 Second Edition Setup Procedures
+--------------------------------------------------------------
+
+Note: This procedure also works on an HP Compaq T5300 Thin Client!  
+      However, you will most certainly need to upgrade the DOM to a higher capacity.
+
+--------------------------------------------------------------
+Preconditions
+--------------------------------------------------------------
+Enable Device support in BIOS
+  On system start, press F10 (couldn't hurt to press it several times!!)
+  Arrow down to Integrated Peripherals
+  Press Enter
+  Ensure that the following are Enabled (if not enabled, press Enter, arrow down to Enabled, and then press Enter to Accept)
+    Integrated Audio
+    Network Controller
+    USB Controller
+    USB Keyboard Support
+    USB Mouse Support
+  Press Escape when done enabling all items above
+  Arrow up to Advanced BIOS Features
+  Press Enter
+  Ensure the following are set
+    First Boot Device: USB
+    Second Boot Device: ATA Flash
+  Arrow over to Save & Exit Setup
+  Press Enter
+  Press y
+  Press Enter
+
+
+--------------------------------------------------------------
+Partition and Format your DOS disk
+--------------------------------------------------------------
+Download unetbootin: http://unetbootin.github.io/
+Download Windows 98 SE floppy image: https://www.allbootdisks.com/downloads/Disks/Windows_98_Boot_Disk_Download49/Diskette%20Images/Windows98_SE.img
+
+Insert a USB stick into your computer
+
+Run unetbootin
+-- Select Diskimage radio button
+-- Change dropdown to floppy
+-- Click ...
+-- Select Windows98_SE.img
+-- Click Ok
+
+Boot the thumb drive in the thin client
+
+Run fdisk
+Press 5 to change current fixed disk drive
+Press Enter
+Press 2
+Press Enter
+Press 4 to display partition information
+Press Enter
+Remember partition types!
+Press Esc
+Press 3 to delete partition, press Enter, select partition type, follow prompts to delete partition, repeat as needed
+Press Esc to exit fdisk
+reboot
+
+Run this command to get information about the disk number and size.  Make a note of it
+  fdisk /status
+  <get size and number of the disk>
+
+Run fdisk command to create a primary partition on the disk  
+  fdisk <disk number> /PRI:<size of disk>
+
+reboot
+
+Format drive C:
+  format C: /u/s
+
+Take out USB stick and test reboot!!
+
+Works? Skip the next section
+
+Doesn't work?  You might need to fix the MBR, proceed to next section
+
+
+--------------------------------------------------------------
+Fixing your Disk's MBR
+--------------------------------------------------------------
+NOTE: THIS SECTION IS ONLY REQUIRED IF THERE WERE ISSUES ENCOUTERED IN THE PREVIOUS SECTION.  OTHERWISE, SKIP THIS SECTION
+
+Insert the USB stick into your computer that you built in the previous step
+
+Run this command to get information about the disk number.  Make a note of it.
+  fdisk /status
+  <get number of the disk>
+
+Fix the MBR on the disk
+  fdisk /cmbr <disk number>
+
+Take out USB stick and test reboot!!
+
+
+--------------------------------------------------------------
+Create a thumb drive with your installers and copy contents to thin client
+--------------------------------------------------------------
+Download Rufus: https://sourceforge.net/projects/rufus.mirror/
+
+Insert your USB stick into your computer
+
+Launch Rufus:
+-- Boot selection: FreeDOS
+-- Start
+
+Copy xxcopy16 to the root of the USB drive
+-- Download http://www.xxcopy.com/download/xxcopy16.zip
+-- unzip and put xxcopy16.exe in the root of the USB drive
+
+Copy all of your goodies to the drive in a subfolder on the USB stick (call it install)
+
+Driver goodies 
+
+* Network driver (VIA Technologies, Inc. VT6102/VT6103 [Rhine-II]): https://files.aoaforums.com/I3934-via_rhine_ndis5_v384a.zip.html
+  -- suggest unzipping this in the install directory on the USB stick
+  -- you only really need the X86 directory out of this
+* Video 
+  DirectX (Download the 08 Dec 2006 version of DirectX 9.0c) : http://falconfly.3dfx.pl/directx.htm
+  -- suggest unzipping this in the install directory on the USB stick
+  Drivers (Advanced Micro Devices, Inc. [AMD/ATI] Rage XL PCI): https://download.cnet.com/VGA-RageXL-zip/3000-2108_4-198069.html
+  -- suggest unzipping this in the install directory on the USB stick
+* Sound (VIA Technologies, Inc. VT82C686 AC97 Audio Controller): https://www.majorgeeks.com/files/details/via_ac97_vinyl_audio_driver.html
+  -- suggest unzipping this in the install directory on the USB stick
+* Chipset
+  Main Chipset Drivers: https://www.philscomputerlab.com/uploads/3/7/2/3/37231621/via_hyperionpro_v524a.zip
+  -- suggest unzipping this in the install directory on the USB stick
+  PCI to ISA Bridge Drivers: https://www.helpjet.net/Fs-53896395-25837635-10448444-devices.html
+  -- suggest unzipping this in the install directory on the USB stick
+* Also copy the files from your Windows 98 SE installer to the USB drive!!
+  -- Can simply copy the "Setup" (or perhaps "win98) directory of the disk in most cases, whichever directory has a whole bunch of CAB files in it
+Insert the USB stick into the thin client
+Boot with your image
+
+When booted, copy all files to the hard disk
+  xxcopy16 install /s D:
+
+Take the USB stick out and boot to DOS!!
+
+
+
+--------------------------------------------------------------
+Installing Windows 98 SE
+--------------------------------------------------------------
+Run installer
+
+Delete PS/2 mouse in Device Manager
+
+Install the Via Hyperion Main Chipset Drivers
+-- After installing, change IDE controller to be Primary Only
+
+Install the PCI to ISA Bridge Chipset Drivers
+-- Point the unknown PCI device to this driver and update driver
+
+Install Network Drivers
+
+Install Audio Drivers
+
+Install DirectX Drivers
+
+Install Video Drivers
