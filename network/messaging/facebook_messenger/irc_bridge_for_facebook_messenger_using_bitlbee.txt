@@ -63,7 +63,7 @@ At this point you may have to go to Facebook's home page, login, and verify the 
 You can now join an existing chat, groupchat, etc.  Directions are here! https://wiki.bitlbee.org/HowtoFacebookMQTT
 
 We will go ahead and have an individual chat with a friend
-  /msg send FriendName Hello!
+  /msg FriendName Hello!
   This will open a new window and you can chat as you normally would!
   Alternatively if a friend starts a chat with you, that will pop up in a new window!
 
