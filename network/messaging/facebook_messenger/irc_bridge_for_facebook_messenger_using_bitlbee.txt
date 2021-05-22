@@ -56,6 +56,7 @@ You can now join an existing chat, groupchat, etc.  Directions are here! https:/
 We will go ahead and have an individual chat with a friend
   /msg send FriendName Hello!
   This will open a new window and you can chat as you normally would!
+  Alternatively if a friend starts a chat with you, that will pop up in a new window!
 
 If you want to go back to the main window with contacts:
   ALT+1
