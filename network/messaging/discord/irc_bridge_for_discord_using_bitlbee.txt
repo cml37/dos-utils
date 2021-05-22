@@ -65,7 +65,7 @@ From there you can join discord channels
   find the channel number to join
   chat add discord !<channel number> #anynameyoulike
   /join #naynameyoulike
-  /msg Hello everyone!
+  Hello everyone!
 
 If you have too many channels, you might need to find an alternate IRC client to see the full list of channels
 You can use irssi on the Raspberry Pi command line!  Here's how:
@@ -98,7 +98,7 @@ If you want to return to IRCjr at a future point:
   channel list
   <Ah I see my channel, now I want to join it>
   /join #mychannelname
+  Hello everyone!
 
 Have fun!  And, oh, want to do something more fancy?  Check out some of the other settings:
   https://github.com/sm00th/bitlbee-discord#options
-  /msg Hello everyone!
