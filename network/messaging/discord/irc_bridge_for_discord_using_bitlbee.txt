@@ -5,10 +5,19 @@ You have set up a Raspberry Pi and enabled SSH.
   See my instructions here for an example: https://github.com/cml37/dos-utils/blob/master/config/my_raspberrypi_setup_instructions.txt
   For purposes of this procedure, we will be using the hostname "raspberrypi"
 
+You have a proceess for getting files from your modern computer to your old computer
+  Zip drive, floppy drive, network, CD burner, etc.
 
 ====================================================================
 Installing the Discord Bridge Using BitlBee
 ====================================================================
+
+SSH to your raspberry pi using your favorite SSH program
+  We'll demo this procedure using Putty for windows
+  Host Name: raspberrypi
+  Username: pi
+  Password: <password you chose during the Raspberry Pi installation procedure>
+
 Install BitlBee
   sudo apt-get install bitlbee-dev autoconf libtool libglib2.0-dev
 
