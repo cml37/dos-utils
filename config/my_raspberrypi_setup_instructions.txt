@@ -1,31 +1,17 @@
-------------------------------------------------------------------------------------------------------
-NOOBS
-------------------------------------------------------------------------------------------------------
-Use NOOBS to install raspbian
-1) Download NOOBS
-2) Use "Create and format hard disk partitions to remove existing partitions from the SD card and then add a new NTFS partition
-   A) This is important for the next step; otherwise if your SD card has an exFat partition, it will not get changed to FAT32 in the next step!!!
+---------------------------------------------------
+Raspberry Pi Imager
+---------------------------------------------------
+Use Raspberry Pi Imager to install raspbian
+1) Download Raspberry Pi Imager 
+2) Lay down an NTFS partition on the SD card
 3) Format SD card as FAT32 using http://web.archive.org/web/20200429161535/http://www.ridgecrop.demon.co.uk/index.htm?guiformat.htm
-4) Unzip NOOBS and copy to root of SDCard
+4) Install Raspberry Pi OS 32 bit using Raspberry Pi Imager
 
 ------------------------------------------------------------------------------------------------------
 Installation
 ------------------------------------------------------------------------------------------------------
 Connect keyboard/mouse to Raspberry Pi
 Place SD card in Raspberry Pi and power on Raspberry Pi
-
-Noobs v3.5
-Check box for "Rasberry Pi OS Full (32-bit)"
-Click Install
-
-Confirm
-Yes
-
-(Once complete)
-OS(es) Installed Successfully
-Ok
-
-(The Raspberry Pi will reboot)
 
 ------------------------------------------------------------------------------------------------------
 First Boot
@@ -34,10 +20,10 @@ Welcome to the Raspberry Pi Desktop!
 Next
 
 Set Country
-Country: United States
-Language: American English
-Timezone: New York
-Use US keyboard: checked
+Country: <your country>
+Language: <your language>
+Timezone: <your timezone>
+Use US keyboard: <you can choose yes or no>
 Next
 
 Change Password
