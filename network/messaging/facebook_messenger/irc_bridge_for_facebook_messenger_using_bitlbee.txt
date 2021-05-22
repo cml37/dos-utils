@@ -1,0 +1,73 @@
+====================================================================
+Preconditions
+====================================================================
+You have set up a Raspberry Pi and enabled SSH.
+  See my instructions here for an example: https://github.com/cml37/dos-utils/blob/master/config/my_raspberrypi_setup_instructions.txt
+  For purposes of this procedure, we will be using the hostname "raspberrypi"
+
+
+====================================================================
+Installing the Facebook Messenger Bridge Using BitlBee
+====================================================================
+Install BitlBee
+  sudo apt-get install bitlbee-dev autoconf libtool libglib2.0-dev
+
+Install the BitlBee Facebook Plugin
+  sudo apt-get install bitlbee-plugin-facebook
+
+Start BitlBee
+  sudo /etc/init.d/bitlbee restart
+  If you want bitlbee to start on system reboot you can add the above "restart line to /etc/rc.local as well
+
+
+====================================================================
+Accessing and Using the Facebook Messenger Bridge Server Via IRCJr
+====================================================================
+Download mTCP: http://www.brutman.com/mTCP/
+
+Follow my mTCP Setup guide: https://github.com/cml37/dos-utils/blob/master/network/mtcp/target_system/mtcp.txt
+(you don't need to create batch files for telnet or ftp)
+Edit tcp.cfg and add some IRCJR specific parameters:
+ IRCJR_NICK <nickname>
+ IRCJR_USER <any old username>
+ IRCJR_NAME <any old name>
+
+Launch IRCJr, passing in your virtual host name
+  Example: 
+    cd \mtcp
+    config.bat 
+    ircjr raspberrypi
+
+You'll now be connected to BitlBee.  Add an account for you and associate the Facebook Messenger user with your account.
+  register
+  /oper <nickname> <your_password>
+  account add facebook <email> <password>
+  account on
+
+At this point you may have to go to Facebook's home page, login, and verify the account
+  Go to facebook.com
+  Log In
+  Login Approval Needed -> Continue
+  Choose an option -> Your choice -> Continue
+  Proceed through the prompts to confirm
+
+You can now join an existing chat, groupchat, etc.  Directions are here! https://wiki.bitlbee.org/HowtoFacebookMQTT
+
+We will go ahead and have an individual chat with a friend
+  /msg send FriendName Hello!
+  This will open a new window and you can chat as you normally would!
+
+If you want to go back to the main window with contacts:
+  ALT+1
+  From there you can pick another person for chatting
+
+To exit IRCjr
+  ALT+X
+
+Want to log in later?
+  cd \mtcp
+  config.bat
+  ircjr raspberrypi
+  identify
+  /oper <nickname> <your_password>
+  From there you can join an existing chat, groupchat, etc.  Directions are here! https://wiki.bitlbee.org/HowtoFacebookMQTT
