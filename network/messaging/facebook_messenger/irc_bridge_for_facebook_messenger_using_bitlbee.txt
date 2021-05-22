@@ -41,7 +41,7 @@ Launch IRCJr, passing in your virtual host name
 You'll now be connected to BitlBee.  Add an account for you and associate the Facebook Messenger user with your account.
   register
   /oper <nickname> <your_password>
-  account add facebook <email> <password>
+  account add facebook <your facebook account> <password>
   account on
 
 At this point you may have to go to Facebook's home page, login, and verify the account
