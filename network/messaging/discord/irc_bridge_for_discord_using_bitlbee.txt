@@ -79,11 +79,12 @@ You can use irssi on the Raspberry Pi command line!  Here's how:
   <look for "settings">
   <Change this line to match what you used for the IRCJR settings above>
   core = { real_name = "<whatever you used for IRCJR_NAME above>"; user_name = "<whatever you used for IRCJR_USER above "; nick = "<whatever you used for IRCJR_NICK above"; };
-  CTRL+X then y to save
+  CTRL+X then y to save then enter
   irssi
   <BEFORE YOU PROCEED WITH THE NEXT COMMAND, MAKE SURE THAT YOU HAVE EXITED IRCJR>
   /connect raspberrypi
-  join &bitlbee
+  /join &bitlbee
+  identify
   /oper <nickname> <your_password>
   chat list discord
   <Use pgup to scroll through history and find your channel number>
