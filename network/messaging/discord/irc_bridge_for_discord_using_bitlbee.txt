@@ -67,10 +67,12 @@ From there you can join discord channels
   /join #naynameyoulike
   Hello everyone!
 
+To exit IRCjr
+  ALT+X
+
 If you have too many channels, you might need to find an alternate IRC client to see the full list of channels
 You can use irssi on the Raspberry Pi command line!  Here's how:
   sudo apt install irssi
-  cd ~/.irssi
   irssi
   /quit
   nano ~/.irssi/config
