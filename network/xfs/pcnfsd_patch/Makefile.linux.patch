@@ -1,0 +1,11 @@
+--- Makefile.linux.orig 2021-06-05 18:26:46.971233027 -0400
++++ Makefile.linux      2021-06-05 18:27:05.381062812 -0400
+@@ -42,7 +42,7 @@
+ # uncomment as appropriate for debugging
+ CFLAGS = -DOSVER_BSD386
+ #CFLAGS = -g -DDEBUG -DOSVER_BSD386
+-LIBS= #-lrpc
++LIBS= lcrypt
+ LFLAGS =
+
+ linux/rpc.pcnfsd: $(LINUX_OBJS) $(HDRS)
