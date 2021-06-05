@@ -7,6 +7,7 @@ Obtain the XFS 1.91 DOS client:
 http://omolini.steptail.com/mirror/winsite/winsite-mar96-3/info/pc/win3/winsock/xfs191.zip/index.html
 
 Unzip the above contents to a directory called xfs
+Copy it to your retro PC
 
 Locate a packet driver for your network card
 Copy the packet driver to the xfs directory
@@ -22,7 +23,7 @@ In the xfs directory, modify the "hosts" file
  192.168.1.255   broadcast
  255.255.255.0   netmask
  
- 192.168.1.105   pi
+ 192.168.1.140   nfspi
  192.168.1.111   client
 
 In the xfs directory, modify the "init" file
@@ -42,7 +43,7 @@ In the xfs directory, modify the "init" file
     init client sm=255.255.255.0 gw=192.168.1.1 csum=off
     pcnfsd server
     mount E: server:/mnt/nfsshare
-    mount lpt2 server:myprinter
+    mount lpt2 server:test
     show
 
 In the xfs directory, modify xfs.bat

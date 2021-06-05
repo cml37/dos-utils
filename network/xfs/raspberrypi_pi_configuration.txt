@@ -1,4 +1,14 @@
 ------------------------------------------------------------------
+Preconditions
+------------------------------------------------------------------
+You have set up a Raspberry Pi and enabled SSH.
+  See my instructions here for an example: https://github.com/cml37/dos-utils/blob/master/config/my_raspberrypi_setup_instructions.txt
+  For purposes of this procedure, we will be using the hostname "nfspi"
+
+You have a proceess for getting files from your modern computer to your old computer
+  Zip drive, floppy drive, network, CD burner, etc.
+
+------------------------------------------------------------------
 Configuring NFS
 ------------------------------------------------------------------
 Follow this tutorial step by step: 
@@ -11,14 +21,16 @@ https://www.nixcraft.com/t/how-to-enable-nfs-v2-on-ubuntu-18-04lts/2857
 Configuring PCNFSD
 ------------------------------------------------------------------
 Download this file to your Raspberry Pi:
-http://ftp.linux.org.uk/pub/linux/Networking/attic/Other/pcnfsd/linux_pcnfsd2.tgz
+  wget --no-check-certificate https://home.dyn.spuddy.org/fs/yggrasil/winter97/disk2/system/Network/sunacm/Other/pcnfsd/linux_pcnfsd2.tgz
 
-Untar the file
-  sudo tar xzf linux_pcnfsd2.tgz
+Make a directory and move the tar file
+  mkdir pcnfsd2
+  mv linux_pcnfsd2.tgz pcnfsd2
   
-Change into the directory
-  cd linux_pcnfsd2
-
+Untar the file
+  cd pcnfsd2
+  tar xzf linux_pcnfsd2.tgz
+  
 Modify Makefile.linux to change this line:
   LIBS= #-lrpc
 to this:
@@ -50,13 +62,13 @@ modify /etc/exports
   Add this line:
     /var/spool/pcnfs *(rw,all_squash,insecure,async,no_subtree_check,anonuid=1000,anongid=1000)
 
-TODO: fix the below!!!
-Create /etc/pcnfsd.conf and configure your printer (here's an example for where a printer named "test" is a "fake" printer that just calls a command to create a text file)
-  printer test - echo hi > /tmp/hi.txt
+Create /etc/pcnfsd.conf and configure your printer (we will configure with a sample "test" printer)
+  sudo nano /etc/pcnfsd.conf
+  Add this line:
+    printer test - echo hi > /tmp/hi.txt
 
 Restart nfs
   sudo systemctl restart nfs-kernel-server
-  
 
 ------------------------------------------------------------------
 Starting pcnfsd
@@ -65,4 +77,4 @@ Starting pcnfsd
 Start pcnfsd for the first time!
   sudo /etc/rpc.pcnfsd
 
-At this point, your can execute printer commands from your xfs client!!
+At this point, your can execute printer and file share commands from your xfs client!!
