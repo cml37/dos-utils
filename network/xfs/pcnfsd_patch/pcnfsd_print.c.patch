@@ -5,7 +5,7 @@
  		return(PI_RES_NO_SUCH_PRINTER);
  
 +#ifdef BSD386
-+	sprintf(buff, "/usr/sbin/lpq -P%s", pn);
++	sprintf(buff, "/usr/bin/lpq -P%s", pn);
 +#else
  	sprintf(buff, "/usr/ucb/lpq -P%s", pn);
 +#endif BSD386
