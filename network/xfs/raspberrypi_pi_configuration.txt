@@ -21,20 +21,22 @@ https://www.nixcraft.com/t/how-to-enable-nfs-v2-on-ubuntu-18-04lts/2857
 Configuring PCNFSD
 ------------------------------------------------------------------
 Download this file to your Raspberry Pi:
-  wget --no-check-certificate https://home.dyn.spuddy.org/fs/yggrasil/winter97/disk2/system/Network/sunacm/Other/pcnfsd/linux_pcnfsd2.tgz
-
-Make a directory and move the tar file
   mkdir pcnfsd2
-  mv linux_pcnfsd2.tgz pcnfsd2
+  cd pcnfsd2
+  wget --no-check-certificate https://home.dyn.spuddy.org/fs/yggrasil/winter97/disk2/system/Network/sunacm/Other/pcnfsd/linux_pcnfsd2.tgz
   
 Untar the file
-  cd pcnfsd2
   tar xzf linux_pcnfsd2.tgz
+
+Download patches from my git repo
+  wget https://raw.githubusercontent.com/cml37/dos-utils/master/network/xfs/pcnfsd_patch/pcnfsd_misc.c.patch
+  wget https://raw.githubusercontent.com/cml37/dos-utils/master/network/xfs/pcnfsd_patch/pcnfsd_print.c.patch
+  wget https://raw.githubusercontent.com/cml37/dos-utils/master/network/xfs/pcnfsd_patch/Makefile.linux.patch
   
-Modify Makefile.linux to change this line:
-  LIBS= #-lrpc
-to this:
-  LIBS= -lcrypt
+Apply my patches
+  patch pcnfsd_misc.c < pcnfsd_misc.c.patch
+  patch pcnfsd_print.c < pcnfsd_print.c.patch
+  patch Makefile.linux < Makefile.linux.patch
 
 Build pcnfsd
   sudo make -f Makefile.linux
@@ -53,8 +55,6 @@ Configuring A Printer
 ------------------------------------------------------------------
 Create a directory and share to support spooling
   sudo mkdir /var/spool/pcnfs
-
-mkdir /mnt/spool
   sudo chown pi:pi /var/spool/pcnfs
  
 modify /etc/exports
@@ -62,10 +62,31 @@ modify /etc/exports
   Add this line:
     /var/spool/pcnfs *(rw,all_squash,insecure,async,no_subtree_check,anonuid=1000,anongid=1000)
 
-Create /etc/pcnfsd.conf and configure your printer (we will configure with a sample "test" printer)
+Create /etc/pcnfsd.conf and configure a virtual printer (we will configure with a sample "test" printer)
   sudo nano /etc/pcnfsd.conf
   Add this line:
-    printer test - echo hi > /tmp/hi.txt
+    printer test - cp $FILE > /tmp
+
+Extra credit example: configure an lpr printer for use with pcnfsd.  I'll configure my Samsung JetDirect PCL5 compatible printer
+    sudo apt-get install lpr
+  
+  sudo nano /etc/printcap
+  Add the following, subbing in the IP address of your network printer
+      jetprint|jetprint:\
+            :sh:\
+            :sd=/var/spool/lpd/jetprint:\
+            :rm=<hostname or ip adddress of your network printer>:\
+            :rp=raw:
+  
+  Now make a spool directory for use 
+    sudo mkdir /var/spool/lpd/jetprint/
+    sudo chmod 777 /var/spool/lpd/jetprint/
+
+  All set and ready to map via the name "jetprint"  
+  Want to test it on the linux side? Here you go!
+    echo hello > /tmp/test.txt
+    lpr -Pjetprint /tmp/test.txt
+  
 
 Restart nfs
   sudo systemctl restart nfs-kernel-server
@@ -78,3 +99,8 @@ Start pcnfsd for the first time!
   sudo /etc/rpc.pcnfsd
 
 At this point, your can execute printer and file share commands from your xfs client!!
+
+------------------------------------------------------------------
+Troubleshooting
+------------------------------------------------------------------
+If you have any issues once you connect the client, you can do a tail -f /var/log/syslog to see messages from pcnfsd.  Good luck!

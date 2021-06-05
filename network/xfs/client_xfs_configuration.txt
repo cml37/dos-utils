@@ -27,23 +27,27 @@ In the xfs directory, modify the "hosts" file
  192.168.1.111   client
 
 In the xfs directory, modify the "init" file
-  * add an init line to initialize the client, i.e.
-    init client sm=255.255.255.0 gw=192.168.1.1 csum=off
-  * add a line to specify the pcnfsd server, which will be the "server" that you placed in the "hosts" file, i.e. 
-    pcnfsd server
-  * Add a line to mount any shares, specifying a drive letter, the "server" name, and the full path on the server of the share, i.e. 
-    mount E: server:/mnt/nfsshare
+  * modify the init line to initialize the client using the netmask and gateway from above, i.e.
+      init client sm=255.255.255.0 gw=192.168.1.1 csum=off
+  * modify the "pcnfsd line" to specify the pcnfsd server, which will be the "server" that you placed in the "hosts" file, i.e. 
+      pcnfsd nfspi
+  * remove the "login" line
+  * modify the drive letter "mount" lines to mount a share, specifying a drive letter, the "server" name, 
+    and the full path on the server of the share, i.e. 
+      mount E: nfspi:/mnt/nfsshare
     (NOTE: if you want to user a drive letter that is further in the alphabet, add LASTDRIVE=Z to your config.sys)
-  * If you'd like, map a printer to lpt2, using the printer name as specified on the "server", i.e.
-    mount lpt2 server:myprinter
-  * If you'd like, add a show line to display information about connections, i.e. 
-    show
+  * modify the printer "mount" lines (i.e. lpt2) to map a printer, using the printer name as specified on the "server", i.e.
+      mount lpt2 nfspi:test
+  * and if you did the extra credit assignment and want to add your own laser printer, add a new mount line for that
+      mount lpt3 nfspi:jetprint
+  * comment out the rdate line
     
   Here's my complete init file:  
     init client sm=255.255.255.0 gw=192.168.1.1 csum=off
-    pcnfsd server
-    mount E: server:/mnt/nfsshare
-    mount lpt2 server:test
+    pcnfsd nfspi
+    mount E: nfspi:/mnt/nfsshare
+    mount lpt2 nfspi:test
+    mount lpt3 nfspi:jetprint
     show
 
 In the xfs directory, modify xfs.bat
@@ -52,7 +56,7 @@ In the xfs directory, modify xfs.bat
  * And the last line should be xfstool @init (this references and executes the file you created in the previous step
  
  Here's my complete xfs.bat file
-  rtspkt 0x60
+  pcntpk 0x60 INT=0x60
   xfskrnl 0x60
   xfstool @init
 
@@ -67,15 +71,17 @@ If you want to run on a newer system (i.e on a VM or a system > 200 Mhz), you ne
     patchcrt
     (press escape)
     C:\xfs\xfstool.exe
+    Y to indicate you have a good backup
+    (press escape)
   
 Run and connect!
   cd xfs
   xfs.bat  
   
 If you want to mount a new directory or printer, or execute a command to "show connections", you can do this from the command line, i.e.:
-  * xfstool mount Q: server:/some/other/path
-  * xfstool mount lpt3 server:anotherprinter
+  * xfstool mount Q: nfspi:/some/other/path
   * xfstool umount lpt2
+  * xfstool mount lpt2 nfspi:anotherprinter
   * xfstool show
 
 If you want to make a new directory or printer permanent, add it to the C:\xfs\init file without the "xsftool" portion of the command 
