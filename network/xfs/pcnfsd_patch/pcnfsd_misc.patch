@@ -1,0 +1,11 @@
+--- pcnfsd_misc.c.orig  2021-06-05 18:18:46.505672631 -0400
++++ pcnfsd_misc.c       2021-06-05 18:16:46.356780981 -0400
+@@ -53,7 +53,7 @@
+ */
+
+ #define        zchar           0x5b
+-#define NOBODY (uid_t)(-2)
++#define NOBODY (uid_t)(65534)
+
+ char            tempstr[256];
+ extern char    sp_name[1024]; /* in pcnfsd_print.c */
