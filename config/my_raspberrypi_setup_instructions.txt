@@ -4,7 +4,7 @@ Raspberry Pi Imager
 Use Raspberry Pi Imager to install raspbian
 1) Download Raspberry Pi Imager 
 2) Under Operating System, select Erase, choose your SD card, then write, then yes
-3) Under Operating System, select Raspberry Pi OS (32-BIT), choose your SD card, and then write, then yes
+3) Under Operating System, select Raspberry Pi OS (32-BIT), choose your SD card, then write, then yes
 
 ------------------------------------------------------------------------------------------------------
 Installation
