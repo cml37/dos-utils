@@ -1,15 +1,14 @@
---- pcnfsd_print.c.orig 2021-06-05 18:21:26.394196099 -0400
-+++ pcnfsd_print.c      2021-06-05 18:22:55.763370310 -0400
-@@ -975,7 +975,12 @@
-        if(pn == NULL || suspicious(pn) || !valid_pr(pn))
-                return(PI_RES_NO_SUCH_PRINTER);
-
+--- pcnfsd_print.c	1994-04-06 05:48:20.000000000 -0400
++++ pcnfsd_print.c.new	2021-06-05 18:49:11.919640701 -0400
+@@ -975,7 +975,11 @@
+ 	if(pn == NULL || suspicious(pn) || !valid_pr(pn))
+ 		return(PI_RES_NO_SUCH_PRINTER);
+ 
 +#ifdef BSD386
-+       sprintf(buff, "/usr/sbin/lpq -P%s", pn);
++	sprintf(buff, "/usr/bin/lpq -P%s", pn);
 +#else
-        sprintf(buff, "/usr/ucb/lpq -P%s", pn);
+ 	sprintf(buff, "/usr/ucb/lpq -P%s", pn);
 +#endif BSD386
-+
-
-        p = su_popen(user, buff, MAXTIME_FOR_QUEUE);
-        if(p == NULL) {
+ 
+ 	p = su_popen(user, buff, MAXTIME_FOR_QUEUE);
+ 	if(p == NULL) {
