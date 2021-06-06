@@ -72,6 +72,7 @@ Extra credit example: configure an lpr printer for use with pcnfsd.  I'll config
   
   sudo nano /etc/printcap
   Add the following, subbing in the IP address of your network printer
+  and MAKE SURE THERE ARE NO SPACES BEFORE "jetprint" OR PCNFSD WILL BREAK!!
       jetprint|jetprint:\
             :sh:\
             :sd=/var/spool/lpd/jetprint:\
