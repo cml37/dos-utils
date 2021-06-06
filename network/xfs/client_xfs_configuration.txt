@@ -11,7 +11,6 @@ Locate a packet driver for your network card
 Copy the packet driver to the xfs directory
 Using AMD PCNET III packet drivers with VirtualBox?
   * You can find packet drivers here: https://www.lazybrowndog.net/freedos/virtualbox/downloads/drivers/pcntpk.zip
-  * Your first line of xfs.bat will look something like this: pcntpk INT=0x60
 
 If you want to run on a newer system (i.e on a VM or a system > 200 Mhz), you need to patch C:\xfs\xfstool.exe
   Download and extract this utility
