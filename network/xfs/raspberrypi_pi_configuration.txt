@@ -65,7 +65,7 @@ modify /etc/exports
 Create /etc/pcnfsd.conf and configure a virtual printer (we will configure with a sample "test" printer)
   sudo nano /etc/pcnfsd.conf
   Add this line:
-    printer test - cp $FILE > /tmp
+    printer test - cp $FILE /tmp
 
 Extra credit example: configure an lpr printer for use with pcnfsd.  I'll configure my Samsung JetDirect PCL5 compatible printer
     sudo apt-get install lpr
