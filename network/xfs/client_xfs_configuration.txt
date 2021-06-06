@@ -7,10 +7,9 @@ Obtain the XFS 1.91 DOS client:
 http://omolini.steptail.com/mirror/winsite/winsite-mar96-3/info/pc/win3/winsock/xfs191.zip/index.html
 
 Unzip the above contents to a directory called xfs
-Copy it to your retro PC
-
 Locate a packet driver for your network card
 Copy the packet driver to the xfs directory
+Copy the xfs directory to your retro PC
 
 In the xfs directory, modify the "hosts" file
  * Set the gateway, broadcast and netmask addresses to those of your network
