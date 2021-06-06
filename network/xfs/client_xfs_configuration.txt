@@ -5,10 +5,20 @@ NOTE: This procedure will not work on 8088 systems (a NEC V20 or higher is requi
 
 Obtain the XFS 1.91 DOS client: 
 http://omolini.steptail.com/mirror/winsite/winsite-mar96-3/info/pc/win3/winsock/xfs191.zip/index.html
-
 Unzip the above contents to a directory called xfs
+
 Locate a packet driver for your network card
 Copy the packet driver to the xfs directory
+Using AMD PCNET III packet drivers with VirtualBox?
+  * You can find packet drivers here: https://www.lazybrowndog.net/freedos/virtualbox/downloads/drivers/pcntpk.zip
+  * Your first line of xfs.bat will look something like this: pcntpk INT=0x60
+
+If you want to run on a newer system (i.e on a VM or a system > 200 Mhz), you need to patch C:\xfs\xfstool.exe
+  Download and extract this utility
+   https://www.kennedysoftware.ie/patchcrt.htm
+  Copy it to the xfs directory
+  (We'll proceed to patch this here in just a few minutes)
+
 Copy the xfs directory to your retro PC
 
 In the xfs directory, modify the "hosts" file
@@ -59,14 +69,8 @@ In the xfs directory, modify xfs.bat
   xfskrnl 0x60
   xfstool @init
 
-Using AMD PCNET III packet drivers with VirtualBox?
-  * You can find packet drivers here: https://www.lazybrowndog.net/freedos/virtualbox/downloads/drivers/pcntpk.zip
-  * Your first line of xfs.bat will look something like this: pcntpk INT=0x60
-
-If you want to run on a newer system (i.e on a VM or a system > 200 Mhz), you need to patch C:\xfs\xfstool.exe
-  Download and extract this utility
-   https://www.kennedysoftware.ie/patchcrt.htm
-  Run the utility
+If you are running on a newer system (i.e on a VM or a system > 200 Mhz), you need to patch C:\xfs\xfstool.exe
+  In the xfs directory, run the utility:
     patchcrt
     (press escape)
     C:\xfs\xfstool.exe
