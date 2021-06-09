@@ -1,0 +1,35 @@
+------------------------------------------------------------------
+Preconditions
+------------------------------------------------------------------
+You have set up a Raspberry Pi and enabled SSH
+  See my instructions here for an example: https://github.com/cml37/dos-utils/blob/master/config/my_raspberrypi_setup_instructions.txt
+  For purposes of this procedure, we will be using the hostname "filepi"
+
+------------------------------------------------------------------
+Configuring SMB1
+------------------------------------------------------------------
+Install packages
+  sudo apt-get install samba samba-common-bin
+
+Create a directory for sharing files
+  sudo mkdir /data
+  sudo chmod 777 /data
+
+Configure samba to allow anyone to access and modify files on the share
+  sudo nano /etc/samba/smb.conf
+  add these lines under the [global] block
+
+    lanman auth=yes
+    ntlm auth=yes
+
+  add these lines at the bottom of the file:
+
+    [data]
+        path = /data
+        read only = no
+        guest ok = yes
+        guest account = root
+        
+All set! Time to test
+* To access your server, from another computer you can navigate to: \\filepi\data
+* To map to, say, drive E:, from a command prompt, you can type "net use E: \\filepi\data"
