@@ -51,26 +51,17 @@ Setup Complete
 Restart
 
 ------------------------------------------------------------------------------------------------------
-Configure Bootup to Wait for Network Configuration
+Configure Bootup to Wait for Network Configuration, Pi Name, and enable SSH
 ------------------------------------------------------------------------------------------------------
 Preferences | Raspberry Pi configuration
 Network at Boot: check "Wait for network"
-Restart
-
-------------------------------------------------------------------------------------------------------
-Configure Pi Name
-------------------------------------------------------------------------------------------------------
-Preferences | Raspberry Pi configuration
 Hostname: <your choice or as specified in my other directions>
-
-------------------------------------------------------------------------------------------------------
-Enable SSH 
-------------------------------------------------------------------------------------------------------
-Preferences | Raspberry Pi configuration
-Interfaces: 
+Click on the Interfaces tab
   SSH => enabled
 Ok
+Yes to restart
 
+At this point you can ssh into the pi for the rest of the install if desired!
 ------------------------------------------------------------------------------------------------------
 Packages to install
 ------------------------------------------------------------------------------------------------------
