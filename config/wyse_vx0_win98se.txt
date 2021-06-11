@@ -73,25 +73,26 @@ On boot Choose option #2 (No Network) from the boot menu
 Run fdisk
 Do you want to enable large disk support => Y
 Press Enter
-Press 2
-Press Enter
 Press 4 to display partition information
 Press Enter
 Remember partition types!
 Press Esc
 Press 3 to delete partition, press Enter, select partition type, follow prompts to delete partition, repeat as needed
-Press Esc to exit fdisk
-reboot
-
-Run fdisk
-Do you want to enable large disk support => Y
+Press Esc
+Press 1
 Press Enter
 Press 1
-TODO 
+Press Enter
+Press Enter
+Press Esc to exit FDISK
+reboot
+
+On boot Choose option #2 (No Network) from the boot menu
 
 Format drive C:
   format C: /u/s
-
+  Y to proceed
+  
 --------------------------------------------------------------
 Prepare Installation of Windows 98 Second Edition
 --------------------------------------------------------------
