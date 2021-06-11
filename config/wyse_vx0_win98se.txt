@@ -118,8 +118,8 @@ Make sure that your share is mounted
   <make sure file listing is returned>
   
 Copy Windows 98 SE installer to your hard disk
-  md C:\win98
-  copy Z:\win98\*.* C:\win98
+  md C:\win98se
+  copy Z:\win98se\*.* C:\win98se
 
 Copy USB mass storage driver to drive C:
   copy Z:\nusb36e.exe C:\
@@ -130,7 +130,8 @@ Reboot the thin client and choose option #2 (No Network) from the boot menu
 Installing Windows 98 SE
 --------------------------------------------------------------
 Run the Windows 98 SE Installer
--- cd win98
+-- C:
+-- cd win98se
 -- setup
 -- Enter to run scandisk
 -- I accept the agreement
@@ -163,7 +164,20 @@ Install the Windows 98 USB drivers
 -- Yes to restart
 
 Wait for the system to reboot.
-Once rebooted, reconnect the USB-CD-ROM Drive
+
+Fix the yellow exclamation mark for USB drivers
+-- Right click on My Computer
+-- Properties
+-- Device Manager
+-- Double Click on PCI Universal Serial Bus
+-- Click Reinstall Driver.
+-- Next
+-- Finish
+-- Close
+-- Ok
+
+Reconnect the USB-CD-ROM Drive
+Wait for the Driver Installations to finish
 
 Copy/move all drivers files to the desktop
 -- Navigate to D:
@@ -171,23 +185,24 @@ Copy/move all drivers files to the desktop
 
 AT THIS POINT, UNPLUG THE USB CD-ROM DRIVE!!
 
-Install Network Drivers
--- TODO
--- Once installed, Yes to restart (you did remove that USB stick, right??)
-
 Install Audio Drivers
--- Local the Via Vinyl Drivers
+-- drivers\audio\Vinyl_V700b
 -- Run setup
 -- Next
 -- I Agree
 -- Next
 -- Next
 -- Next
--- Next
--- Next to restart
+-- Finish to restart (you did unplug that CD-ROM drive, right??)
+
+Install Network Drivers
+-- drivers\network\lan\via823x
+-- Run winSetup
+-- Once installed, Yes to restart
 
 Install DirectX Drivers
--- Double click on the installer
+-- drivers
+-- run directx_dec2006_redist
 -- Yes to accept
 -- When asked to extract, choose C:\dxtmp
 -- Ok
@@ -200,15 +215,26 @@ Install DirectX Drivers
 -- Finish to restart computer
 
 Install Video Drivers
--- TODO
+-- drivers\video\vga\win98me
+-- Run setup
+-- Next
+-- Next
+-- Finish to restart computer
 
 Adjust hardware acceleration to prevent errors when running programs with OpenGL, etc.
 -- Right click on desktop
 -- Properties
--- TODO
+-- Settings
+-- Advanced...
+-- Peformance
+-- Second option (Basic accelerator)
+-- Ok
+-- Close
+-- Yes to restart
 
 Install the Via Hyperion Main Chipset Drivers
--- Double click on setup
+-- drivers\chipset\VIA_Hyperion_Pro_V524A
+-- Run setup
 -- Next
 -- I agree
 -- Next
