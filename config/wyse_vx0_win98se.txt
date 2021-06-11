@@ -1,0 +1,218 @@
+--------------------------------------------------------------
+Wyse Vx0 Thin Client Windows 98 Second Edition Setup Procedures
+--------------------------------------------------------------
+NOTE: This procedure has several specific requirements:
+      * You will need an external USB CD-ROM Drive
+      * You will need the ability to connect the thin client to
+        a wired network
+      * You will need the ability to share files from a file host
+        that supports MS-DOS LAN Manager (SMB1)
+        * See this procedure for details on how to configure a 
+          Raspberry Pi to support SMB1: 
+          https://github.com/cml37/dos-utils/blob/master/network/smb1_file_server/raspberrypi_pi_smb1_msdos_file_server.txt
+      
+NOTE: I recognize that there are a lot of prereqs here.  You can
+      instead try to use a USB stick if you'd like, but this has
+      worked with much mixed success on these machines.  
+        * If you want to try it, instead of following the 
+          "Partition and Format" section below, you can follow the
+          "Partition and Format" portion of my HP T5700 procedure
+          * Link: https://github.com/cml37/dos-utils/blob/master/config/hp_t5700_win98se.txt
+
+--------------------------------------------------------------
+Preconditions
+--------------------------------------------------------------
+Ensure that you have installed a DOM that is at least 512 MB into the thin client
+
+Download the following drivers
+  * First, make a folder named "drivers"
+  * Chipset drivers: https://www.philscomputerlab.com/uploads/3/7/2/3/37231621/via_hyperionpro_v524a.zip
+    - unzip to folder named "drivers\chipset"
+  * Network drivers (Via Rhine II): https://www.helpjet.net/Fs-61735172-25837635-73977955-extract.html
+    - unzip to folder named "drivers\network"
+  * Audio: https://m.majorgeeks.com/files/details/via_ac97_vinyl_audio_driver.html
+    - unzip to folder named "drivers\audio"
+  * Video: https://www.helpjet.net/Fs-63470350-25837635-56305107.html
+    - unzip to folder named "drivers\video"
+  * DirectX 9.0c: http://falconfly.3dfx.pl/directx.htm
+    - move to "drivers" folder
+
+Download my Windows 95b LAN Manager Disk Image: https://github.com/cml37/dos-utils/blob/master/config/resources/rhineii-lanman.ima
+    
+Use a program like BurnAware Free to create a bootable Windows 95b Boot/Drivers ISO
+ * Use my Windows 95b LAN Manager Disk image as the bootable image
+ * Add the "drivers" folder to the image
+   - BE AWARE, the drivers have long file names
+     - Suggest using an "ISO 9660 + Joliet" File System
+     - Suggest using an "ISO Level 3" (128 characters) File Name Length
+     
+Burn the Windows 95b Boot/Drivers ISO to a CD using your favorite program
+
+Configure the BIOS on the thin client to boot from the USB CD-ROM drive
+  On system start, press Del (couldn't hurt to press it several times!!)
+  Password: Fireport
+  Arrow down to Advanced BIOS Features
+  Press Enter
+  Ensure the following are set
+    First Boot Device: USB-CDROM
+    Second Boot Device: Hard Disk
+  Press Esc
+  Arrow over to Save & Exit Setup
+  Press Enter
+  Press y
+  Press Enter
+
+--------------------------------------------------------------
+Partition and Format
+--------------------------------------------------------------
+Insert the Windows 95b Boot/Drivers ISO into the USB CD-ROM drive
+Connect your external USB CD-ROM drive to the thin client and power it on
+
+On boot Choose option #2 (No Network) from the boot menu
+
+Run fdisk
+Do you want to enable large disk support => Y
+Press Enter
+Press 2
+Press Enter
+Press 4 to display partition information
+Press Enter
+Remember partition types!
+Press Esc
+Press 3 to delete partition, press Enter, select partition type, follow prompts to delete partition, repeat as needed
+Press Esc to exit fdisk
+reboot
+
+Run fdisk
+Do you want to enable large disk support => Y
+Press Enter
+Press 1
+TODO 
+
+Format drive C:
+  format C: /u/s
+
+--------------------------------------------------------------
+Prepare Installation of Windows 98 Second Edition
+--------------------------------------------------------------
+Copy the Windows 98 Second Edition installer to your file sharing host (remember: it must support SMB1)
+Make a note of the file sharing hostname and network share, you will need it!
+
+Download Windows 98 USB mass storage driver: https://www.philscomputerlab.com/uploads/3/7/2/3/37231621/nusb36e.exe
+Copy the Windows 98 USB mass storage driver to your file host
+
+Connect your thin client to the network
+Reboot the thin client
+Choose Option #1 (MS LAN MANAGER Network (Via Rhine II)) from the boot menu
+
+When presented with write protect errors, just choose "F" to fail (multiple times)
+When presented with a login prompt, press <Enter>
+
+Map a network drive to your file sharing host
+  net use Z: \\yourhost\yourshare (i.e. \\filepi\data)
+  NOTE: You will get an error, that is fine
+
+Make sure that your share is mounted
+  dir Z:
+  <make sure file listing is returned>
+  
+Copy Windows 98 SE installer to your hard disk
+  md C:\win98
+  copy Z:\win98\*.* C:\win98
+
+Copy USB mass storage driver to drive C:
+  copy Z:\nusb36e.exe C:\
+  
+Reboot the thin client and choose option #2 (No Network) from the boot menu
+
+--------------------------------------------------------------
+Installing Windows 98 SE
+--------------------------------------------------------------
+Run the Windows 98 SE Installer
+-- cd win98
+-- setup
+-- Enter to run scandisk
+-- I accept the agreement
+-- Next
+-- Windows Product Key (put in your product key)
+-- Next
+-- Next
+-- Typical is Fine.  Just Click Next
+-- Enter your Name
+-- Next
+-- Next
+-- Choose your location
+-- Next
+-- Next
+
+AT THIS POINT, UNPLUG THE USB CD-ROM DRIVE!!
+
+Files will start to copy.  Take a nap.  After the installer reboots
+-- When prompted, provide a computer and workgroup name
+-- When prompted, choose a timezone
+-- Once the rest of the list finishes up, the system will reboot!
+
+Windows 98 will boot and ask for your password
+-- Press Ok
+
+Install the Windows 98 USB drivers 
+-- Navigate to C:
+-- double click on nusb36e.exe
+-- Yes
+-- Yes to restart
+
+Wait for the system to reboot.
+Once rebooted, reconnect the USB-CD-ROM Drive
+
+Copy/move all drivers files to the desktop
+-- Navigate to D:
+-- Click on the "drivers" folder and drag it to the desktop
+
+AT THIS POINT, UNPLUG THE USB CD-ROM DRIVE!!
+
+Install Network Drivers
+-- TODO
+-- Once installed, Yes to restart (you did remove that USB stick, right??)
+
+Install Audio Drivers
+-- Local the Via Vinyl Drivers
+-- Run setup
+-- Next
+-- I Agree
+-- Next
+-- Next
+-- Next
+-- Next
+-- Next to restart
+
+Install DirectX Drivers
+-- Double click on the installer
+-- Yes to accept
+-- When asked to extract, choose C:\dxtmp
+-- Ok
+-- Yes to create folder
+-- Once extracted, navigate to C:\dxtemp
+-- Double click dxsetup
+-- I accept
+-- Next
+-- Next
+-- Finish to restart computer
+
+Install Video Drivers
+-- TODO
+
+Adjust hardware acceleration to prevent errors when running programs with OpenGL, etc.
+-- Right click on desktop
+-- Properties
+-- TODO
+
+Install the Via Hyperion Main Chipset Drivers
+-- Double click on setup
+-- Next
+-- I agree
+-- Next
+-- Next
+-- Next
+-- Finish
+
+All set!  Enjoy your nice and cheap Windows 98 SE system!
