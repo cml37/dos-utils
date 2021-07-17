@@ -104,11 +104,12 @@ Use FastLynx on the Retro PC to copy files accordingly
 A couple of suggested settings:
   Hit F9 for options
   Change Directories to "Copy all subdirectories"
+  Change Prompt Mode to "Do not prompt before transfers"
   ESC
   Save and Exit
 
 To transfer a directory/file:
-  F5 to batch select
+  F5 to batch select (if copying more than one file/directory)
   F3 to transfer
 
 
