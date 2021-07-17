@@ -59,7 +59,6 @@ NOTE: The "-t floppy" option ensures that the /data/xfer directory does not get 
 ---------------------------------------------------------------------
 Testing Setup
 ---------------------------------------------------------------------
-
 Connect the Raspberry Pi and Retro PC
   * Connect the Sabrent USB 2.0 to Serial (9-Pin) DB-9 RS-232 Converter Cable to the Raspberry Pi
   * Connect the null modem cable to the Converter Cable and the Retro PC
