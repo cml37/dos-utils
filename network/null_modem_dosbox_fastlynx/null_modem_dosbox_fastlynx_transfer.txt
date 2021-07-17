@@ -1,0 +1,122 @@
+---------------------------------------------------------------------
+Preconditions
+---------------------------------------------------------------------
+You have the following hardware:
+  * Null Modem Cable: 9 pin DE-9 to 9 pin DE-9
+  * Sabrent USB 2.0 to Serial (9-Pin) DB-9 RS-232 Converter Cable, Prolific Chipset
+  * 9 pin serial port installed on your retro computer
+  * Raspberry Pi, SD card, power cord, and monitor and keyboard to support setup
+NOTE: You may be able to use a non Sabrent USB 2.0 to Serial cable, but will need to know how to identify its port name/address in Linux
+
+You have a licensed version of FastLynx 2.0 for DOS
+
+You have set up a Raspberry Pi and enabled SSH:
+  * See my instructions here for an example: https://github.com/cml37/dos-utils/blob/master/config/my_raspberrypi_setup_instructions.txt
+  * For purposes of this procedure, we will be using the hostname "filepi"
+
+
+---------------------------------------------------------------------
+Setup Samba File Server
+---------------------------------------------------------------------
+Follow this procedure here to set up file sharing:
+  https://github.com/cml37/dos-utils/blob/master/network/smb1_file_server/raspberrypi_pi_smb1_msdos_file_server.txt
+
+
+---------------------------------------------------------------------
+Install and Configure DOSBox
+---------------------------------------------------------------------
+Make some directories on the Raspberry Pi and set permissions:
+  sudo mkdir /data/xfer
+  sudo mkdir /data/fx20
+  sudo chmod -R 777 /data/xfer
+  sudo chmod -R 777 /data/fx20
+
+Using a modern computer, copy FastLynx 2.0 to \\filepi\data\fx20
+
+Install DOSBox
+  sudo apt-get install dosbox
+
+Run DOSBox once to generate configs
+  dosbox
+  exit
+
+Configure DOSBox
+  nano ~/.dosbox/dosbox*.conf
+
+  Under the [serial] section, change "serial1" to read as follows:
+    serial1=directserial realport:ttyUSB0
+
+  Under the [autoexec] section, change to read as follows:    
+    mount C: /data/xfer -t floppy
+    mount D: /data/fx20
+    C:
+    D:\fx
+
+NOTE: The "-t floppy" option ensures that the /data/xfer directory does not get cached under DOSBox, which 
+      allows us to add more files to the xfer directory without having to restart DOSBox!
+
+
+---------------------------------------------------------------------
+Testing Setup
+---------------------------------------------------------------------
+Start DOSBox:
+  dosbox
+
+Look for the following in console output:
+  Serial1: Opening ttyUSB0
+
+If you see something like this in console output below the above line, your serial port couldn't open:
+  Serial1: Serial Port "ttyUSB0" could not be opened.
+
+Look for the appearance of a graphical window running FastLynx:
+  If it doesn't launch, perhaps you didn't copy the executables to the right location?
+    Hint: \\filepi\data\fx20
+
+
+---------------------------------------------------------------------
+Optional: Transferring FastLynx to a computer without a floppy drive
+---------------------------------------------------------------------
+NOTE: The remote computer must have the DOS "MODE" commmand available to be run
+
+Start DOSBox:
+  dosbox
+
+In FastLynx in DOSBox
+  Choose Upload
+  Select the Remote Serial port of your retro computer
+
+On the remote computer
+  On the remote computer, change to the directory where you want FastLynx to be placed
+  Follow the instructions to upload FastLynx!
+
+
+---------------------------------------------------------------------
+Transferring Files Using FastLynx
+---------------------------------------------------------------------
+From a modern PC, copy files to \\filepi\data\xfer
+
+Use FastLynx on the Retro PC to copy files accordingly
+
+A couple of suggested settings:
+  Hit F9 for options
+  Change Directories to "Copy all subdirectories"
+  ESC
+  Save and Exit
+
+To transfer a directory/file:
+  F5 to batch select
+  F3 to transfer
+
+
+---------------------------------------------------------------------
+Optional: Configuring Automatic Startup on System Boot
+---------------------------------------------------------------------
+We'll use the X virtual frame buffer so that we don't get a window popping up on startup.
+
+As such, first, install Xvfb:
+  sudo apt-get install xvfb
+
+Modify to allow run on startup:
+  sudo nano /etc/rc.local
+  Add this line above exit 0:
+    runuser -l pi -c 'xvfb-run dosbox >/tmp/dosbox.log 2>&1 &'
