@@ -78,7 +78,7 @@ Look for the appearance of a graphical window running FastLynx:
 
 
 ---------------------------------------------------------------------
-Optional: Transferring FastLynx to a computer without a floppy drive
+Optional: Remote FastLynx Client Installation (Via Serial Cable)
 ---------------------------------------------------------------------
 NOTE: The remote computer must have the DOS "MODE" commmand available to be run
 
@@ -95,7 +95,7 @@ On the remote computer
 
 
 ---------------------------------------------------------------------
-Transferring Files Using FastLynx
+Using FastLynx to Transfer Files 
 ---------------------------------------------------------------------
 From a modern PC, copy files to \\filepi\data\xfer
 
@@ -114,7 +114,7 @@ To transfer a directory/file:
 
 
 ---------------------------------------------------------------------
-Optional: Configuring Automatic Startup on System Boot
+Optional: Configuring Automatic FastLynx Server Startup on System Boot
 ---------------------------------------------------------------------
 We'll use the X virtual frame buffer so that we don't get a window popping up on startup.
 
