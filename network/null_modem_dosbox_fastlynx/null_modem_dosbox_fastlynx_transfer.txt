@@ -131,9 +131,5 @@ To test
   Launch a terminal window
   pgrep dosbox
     Make sure you get a process PID (i.e. a "number") for the output
-  nano /tmp/dosbox.log
-    Look for the following in the file output:
-      Serial1: Opening ttyUSB0
-    If you see something like this in the file output below the above line, your serial port couldn't open:
-      Serial1: Serial Port "ttyUSB0" could not be opened.
-    If /tmp/dosbox.log is blank, then DOSbox had a problem starting.  Retrace the steps above.
+  Connect the Retro PC to the Raspberry Pi
+    Make sure that you can transfer files from the Raspberry Pi
