@@ -80,7 +80,7 @@ Look for the appearance of a graphical window running FastLynx:
 ---------------------------------------------------------------------
 Optional: Remote FastLynx Client Installation (Via Serial Cable)
 ---------------------------------------------------------------------
-NOTE: The remote computer must have the DOS "MODE" commmand available to be run
+NOTE: The remote client computer must have the DOS "MODE" command available to be run
 
 Start DOSBox:
   dosbox
