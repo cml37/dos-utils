@@ -2,11 +2,11 @@
 Preconditions
 ---------------------------------------------------------------------
 You have the following hardware:
-  * Null Modem Cable: 9 pin DE-9 to 9 pin DE-9
+  * Null Modem Cable: 9 pin DE-9 to 9 pin DE-9 (or 25 pin DB-25 if that is the port on your retro computer)
   * Sabrent USB 2.0 to Serial (9-Pin) DB-9 RS-232 Converter Cable, Prolific Chipset
-  * 9 pin serial port installed on your retro computer
-  * Raspberry Pi, SD card, power cord, and monitor and keyboard to support setup
-NOTE: You may be able to use a non Sabrent USB 2.0 to Serial cable, but will need to know how to identify its port name/address in Linux
+    NOTE: You may be able to use a non Sabrent USB 2.0 to Serial cable, but will need to know how to identify its port name/address in Linux
+  * 9 pin (or 25 pin) serial port installed on your retro computer
+  * Raspberry Pi, SD card, power cord, and monitor/keyboard/mouse to support setup
 
 You have a licensed version of FastLynx 2.0 for DOS
 
