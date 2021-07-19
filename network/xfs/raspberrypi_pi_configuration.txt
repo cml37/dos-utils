@@ -23,19 +23,18 @@ Configuring PCNFSD
 Download this file to your Raspberry Pi:
   mkdir pcnfsd2
   cd pcnfsd2
-  wget --no-check-certificate https://home.dyn.spuddy.org/fs/yggrasil/winter97/disk2/system/Network/sunacm/Other/pcnfsd/linux_pcnfsd2.tgz
+  wget --no-check-certificate http://slackware.cs.utah.edu/pub/slackware/slackware-3.0/source/n/tcpip/linux_pcnfsd2.tar.gz
   
-Untar the file
-  tar xzf linux_pcnfsd2.tgz
+Untar the file and change into the directory
+  tar xzf linux_pcnfsd2.tar.gz
+  cd pcnfsd_linux2
 
 Download patches from my git repo
   wget https://raw.githubusercontent.com/cml37/dos-utils/master/network/xfs/pcnfsd_patch/pcnfsd_misc.c.patch
-  wget https://raw.githubusercontent.com/cml37/dos-utils/master/network/xfs/pcnfsd_patch/pcnfsd_print.c.patch
   wget https://raw.githubusercontent.com/cml37/dos-utils/master/network/xfs/pcnfsd_patch/Makefile.linux.patch
   
 Apply my patches
   patch pcnfsd_misc.c < pcnfsd_misc.c.patch
-  patch pcnfsd_print.c < pcnfsd_print.c.patch
   patch Makefile.linux < Makefile.linux.patch
 
 Build pcnfsd
