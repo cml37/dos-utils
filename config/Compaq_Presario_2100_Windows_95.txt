@@ -1,0 +1,51 @@
+-----------------------------------------
+MediaGX Drivers
+-----------------------------------------
+Steps:
+* Go to this thread: https://www.vogons.org/viewtopic.php?p=848611#p848611
+* Download MediaGX.exe
+* Press the left button when it launches
+* Navigate to MediaGX\Win9x
+* Locate the driver file: Cyrix MediaGX Certified Win9x Drivers 4.0.exe
+
+-----------------------------------------
+Modem Drivers
+-----------------------------------------
+Steps:
+* Download from my GitHub repo: https://github.com/cml37/dos-utils/raw/master/config/resources/Compaq_Presario_2100_Modem_Windows_95_Drivers.zip
+* Unzip contents
+
+-----------------------------------------
+Installation Tips
+-----------------------------------------
+Start install on media card => see my video entitled "RetroTutorial: Preparing a CF Card for a Retro PC Using VirtualBox" 
+
+When asked to reboot, move the media card to the PC
+
+Install videochipset drivers
+custom => no audio drivers or joystick drivers
+
+restart
+
+Control panel -> add new hardware -> let windows scan for new hardware -> scan -> finish
+
+Restart a few times as hardware is detected
+
+Add modem when prompted for unknown device
+
+Delete both Cyrix PCI Bus elements
+Reboot
+
+Control panel -> add new hardware -> Don't let window scan -> Display Adapters -> Have disk -> Browse -> C:\progra~1\cyrixc~1 -> ok -> Ok -> next -> finish
+
+Device manager -> Display adapters -> Standard Display Adapter (VGA)
+Driver -> Update Driver
+No, select hardware from list
+Show all hardware
+Cyrix Corporation -> Cyrix XpressGRAPHICS(TM) -> Finish
+C:\progra~1\cyrixc~1 
+yes to restart
+
+Adjust your display resolution
+
+That's it!
