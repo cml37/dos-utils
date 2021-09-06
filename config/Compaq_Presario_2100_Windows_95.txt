@@ -22,10 +22,12 @@ Start install on media card => see my video entitled "RetroTutorial: Preparing a
 
 When asked to reboot, move the media card to the PC
 
-Install videochipset drivers
-custom => no audio drivers or joystick drivers
+Install MediaGX Certified Win9x drivers
+-- Select custom options
+-- Uncheck audio drivers
+-- Make sure joystick drivers is also unchecked
 
-restart
+Restart
 
 Control panel -> add new hardware -> let windows scan for new hardware -> scan -> finish
 
@@ -43,7 +45,7 @@ Driver -> Update Driver
 No, select hardware from list
 Show all hardware
 Cyrix Corporation -> Cyrix XpressGRAPHICS(TM) -> Finish
-C:\progra~1\cyrixc~1 
+When prompted for driver, navigate to C:\progra~1\cyrixc~1 
 yes to restart
 
 Adjust your display resolution
