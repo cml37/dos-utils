@@ -21,6 +21,7 @@ Configure samba to allow anyone to access and modify files on the share
 
     lanman auth = yes
     ntlm auth = yes
+    server min protocol = LANMAN2
 
   add these lines at the bottom of the file:
 
