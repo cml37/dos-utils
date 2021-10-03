@@ -1,0 +1,127 @@
+----------------------------------------------------------------------------------
+Adding a Custom VirtualBox Network Card for Windows NT 4.0 RPL Support of DOS 6.22
+----------------------------------------------------------------------------------
+This procedure will guide you through how to add a custom network card to a Windows NT 4.0
+installation.  It assumes an AMD PCNET III network card as used by VirtualBox.
+
+This procedure could be extended to use other network cards as well if desired!
+
+----------------------------------------------------------------------------------
+Configuring a DOS Virtual Machine Capable of RPL Booting
+----------------------------------------------------------------------------------
+If desired, create a DOS virtual machine that is capable of RPL Booting
+  Launch Oracle VirtualBox
+  New 
+  Name: DOS RPL (or whatever you like, but the name will be important in a later step)
+  Next
+  Next
+  Create
+  Next
+  Next
+  Create
+  
+  Select the Virtual Machine in the list and choose Settings
+  Choose Network
+  Attached to: Bridged Adapter
+  Name: <same adapter card that you used to bridge your Windows NT Server 4.0 Installation>
+  
+  Click on Advanced
+  Make a note of the first six digits of your MAC address, you will need these for a later step
+  
+  Close Virtualbox COMPLETELY
+
+  Download and extract http://download.amd.com/techdownloads/util_boot.zip
+    This should extrat to C:\pcnet\util_bootrom
+
+  Change into the VirtualBox installation directory
+    C:
+    cd program files\oracle\virtualbox
+    
+  Add the BOOT ROM to your DOS RPL Virtual Machine
+    Note: Change "DOS RPL" to a different name in the command below if you used a different name for your virtual machine    
+    VBoxManage.exe setextradata "DOS RPL" VBoxInternal/Devices/pcbios/0/Config/LanBootRom C:\pcnet\util_bootrom\RBOOT.ROM
+
+  Close all VirtualBox VMs 
+  Restart VirtualBox
+
+
+----------------------------------------------------------------------------------
+Windows NT 4.0 Setup and Configuration for custom RPL Network Card
+----------------------------------------------------------------------------------
+Start to Configure a Windows NT installation for RPL
+  Stop at time 12:21 in the original video on "Diskless Remote Booting MS-DOS 6.22 From Windows NT 4.0 Server": https://www.youtube.com/watch?v=0n9izl4TtLI
+  This should give you an installed version of Windows NT 4.0 with Remoteboot support!
+
+
+Copy and configure files for the AMD PCNET III network card to the Windows NT 4.0 Server
+  Download AMD PCNET III Drivers: https://www.lazybrowndog.net/freedos/virtualbox/?page_id=321
+  Place PCNTND.DOS on a virtual floppy image using WinImage
+  Create a virtual Floppy Drive Adapter on your Windows NT 4.0 virtual machine
+    Settings | Storage | Add new storage controller | Add Floppy Controller
+    Add Floppy Drive
+    Choose Disk: your virtual floppy image 
+
+  copy PCNTND.DOS to C:\WINNT\RPL\BBLOCK\NDIS
+  make this directory: C:\WINNT\RPL\BBLOCK\NETBEUI\PCNTND
+  copy protocol.ini and dosbb.cnf from WINNT\RPL\BBLOCK\NETBEUI\ELNK3 to WINNT\RPL\BBLOCK\NETBEUI\PCNTND
+
+  Edit WINNT\RPL\BBLOCK\NETBEUI\PCNTND\protocol.ini (open notepad and drag it in)
+  do a search replace: elnk3 => pcntnd
+  Then find the final drivername entry in the file and change the driver name portion to all uppercase, i.e.
+    drivername = PCNTND$
+  Save file
+
+  Edit WINNT\RPL\BBLOCK\NETBEUI\PCNTND\dosbb.cnf (open notepad and drag it in)
+  do a search replace: ELNK3 => PCNTND
+  Change first line in file to be this:
+    ; DOS on AMD PCNET III
+  Save file
+  
+
+Launch a Command Prompt in Windows NT 4.0 and use the rplcmd to create a new configuration for the AMD PCNET III network card
+
+  We're now going to use the first six characters of the MAC address from your DOS VM
+    If you didn't write them down from earlier, go to settings | network | advanced and get the first six characters of the MAC address
+
+
+  From the Windows NT 4,0 start menu, choose "Run..." then type in "command" and press enter
+  
+  Type "rplcmd" and press enter, and follow the steps below:
+
+           Adapter Boot Config Profile Service Vendor Wksta [Quit]: B
+           Add Del Enum: A
+           BootName=DOSPCN
+           VendorName=xxxxxx    ;first six characters of the DOS VM's MAC address
+           BbcFile=BBLOCK\NETBEUI\PCNTND\DOSBB.CNF
+           BootCommet=DOSPCN
+           WindowsSize=0
+
+           Adapter Boot Config Profile Service Vendor Wksta [Quit]: C
+           Add Del Enum: A
+           ConfigName=DOSPCN
+           BootName=DOSPCN
+           DirName=DOS
+           DirName2=DOS622
+           FitShared=fits\dos622.FIT
+           FitPersonal=fits\dos622p.FIT
+           ConfigComment=DOS 6.22 AMD PCNET III
+           DirName3=            ;press "Enter"
+           DirName4=            ;press "Enter"
+
+           Adapter Boot Config Profile Service Vendor Wksta [Quit]: V
+           Add Del Enum: A
+           VendorName=xxxxxx    ;first six characters of the DOS VM's MAC address
+           VendorComment=AMD PCNET III
+
+           Adapter Boot Config Profile Service Vendor Wksta [Quit]: Q
+
+  Reboot NT server
+  Load remoteboot manager and choose "configure" | "fix security"
+  Then choose "configure" | "check configurations"
+
+At this point, you can proceed with the rest of the video
+  Start at time 12:21 in the original video on "Diskless Remote Booting MS-DOS 6.22 From Windows NT 4.0 Server": https://www.youtube.com/watch?v=0n9izl4TtLI
+  At time 12:32, instead of choosing "DOS 6.22 3Com Etherlink III", choose "DOS 6.22 AMD PCNET III"
+  At time 16:37, you'd make a copy of your AMD PCNET III profile (as opposed to 3Com Etherlink III)
+  At time 16:44, navigate to the PCNTND directory instead of Elnk3
+  And of course, for any other references to 3Com Etheretlink III, you'd go with AMD PCNET III instead
