@@ -41,8 +41,7 @@ If desired, create a DOS virtual machine that is capable of RPL Booting
     Note: Change "DOS RPL" to a different name in the command below if you used a different name for your virtual machine    
     VBoxManage.exe setextradata "DOS RPL" VBoxInternal/Devices/pcbios/0/Config/LanBootRom C:\pcnet\util_bootrom\RBOOT.ROM
 
-  Close all VirtualBox VMs 
-  Restart VirtualBox
+  Restart VirtualBox and any VMS
 
 
 ----------------------------------------------------------------------------------
