@@ -31,11 +31,12 @@ If desired, create a DOS virtual machine that is capable of RPL Booting
   Close Virtualbox COMPLETELY
 
   Download and extract http://download.amd.com/techdownloads/util_boot.zip
-    This should extrat to C:\pcnet\util_bootrom
+    Then run the installer
+    This should place files at C:\pcnet\util_bootrom
 
   Change into the VirtualBox installation directory
     C:
-    cd program files\oracle\virtualbox
+    cd \program files\oracle\virtualbox
     
   Add the BOOT ROM to your DOS RPL Virtual Machine
     Note: Change "DOS RPL" to a different name in the command below if you used a different name for your virtual machine    
