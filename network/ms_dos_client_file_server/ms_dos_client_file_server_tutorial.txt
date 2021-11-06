@@ -1,0 +1,200 @@
+====================================================================
+Preconditions
+====================================================================
+You have Oracle VM VirtualBox installed on your host system
+
+
+====================================================================
+Configure a Floppy Disk With The Needed Drivers
+====================================================================
+
+Download the following items
+  * AMD PCnet-FAST III NDIS Driver: https://www.lazybrowndog.net/freedos/virtualbox/downloads/drivers/pcntnd.zip 
+    -- unzip to a directory call pcntpk
+  * MS Client 3.0 Disk 1: https://www.lazybrowndog.net/freedos/virtualbox/downloads/sources/MSCLIENT/DSK3-1.EXE
+  * MS Client 3.0 Disk 2: https://www.lazybrowndog.net/freedos/virtualbox/downloads/sources/MSCLIENT/DSK3-2.EXE
+  * Network Server Patch: https://www.lazybrowndog.net/freedos/virtualbox/downloads/sources/MSCLIENT/WG1049.EXE
+  
+Create a floppy disk image with ms client installers and NDIS drivers using WinImage
+  -- File | New | 1.44 MB | Ok
+  -- From pcntpk, inject the AMD PCNET NDIS Driver
+    -- Click on \ 
+    -- Image | Inject | pcntnd.dos | Yes
+  -- Inject the MS Client 3.0 Disk 1
+    -- Click on \ 
+    -- Image | Inject | DSK3-1.exe | Yes
+  -- Inject the MS Client 3.0 Disk 2
+    -- Click on \ 
+    -- Image | Inject | DSK3-2.exe | Yes
+  -- File | Save As
+    -- Type: Image file (*.ima)
+    -- File Name: msclient.ima
+    -- Save
+
+Create a floppy disk image with the network server patch using WinImage
+  -- File | New | 1.44 MB | Ok
+  -- Inject the Network Server patch
+    -- Click on \ 
+    -- Image | Inject | WG1049.exe | Yes
+  -- File | Save As
+    -- Type: Image file (*.ima)
+    -- File Name: patch.ima
+    -- Save
+    
+
+====================================================================
+Configure an MS-DOS Virtual Machine
+====================================================================
+
+Download the following files:
+* DOS 6.22 Boot ISO: https://www.allbootdisks.com/downloads/ISO/AllBootDisks_ISO_Image_Downloads25/DOS6.22_bootdisk.iso
+
+Create a new VirtualBox VM
+  New
+  Name: DOS Server
+  Type: Other
+  Version: DOS
+  Memory size: 32MB
+  Hard Disk: Create a virtual hard disk now
+  Hard Disk file type: VMDK
+  Storage on physical hard disk: Dynamically allocated
+  File location and size: defaults are fine
+
+Once created
+ Settings
+ Network
+ Adapter 1
+   Enable Network Adapter
+   Attached to: Bridged Adapter
+   Name: Choose your active network card
+
+
+====================================================================
+Configure MS-DOS File Sharing Server
+====================================================================
+Start the new VM
+Insert the DOS 6.22 ISO into the drive
+Use FDISK to set up the partition
+  fdisk
+  1 to create DOS partition
+  1 to create primary DOS partition
+  Y for max size and making active
+  Any key to reboot
+
+format C: /s
+y to confirm
+ENTER when asked about volume label
+
+Eject the DOS 6.22 ISO from the drive
+
+Reboot the virtual machine
+
+Prepare installlation of MS Client
+  Insert the msclient.ima disk that you created above into the floppy drive
+
+  mkdir C:\install
+  copy A:\*.* C:\install
+
+  Insert the patch.ima that you created above into the floppy drive
+  copy A:\*.* C:\install
+
+  Eject the patch.ima floppy disk image from the drive
+  Insert the DOS 6.22 ISO into the drive
+
+  C:
+  cd install
+  dsk3-1 -d
+  dsk3-2 -d
+  (a to overwrite)
+
+Install MS Client
+  setup
+  Enter
+  Enter to select C:\net
+  Choose "Advanced Micro Devices AM2100/AM1500T"
+  Enter
+  Enter
+  User Name: DOS (or whatever you would like the machine name to be)
+  Enter
+  Up arrow to "Change Network Configuration"
+  Enter
+  Tab, and then down arrow to choose "NWLink IPX Compatible Transport"
+  Tab, then up arrow to "Remove"
+  Down arrow to Microsoft TCP/IP
+  Enter
+  Enter
+  Enter
+  Enter to restart
+  The system will reboot and boot from the DOS 6.22 ISO
+
+Copy over share.exe, the AMD PCnet III drivers, remove unneeded drivers, and copy over the Network Server Patch
+  copy A:\share.exe C:\
+  copy C:\install\pcntnd.dos C:\net
+  copy C:\install\wg1049.exe C:\net
+  del C:\net\am2100.dos
+
+  C:
+  cd net
+  wg1049
+  (press "a" to overwrite all files)
+
+Configure MS Client for network sharing and for the AMD PCNET III drivers
+
+  A:\edit C:\net\system.ini
+    Under [network], edit these line to read as follows:
+      filesharing=yes
+      printsharing=yes
+
+    Under [network], edit the autostart line to read as follows:
+      autostart=basic,server
+  
+    Under [network_drivers], do the following:
+      Change netcard to read as follows
+        netcard=pcntnd.dos
+      Delete the line am2100.dos=LOW
+   
+    Save and exit
+   
+   A:\edit C:\net\protocol.ini
+     Under [network.setup], edit the following lines to read as follows:
+       netcard=ms$pcntnd,1
+       lana0=ms$pcntnd,1,tcpip
+
+     Under [tcpip], edit the following lines to read as follows:
+       BINDINGS=MS$PCNTND
+
+     Find this heading and change it accordingly:
+      [MS$AM2100] => [MS$PCNTND]
+
+     Under [MS$PCNTND] section do the following
+       REMOVE ALL EXISTING LINES
+       Add one new line:
+         DriverName=PCNTND$
+
+     Save and exit
+
+   A:\edit C:\config.sys
+     Add this line to the bottom of the file
+       install=C:\share.exe
+   
+     Save and exit
+
+Eject the DOS 6.22 ISO from the drive and reboot
+
+On reboot, set default password options
+  Press ENTER when asked about a user name
+  Press ENTER when asked about a password
+  Y to create empty password
+  Press ENTER
+  Press ENTER
+
+Upon boot completion, you can now share a drive!  
+  For example, to share drive C: as \\DOS\drivec and give full access:
+    net share drivec=C:\ /FULL
+    
+The drive is immediately available for access from any system that supports SMB1
+  Note: Modern windows does not support SMB1 by default
+  
+Additionally, on future boots, the drive should be shared and available!! 
+  To delete this share, you would type the following:
+    net share drivec /d
