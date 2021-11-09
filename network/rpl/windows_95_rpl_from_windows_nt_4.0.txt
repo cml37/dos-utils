@@ -1,0 +1,674 @@
+----------------------------------------------------------------------------------
+Prerequisites
+----------------------------------------------------------------------------------
+You'll need the following installers:
+  Microsoft Windows NT 4.0 Enterprise Server (4.00.1381.1) ISO
+  Windows 95 (Retail Upgrade) ISO
+  DOS 6.22 Installation (non upgrade version)
+  Windows 3.1(1) Installation Disk 1
+
+WinImage installed
+Oracle VM VirtualBox 5.2.44 installed
+
+
+----------------------------------------------------------------------------------
+Create Windows NT 4.0 Virtual Machine
+----------------------------------------------------------------------------------
+Create a New VM
+  Name: Windows NT Server 4.0
+  Type: Microsoft Windows
+  Version: Windows NT 4
+  Next
+  Memory Size: 256MB
+  Next
+  Hard Disk: Create a virtual hard disk now
+  Create
+  Hard disk file type: VMDK
+  Next
+  Storage on physical hard disk: Dynamically allocated
+  Next
+  Create
+
+Select your new VM
+Click Settings
+  Storage
+    Storage Devices
+      Add Floppy Controller
+      Add Floppy
+        Leave Empty
+  Network  
+    Enable Network Adapter
+    Attached to: Bridged Adapter
+    Name: Choose your wired network card
+  Ok
+
+
+----------------------------------------------------------------------------------
+Install Windows NT 4.0 Server
+----------------------------------------------------------------------------------
+Start VM
+
+Put Microsoft Windows NT 4.0 Enterprise Server ISO into the virtual CD-ROM drive
+
+Windows NT Server Setup
+  Enter
+  Enter
+  C to Continue
+  PGDN around 20 times (just hold it down)
+  F8 to accept agreement
+  Enter to select hardware list
+  C to create partition
+  Enter 
+  Enter
+  Select: Format the partition using the NTFS file system
+  Enter
+  Enter to choose \WINNT installation location
+  ESC to bypass exhaustive disk check
+  When prompted, remove the CD and reboot
+  When prompted (after a few restarts), insert the CD and click OK
+  Windows NT Setup Gathering Information: click Next
+  Enter your Name and Organization and click Next
+  Licening Modes: Per Server for 5 concurrent connections
+  Next
+  Computer Name: NTSERVER
+  Next
+  Server Type: Stand-Alone Server
+  Next
+  Administrator Account: leave password blank
+  Next
+  Emergency Repair Disk: No, do not create an emergency repair disk
+  Next
+  Selet Components: Click Next (defaults are fine)
+  Next
+  Next (these network defaults are fine)
+  Uncheck "Install Microsoft Internet Inforamtion Server"
+  Next
+  Start Search (AMD PCNET Family Ethernet Adapter should appear)
+  Next
+  Select from list
+  Selet DLC Protocol
+  Ok
+  Make sure that all four protocols are checked
+  Next
+  Select from list
+  Remoteboot Service
+  Ok
+  Next
+  Next
+  Continue
+  Yes
+  Continue on Remoteboot Setup dialog
+  For Windows NT setup: D:\clients\rpl (type carefully, this is unforgiving)
+  Continue
+  Next
+  Next to start the network
+  Next to select workgroup name of WORKGROUP
+  Finish
+  Select your timezone and click Close
+  On detectd display, click Ok
+  On display properties, click Ok
+  Click No on viewing the log file
+  Remove the installation ISO from the drive
+  Click Restart Computer
+  Log into windows NT 
+   On VirtualBox, this is usually RIGHT CTL + DEL which simulates a CTRL+ALT+DEL
+   Default of Administrator and no password is fine, then click OK
+  Close the Welcome Screen
+  Insert the installation ISO into the drive
+    (Close the Auostart window when it pops up)    
+  Click Start Installation to install service pack 3
+    OK
+    Next
+    Yes
+    Next
+    No, I do not want to create an Uninstall directory
+    Next
+    Finish
+    Skip
+    Remove the installation ISO from the drive
+    Ok to reboot
+  Login again after the reboot
+  Ok to acknowledge successful setup
+  Uncheck "Show this installer next time you start Windows NT" when the dialog loads
+    Exit
+    Yes
+    Ok
+
+----------------------------------------------------------------------------------
+Configure RPL Boot Manager
+----------------------------------------------------------------------------------
+  Enable Remoteboot Service
+    Start | Settings | Control Panel | Services
+    Find and double click on "Remoteboot Service" 
+    Startup Type: Automatic
+    Ok
+    Then click "Start" to start the service
+    Close
+  Create an RPL manager shortcut
+    My Computer | C: | Winnt | System32 
+    Find Rplmgr | right click on it | Create shortcut
+    Move the shortcut to the desktop
+  Fix permissions for the RPL management
+    Double click on the Rplmgr shortcut
+    Ok 
+    Configure | Fix Security | Yes
+
+  Copy DOS 6.22 files to the Windows NT 4.0 Server using a new DOS VM
+    Create a VirtualBox VM for DOS
+      New
+      Name: DOS
+      Next
+      Create
+      Next
+      Next
+      Create
+    Select your new VM
+    Click Settings
+      Network  
+        Enable Network Adapter
+        Attached to: Bridged Adapter
+        Name: Choose your wired network card
+      Ok
+    Install DOS 6.22 (I use DOS 6.22 plus enhanced tools)
+      Insert disk 1 into the virtual floppy drive
+      Enter
+      Configure Unallocated Disk Space
+      Enter
+      Enter to restart
+      Enter to confirm correct settings
+      Enter to confirm location
+      Enter disks 2 and 3 when prompted, you get the idea
+      Remove all disks and restart when      
+    Boot up using my DOS LAN Manager disk Image: 
+      Download image from here: https://github.com/cml37/dos-utils/blob/master/config/resources/virtualbox-amd-pcnet-iii-lanman.ima
+      Place image in the virtual floppy drive
+      Press enter (or wait for timeout) when presented with the DOS 6.22 selection menu
+      Press enter when prompted for password
+    Once booted:
+      net use M: \\NTSERVER\RPLFILES
+    Copy all the MS-DOS files to the M:\Binfiles\Dos622 directory by typing the following commands.
+      COPY C:\DOS\*.* M:\BINFILES\DOS622
+      A:\ATTRIB -S -H C:\IO.SYS
+      COPY C:\IO.SYS M:\BINFILES\DOS622
+      A:\ATTRIB +S +H C:\IO.SYS
+      A:\ATTRIB -S -H C:\MSDOS.SYS
+      COPY C:\MSDOS.SYS M:\BINFILES\DOS622
+      A:\ATTRIB +S +H C:\MSDOS.SYS
+    Remove the floppy disk from the floppy drive of the DOS Virtual VM
+    Shut down the DOS virtual machine
+
+
+----------------------------------------------------------------------------------
+Configuring a DOS Virtual Machine Capable of RPL Booting
+----------------------------------------------------------------------------------
+Create a DOS virtual machine that is capable of RPL Booting
+  Launch Oracle VirtualBox
+  New 
+  Name: DOS RPL (or whatever you like, but the name will be important in a later step)
+  Next
+  Next
+  Create
+  Next
+  Next
+  Create
+  
+  Select the Virtual Machine in the list and choose Settings
+  Choose Network
+    Attached to: Bridged Adapter
+    Name: <same adapter card that you used to bridge your Windows NT Server 4.0 Installation>
+  System
+    Acceleration
+    Paravirtualization Interfaces: None
+      Hardware Virtualization: Uncheck Enable VT-x/AMD-V
+      Ok
+      (Note: Newer versions of VirtualBox may not have these settings.
+       This could result in problems for second boot of Windows 95.)
+  
+  Click on Advanced
+  Make a note of the first six digits of your MAC address, you will need these for a later step
+  
+  Close Virtualbox COMPLETELY
+
+  Download and extract http://download.amd.com/techdownloads/util_boot.zip
+    Then run the installer
+    This should place files at C:\pcnet\util_bootrom
+
+  Change into the VirtualBox installation directory
+    C:
+    cd \program files\oracle\virtualbox
+    
+  Add the BOOT ROM to your DOS RPL Virtual Machine
+    Note: Change "DOS RPL" to a different name in the command below if you used a different name for your virtual machine    
+    VBoxManage.exe setextradata "DOS RPL" VBoxInternal/Devices/pcbios/0/Config/LanBootRom C:\pcnet\util_bootrom\RBOOT.ROM
+
+  Restart VirtualBox and any VMS
+
+
+----------------------------------------------------------------------------------
+Windows NT 4.0 Setup and Configuration for custom RPL Network Card
+----------------------------------------------------------------------------------
+Copy and configure files for the AMD PCNET III network card to the Windows NT 4.0 Server
+  Download AMD PCNET III Drivers: https://www.lazybrowndog.net/freedos/virtualbox/?page_id=321
+  Unzip to a directory call pcntpk
+
+  Create a floppy disk image with ms client installers and NDIS drivers using WinImage
+    -- File | New | 1.44 MB | Ok
+    -- From pcntpk, inject the AMD PCNET NDIS Driver
+      -- Click on \ 
+      -- Image | Inject | pcntnd.dos | Yes
+    -- File | Save As
+      -- Type: Image file (*.ima)
+      -- File Name: pcntnd.ima
+      -- Save
+
+  Insert the virtual floppy image into the drive of the NT 4.0 Server Virtual Machine
+
+  copy PCNTND.DOS to C:\WINNT\RPL\BBLOCK\NDIS
+  make this directory: C:\WINNT\RPL\BBLOCK\NETBEUI\PCNTND
+  copy protocol.ini, dosbb.cnf, and w95bb.cnf from WINNT\RPL\BBLOCK\NETBEUI\ELNK3 to WINNT\RPL\BBLOCK\NETBEUI\PCNTND
+
+  Edit WINNT\RPL\BBLOCK\NETBEUI\PCNTND\protocol.ini (open notepad and drag it in)
+  do a search replace: elnk3 => pcntnd
+  Then find the final drivername entry in the file and change the driver name portion to all uppercase, i.e.
+    drivername = PCNTND$
+  Save file
+
+  Edit WINNT\RPL\BBLOCK\NETBEUI\PCNTND\dosbb.cnf (open notepad and drag it in)
+  do a search replace: ELNK3 => PCNTND
+  Change first line in file to be this:
+    ; DOS on AMD PCNET III
+  Save file
+
+  Edit WINNT\RPL\BBLOCK\NETBEUI\PCNTND\w95bb.cnf (open notepad and drag it in)
+  do a search replace: ELNK3 => PCNTND
+  Change first line in file to be this:
+    ; Windows 95 on AMD PCNET III
+  Save file  
+
+Launch a Command Prompt in Windows NT 4.0 and use the rplcmd to create a new configuration for the AMD PCNET III network card
+
+  We're now going to use the first six characters of the MAC address from your DOS VM
+    If you didn't write them down from earlier, go to settings | network | advanced and get the first six characters of the MAC address
+
+  From the Windows NT 4,0 start menu, choose "Run..." then type in "command" and press enter
+  
+  Type "rplcmd" and press enter, and follow the steps below:
+
+           Adapter Boot Config Profile Service Vendor Wksta [Quit]: B
+           Add Del Enum: A
+           BootName=DOSPCN
+           VendorName=xxxxxx    ;first six characters of the DOS VM's MAC address
+           BbcFile=BBLOCK\NETBEUI\PCNTND\DOSBB.CNF
+           BootCommet=DOSPCN
+           WindowsSize=0
+
+           Adapter Boot Config Profile Service Vendor Wksta [Quit]: C
+           Add Del Enum: A
+           ConfigName=DOSPCN
+           BootName=DOSPCN
+           DirName=DOS
+           DirName2=DOS622
+           FitShared=fits\dos622.FIT
+           FitPersonal=fits\dos622p.FIT
+           ConfigComment=DOS 6.22 AMD PCNET III
+           DirName3=            ;press "Enter"
+           DirName4=            ;press "Enter"
+
+           Adapter Boot Config Profile Service Vendor Wksta [Quit]: B
+           Add Del Enum: A
+           BootName=W95PCN
+           VendorName=xxxxxx    ;first six characters of the DOS VM's MAC address
+           BbcFile=BBLOCK\NETBEUI\PCNTND\W95BB.CNF
+           BootCommet=W95PCN
+           WindowsSize=0
+
+           Adapter Boot Config Profile Service Vendor Wksta [Quit]: C
+           Add Del Enum: A
+           ConfigName=W95PCN
+           BootName=W95PCN
+           DirName=DOS
+           DirName2=WIN95
+           FitShared=fits\win95.FIT
+           FitPersonal=fits\win95p.FIT
+           ConfigComment=Windows 95 AMD PCNET III
+           DirName3=            ;press "Enter"
+           DirName4=            ;press "Enter"
+
+           Adapter Boot Config Profile Service Vendor Wksta [Quit]: V
+           Add Del Enum: A
+           VendorName=xxxxxx    ;first six characters of the DOS VM's MAC address
+           VendorComment=AMD PCNET III
+
+           Adapter Boot Config Profile Service Vendor Wksta [Quit]: Q
+
+  Reboot NT server
+ 
+
+----------------------------------------------------------------------------------
+Start Up DOS 6.22 RPL VM
+----------------------------------------------------------------------------------
+On the NT 4.0 VM
+  Login
+  Load remoteboot manager and choose "configure" | "fix security" then click Yes
+  Then choose "configure" | "check configurations" then click yes
+
+Remoteboot | New Profile
+  Profile Name: DOS
+  Configuration: DOS 6.22 AMD PCNET III
+  Ok
+
+Start up the DOS RPL VM
+After 20 seconds or so, in the RPL Manager, choose View | Refres
+Select the entry in the table in the top
+Remoteboot | Convert Adapters...
+  Wksta Name: DOS
+  Add
+The VM should now start up and boot!
+Power down the DOS RPL VM for now
+
+
+----------------------------------------------------------------------------------
+Configure TCP/IP for the DOS 6.22 RPL VM
+----------------------------------------------------------------------------------
+On the NT 4.0 VM
+  My Computer | C: | Winnt | rpl | rplfiles | profiles| dos
+  Right click on autoexec.bat and choose edit
+    Find the line with UMB.COM in it and remove REM from the beginning of the line
+    Find the line with LOAD TCPIP and remove REM from the beginning of the line
+    Find the line with NMTSR in it and remove REM from the beginning of the line
+    Exit and save
+
+  From the explorer menu 
+    View | Options | View
+    Show All Files
+    Ok
+  Drag config.sys into notepad
+    Find the line with EMM386.exe in it and remove REM from the beginning of the line
+    Find the line with NEMM.DOS in it and remove REM from the beginning of the line    
+    
+  My Computer | C: | Winnt | rpl | bblock | netbeui | pcntnd
+  Drag dosbb.cnf into notepad
+    Remove the semicolon from the line DRV BBLOCK\TCPDRV.DOS /I:C:\LANMAN.DOS ~ ~
+    Exit and save
+  Load remoteboot manager and choose "configure" | "fix security" then click Yes
+  Then choose "configure" | "check configurations" then click yes
+
+The DOS RPL VM will now support TCP/IP!
+
+
+----------------------------------------------------------------------------------
+Create a Windows 95 VM
+----------------------------------------------------------------------------------
+Right Click on the DOS VM that we created earlier
+Choose Clone
+New Machine name: Windows 95
+Next
+Clone
+
+Settings
+  System
+    Acceleration
+      Paravirtualization Interfaces: None
+      Hardware Virtualization: Uncheck Enable VT-x/AMD-V
+      Ok
+      (Note: Newer versions of VirtualBox may not have these settings.
+       This could result in problems for second boot of Windows 95.)
+
+Download a DOS 6.22 Boot disk: https://www.allbootdisks.com/downloads/Disks/MS-DOS_Boot_Disk_Download47/Diskette%20Images/Dos6.22.img
+
+Insert the Windows 95 Retail Upgrade ISO into the drive of the Windows 95 VM
+Insert the DOS 6.22 boot disk into the virtual floppy drive of the Windows 95 VM
+Start the Windows 95 VM
+
+Install Windows 95
+  mkdir C:\win95
+  xcopy /s/e R:\win95 C:\win95
+  D for directory
+  C:
+  cd \win95
+  Setup
+  Enter
+  Continue
+  Yes
+  Continue
+  Locate
+  Insert disk 1 of Windows 3.11 into the virtual disk drive
+  Drives: A: Ok
+  Remove Windows 3.11 disk 1 from the virtual disk drive
+  Next
+  Next
+  Next
+  Put in your Name
+  Next
+  Put in your CD Key
+  Next
+  Next
+  Next
+  Next
+  No, I do not want a startup disk
+  Next
+  Next
+  Finish
+  The system will reboot
+  Ok
+  Computer name: WIN95
+  Workgroup: WORKGROUP
+  Close
+  Choose your timezone and click close  
+  Cancel when asked to set up a printer
+  Ok to restart
+  Username: Administrator
+  <leave password blank>
+  Ok
+  Ok
+  Close the welcome screen
+
+
+----------------------------------------------------------------------------------
+Configure Windows 95 Remote Boot
+----------------------------------------------------------------------------------
+On the NT 4.0 Server VM, create two directories and share them
+  My Computer | C: | Right Click -> New Folder
+    Rename New Folder to WIN95.SBS
+    Right click | Sharing | Click Shared As | Ok
+  My Computer | C: | Right Click -> New Folder
+    Rename New Folder to WIN95.MAC
+    Right click | Sharing | Click Shared As | Ok
+
+On The 95 VM, install the SBS Windows 95 installer files
+  My Computer | D: | Right click and choose "Explore" | Admin | Nettools | Netsetup
+  Run netsetup
+  Click Set Path...
+    \\ntserver\win95.sbs
+    Ok
+  Click Install...
+  Click Ok (all defaults are fine)
+  Don't Create Default
+  Enter your Product Identification Number 
+  Ok
+  (Wait for this process to complete, takes several minutes) 
+  Windows 95 Installation is Complete => Ok
+  Exit
+  
+On the NT 4.0 Server VM, further configure the SBS Windows 95 installer
+  Insert the NT 4.0 Enterprise Server ISO into the CD-ROM drive
+  Start | Run | command
+  D:
+  cd clients\rpl\update\win95
+  win95srv.bat C:\win95.sbs
+  exit
+
+On the NT 4.0 Server VM
+  Load remoteboot manager and choose "configure" | "fix security" then click Yes
+  Then choose "configure" | "check configurations" then click yes
+
+Power down the Windows 95 VM
+
+
+----------------------------------------------------------------------------------
+Configure The DOS RPL Client to Install Windows 95
+----------------------------------------------------------------------------------
+Start up the DOS RPL VM
+
+Once booted
+  fdisk 
+  1
+  1
+  Y
+  press any key to reboot
+  format D:
+  Y
+  Enter
+  Enter for volume label
+  net use F: \\NTSERVER\WIN95.SBS
+  net use G: \\NTSERVER\WIN95.MAC
+  F:
+  setup /t:G:\win95.tmp
+  Enter
+  Yes
+  Ok
+  Next
+  Next
+  Next
+  Machine Directory: G:\VM
+  Next
+  Custom
+  Next
+  Enter your name
+  Next
+  No, I want to modify the hardware list
+  Next
+  Uncheck all Hardware type on the left
+  Next
+  Next
+  Next
+  Next
+  Select Dial-Up Adapter and choose remove
+  Add
+  Adapter
+  Add 
+  Advanced Micro Devices (AMD) -> AMD PCNET Family Ethernet Adapter (PCI&ISA)
+  OK
+  Next
+  Next
+  Ok
+  Ok
+  Ok
+  Next
+  Next
+  Finish
+
+At this point, turn off the DOS RPL client VM
+
+
+----------------------------------------------------------------------------------
+Install Windows 95 on the DOS RPL VM
+----------------------------------------------------------------------------------
+On the NT 4.0 VM
+  Remoteboot | New Profile
+    Profile Name: Win95
+    Configuration: Windows 95 AMD PCNET III
+    Ok
+  Select the DOS workstation
+    Remoteboot | Properties
+    Wksta Name: WIN95
+    Wksta In Profile: WIN95
+    Configuration Type: Personal
+    Ok
+
+On the NT 4.0 VM, run a command that copies machine settings to a profile
+  Start | run -> command
+  cd \winnt\rpl\bin
+  win95clt C:\win95.mac\vm \\ntserver win95
+
+At this point, get the full MAC address from the DOS RPL VM
+  Settings
+    Network
+     Advanced
+       MAC ADDRESS
+       (make a note of the full MAC address you see here)
+
+On the NT 4.0 VM
+  Start | run -> command
+  edit C:\win95.sbs\machines.ini
+  Add the below, substituing in the DOS RPL machine's MAC address accordingly
+    [<12-digit-mac>]
+    SysDatPath=G:\VM
+    G=\\NTSERVER\WIN95.MAC
+  Save and exit
+  ^^^ NOTE WELL, the path above is SysDatPath, NOT SysDataPath.. No "a" after Dat.  This cost me some time!
+
+#####################################################################################################
+TODO NEED TO DO SOMETHING HERE TO FIX VBACKUP ERROR ON STARTUP!!!!  FIX95CFG?  Try VMWare?  RAMDISK?
+#####################################################################################################
+
+Start up the DOS RPL VM and finish the Windows 95 installation
+  When prompted for the second login name that looks like your 12 digit mac address, 
+    type in the machine name, which is WIN95
+    press enter for the password
+  Enter Network Password
+    Username: WIN95
+    Password: <blank>
+    Domain: WORKGROUP
+    OK
+  Microsoft Networking error about domain server
+    OK
+  Set Windows Password
+    OK
+  System Error Reading Drive A:
+    Cancel
+  Time Zone
+    Select your time zone
+    Close
+  Add printer Wizard
+    Cancel
+  Setup Complete
+    OK
+  The system will reboot
+    When prompted, enter WIN95 for the username
+    Press Enter for the password
+  System File Warning
+    OK
+    OK
+  Enter Network Password
+    OK
+  Microsoft Networking error about domain server
+    OK
+  Start 
+    Shutdown
+      Shut down the computer?
+        Yes
+
+
+----------------------------------------------------------------------------------
+Optional: Remove Nuisance "Second Password Request" on boot 
+(i.e. boot straight to Windows 95 GUI without interruption)
+----------------------------------------------------------------------------------  
+Configure automatic login for DOS bootup
+  On the Windows NT 4.0 VM
+    Edit C:\winnt\rpl\rplfiles\machines\Win95\Win95\pro\suboot\win.bat
+      change: 
+        net logon /savepw:no /y  ==> net logon Win95 /y
+    Edit C:\winnt\rpl\fits\win95p.fit
+      Edit this line
+        C:\win.bat    MACHINES\(CNAME)\(PROFILE)\PRO\SUBOOT\win.bat
+
+  Start up the Windows 95 RPL VM
+    When prompted for the second login name, press enter
+    Press enter to confirm your password
+  Enter Network Password
+    OK
+  Microsoft Networking error about domain server
+    OK
+  Using My Computer:  
+    Copy E:\winboot\win95.pwl to G:\
+    copy E:\winboot\system.ini to G:\ (NOTE: if extensions are hidden, this will appear as "system"
+  
+  On the Windows NT 4.0 VM
+    move C:\win95.mac\win95.pwl and C:\win95.mac\system.ini to C:\winnt\rpl\rplfiles\machines\win95\win95\pro\suboot\
+  Edit C:\winnt\rpl\fits\win95p.fit
+    Add these lines
+      C:\win95.pwl    MACHINES\(CNAME)\(PROFILE)\PRO\SUBOOT\win95.pwl
+      C:\system.ini   MACHINES\(CNAME)\(PROFILE)\PRO\SUBOOT\system.ini
+      
+  Restart the Windows 95 RPL VM, and it should not prompt for that second password anymore!
