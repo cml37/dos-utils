@@ -1,0 +1,140 @@
+====================================
+Items to Locate
+====================================
+Oracle VM VirtualBox (suggested version 6.0.18 or lower) https://download.virtualbox.org/virtualbox/6.0.18/VirtualBox-6.0.18-136238-Win.exe
+ * Newer versions of VirtualBox have removed supported for setting this feature to false: <HardwareVirtEx enabled="false"/> 
+   * Not an issue for a DOS VM, but best to be safe
+WinImage: http://www.winimage.com/download.htm
+  
+Bootable ISO Image for DOS 6.22: https://www.allbootdisks.com/downloads/ISO/AllBootDisks_ISO_Image_Downloads25/DOS6.22_bootdisk.iso
+Artisoft LANtastic 6.0 (3.5-1.44mb) installation disks
+
+AMD PCNET III NDIS Drivers: https://www.lazybrowndog.net/freedos/virtualbox/downloads/drivers/pcntnd.zip
+-- unzip to a directory called pcntnd
+
+====================================
+Installations
+====================================
+Install Oracle VM VirtualBox
+Install WinImage
+
+====================================
+Create and Configure Virtual Machine
+====================================
+Create a DOS virtual machine in VirtualBox
+New
+Name: LANtastic Client
+Memory size: 32MB
+Hard Disk: Create a virtual hard disk now
+Hard disk file type: VMDK (this is important so that WinImage can open your hard disk file!!)
+Storage on physical hard disk: Dynamically allocated
+File location and size: defaults are fine
+
+Once created
+ Settings
+ Network
+ Adapter 1
+   Enable Network Adapter
+   Attached to: Bridged Adapter
+   Name: (choose to match the LANtastic server.  You CAN use wireless for virtualized hardware, but NOT for real hardware)
+
+====================================
+Launch Virtual Machine
+====================================
+Insert bootable DOS 6.22 ISO into the virtual CD ROM drive
+
+After system boots:
+  Perform FDISK
+    Choose "1" to create DOS partition
+    Choose "1" to create primary partition
+    Choose "Y" to choose maximum space
+  Reboot
+  Format C: /s
+  Remove bootable ISO from the virtual CD ROM drive
+  Shut down virtual machine
+
+Create a text file called protocol.ini with the following contents:
+
+;PROTOCOL.INI for LANtastic Version 6.00
+;--- using AMD PCNET III Fast Ethernet Adapter
+
+[PROTMAN]
+   DRIVERNAME = PROTMAN$
+   DYNAMIC = YES
+
+[PCNTND_NIF]
+   DRIVERNAME = PCNTND$
+
+
+Create a floppy disk image with NDIS drivers using WinImage
+  -- File | New | 1.44 MB | Ok
+  -- From pcntnd, inject the AMD PCNET NDIS Driver
+    -- Click on \ 
+    -- Image | Inject | pcntnd.dos | Yes
+  -- Inject the protocol.ini file you just created above
+    -- Click on \ 
+    -- Image | Inject | protocol.ini | Yes
+  -- File | Save As
+    -- Type: Image file (*.ima)
+    -- File Name: pcntnd.ima
+    -- Save
+ 
+ 
+ 
+====================================
+Install LANTastic
+====================================
+Start the virtual machine
+
+Insert LANtastic 6.0 Disk 1 into the virtual floppy drive
+ A:
+ install
+ enter
+ press any key
+ press any key
+ Computer name: DOSTASTIC
+ enter to choose drive C: 
+ enter to choose \LANTASTI directory
+ Your choice regarding sharing printer and drivers (sharing will take more memory though!)
+ enter for optional features (leave them all unselected)
+ enter to continue with installation
+ select NDIS support for Network Adapters
+ (put pcntnd.ima into the floppy drive and press enter)
+ insert LANtastic disk 1 into the drive and press enter
+ select "Do not set up any drive or printer connections" and press enter
+ Ok to perform the installation => enter
+ press any key
+ insert disk 2 when prompted
+ any key to acknowlege autoexec.bat
+ any key to acknowlege config.sys
+ any key to continue
+ remove disk and reboot
+ 
+ 
+====================================
+Connect Up drives and printers
+====================================
+After the VM client reboots, and assuming the server is running, wait a minute or so for the server to be discovered, then proceed
+
+Here's an example on how you can connect to a drive!
+  net
+  Connect to Other Computers' Drives
+  D:
+  (LANTASTIC)
+  Enter when prompted about time
+  C-DRIVE
+  
+Here's an example on how you can connect to a printer!
+  net
+  Connect to Other Computers' Printers
+  LPT1
+  \\LANTASTIC
+  @PRINT-1
+  
+Press esc to exit the net program
+  
+Now if you exit the net program and want to save your connections for future reboots, you can do something like this
+  net show/batch > C:\lantasti\connect.bat
+
+If you want to login without a password prompt, edit C:\lantasti\connect.bat and change the net user line to something like this
+  net user dostastic ""
