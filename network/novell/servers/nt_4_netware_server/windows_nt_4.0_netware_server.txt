@@ -1,0 +1,192 @@
+----------------------------------------------------------------------------------
+Prerequisites
+----------------------------------------------------------------------------------
+You'll need the following installers:
+  Microsoft Windows NT 4.0 Enterprise Server (4.00.1381.1) ISO
+  Microsoft Directory Service Manager for NetWare(R) 3.51
+
+WinImage installed
+Oracle VM VirtualBox 5.2.44 installed
+
+
+----------------------------------------------------------------------------------
+Create Windows NT 4.0 Virtual Machine
+----------------------------------------------------------------------------------
+Create a New VM
+  Name: Windows NT Server 4.0
+  Type: Microsoft Windows
+  Version: Windows NT 4
+  Next
+  Memory Size: 256MB
+  Next
+  Hard Disk: Create a virtual hard disk now
+  Create
+  Hard disk file type: VMDK
+  Next
+  Storage on physical hard disk: Dynamically allocated
+  Next
+  Create
+
+Select your new VM
+Click Settings
+  Storage
+    Storage Devices
+      Add Floppy Controller
+      Add Floppy
+        Leave Empty
+  Network  
+    Enable Network Adapter
+    Attached to: Bridged Adapter
+    Name: (if planning to host "real" machines, choose your wired network adapter... wireless will NOT work.  Otherwise, wireless is fine)
+  Ok
+
+
+----------------------------------------------------------------------------------
+Install Windows NT 4.0 Server
+----------------------------------------------------------------------------------
+Start VM
+
+Put Microsoft Windows NT 4.0 Enterprise Server ISO into the virtual CD-ROM drive
+
+Windows NT Server Setup
+  Enter
+  Enter
+  C to Continue
+  PGDN around 20 times (just hold it down)
+  F8 to accept agreement
+  Enter to select hardware list
+  C to create partition
+  Enter 
+  Enter
+  Select: Format the partition using the NTFS file system
+  Enter
+  Enter to choose \WINNT installation location
+  ESC to bypass exhaustive disk check
+  When prompted, remove the CD and reboot
+  When prompted (after a few restarts), insert the CD and click OK
+  Windows NT Setup Gathering Information: click Next
+  Enter your Name and Organization and click Next
+  Licensing Modes: Per Server for 5 concurrent connections
+  Next
+  Computer Name: NTSERVER
+  Next
+  Server Type: Stand-Alone Server
+  Next
+  Administrator Account: leave password blank
+  Next
+  Emergency Repair Disk: No, do not create an emergency repair disk
+  Next
+  Select Components: Click Next (defaults are fine)
+  Next
+  Next (these network defaults are fine)
+  Uncheck "Install Microsoft Internet Information Server"
+  Next
+  Start Search (AMD PCNET Family Ethernet Adapter should appear)
+  Next
+  Make sure that all three protocols are checked
+  Next
+  Next
+  Next
+  Continue
+  Yes for DHCP
+  Next
+  Next to start the network
+  Next to select workgroup name of WORKGROUP
+  Finish
+  Select your time zone and click Close
+  On detected display, click Ok
+  On display properties, click Ok
+  Click No on viewing the log file
+  Remove the installation ISO from the drive
+  Click Restart Computer
+  Log into windows NT 
+   On VirtualBox, this is usually RIGHT CTL + DEL which simulates a CTRL+ALT+DEL
+   Default of Administrator and no password is fine, then click OK
+  Close the Welcome Screen
+  Insert the installation ISO into the drive
+    (Close the Autostart window when it pops up)    
+  Click Start Installation to install service pack 3
+    OK
+    Next
+    Yes
+    Next
+    No, I do not want to create an Uninstall directory
+    Next
+    Finish
+    Skip
+    Remove the installation ISO from the drive
+    Ok to reboot
+  Login again after the reboot
+  Ok to acknowledge successful setup
+  Uncheck "Show this installer next time you start Windows NT" when the dialog loads
+    Exit
+    Yes
+    Ok
+
+
+----------------------------------------------------------------------------------
+Install File and Print Services for NetWare
+----------------------------------------------------------------------------------
+Insert the Microsoft Directory Service Manager for NetWare(R) 3.51 disc into the CD ROM drive
+
+Click Start and select Settings, then Control Panel. Double-click the Network icon.
+Select the Services tab, and then click the Add button.
+In the box under "Network Service:", select Have Disk...
+  D:\FPNW\NT40\i386
+  Click OK.
+  Select "File and Print Services for NetWare.
+  Click OK.
+  Make a note of the server name, you can change it if you like.
+  Click OK.
+  Click OK (no password).
+  Click Yes.
+  Click Close.
+  Click Yes to restart.
+
+
+At this point, once the NT server finishes restarting, you can connect up a NetWare client and login as supervisor!!
+
+
+----------------------------------------------------------------------------------
+(Optional) Configure and Share a Network Printer
+----------------------------------------------------------------------------------
+First, you need to have Microsoft TCP/IP Printing Service installed. To install it, follow the steps below:
+  Click Start and select Settings, then Control Panel. Double-click the Network icon.
+  Select the Services tab, and then click the Add button.
+  In the box under "Network Service:", select Microsoft TCP/IP Printing.
+  Insert the NT Server ISO into the Optical Drive
+  Click Continue.
+  Click Close.
+  Click Yes to restart.
+
+You also need to set up a printer port, as described below:
+  Click Start and select Settings, then Printers.
+  Double-click the Add Printer icon.
+  Select My computer, and then click Next.
+  Select Add Port to display the available port types. Choose LPR Port and click New Port..
+  In the dialog box, enter the IP address for the printer.
+  Click Ok.
+  Click Close.
+  The port should now be selected for your printer.  Click Next.
+  Select the LPR/LPD port with the printer IP address you just added.
+
+From this point, you will continue with the Add Printer Wizard. 
+You'll want to choose a printer that will be compatible with your networked printer.  
+For laser printers, the HP LaserJet 4 is a good choice. But be warned that this could be a "trial and error" procedure for your printer!
+  Insert the NT Server ISO into the Optical Drive
+  Highlight the manufacturer on the left, highlight the printer on the right, and click Next.
+  Give your printer a name. Then click Next.
+  Choose to share the printer with other users. Then click Next.
+  Choose whether or not you want to print a test page and click Finish.
+  Remove the NT Server ISO from the Optical Drive
+  
+  
+----------------------------------------------------------------------------------
+(Optional) Connecting the NetWare Client to the Printer
+----------------------------------------------------------------------------------
+Login as SUPERVISOR
+capture Q=hp_laserjet_4 (or whatever the NAME of your printer is, with underscores)
+
+All set!  Now you can print.  Want to test it?
+  echo hi > lpt1
+  (you should get a printout!)

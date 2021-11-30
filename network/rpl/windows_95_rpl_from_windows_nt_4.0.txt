@@ -68,7 +68,7 @@ Windows NT Server Setup
   When prompted (after a few restarts), insert the CD and click OK
   Windows NT Setup Gathering Information: click Next
   Enter your Name and Organization and click Next
-  Licening Modes: Per Server for 5 concurrent connections
+  Licensing Modes: Per Server for 5 concurrent connections
   Next
   Computer Name: NTSERVER
   Next
@@ -78,15 +78,15 @@ Windows NT Server Setup
   Next
   Emergency Repair Disk: No, do not create an emergency repair disk
   Next
-  Selet Components: Click Next (defaults are fine)
+  Select Components: Click Next (defaults are fine)
   Next
   Next (these network defaults are fine)
-  Uncheck "Install Microsoft Internet Inforamtion Server"
+  Uncheck "Install Microsoft Internet Information Server"
   Next
   Start Search (AMD PCNET Family Ethernet Adapter should appear)
   Next
   Select from list
-  Selet DLC Protocol
+  Select DLC Protocol
   Ok
   Make sure that all four protocols are checked
   Next
@@ -104,8 +104,8 @@ Windows NT Server Setup
   Next to start the network
   Next to select workgroup name of WORKGROUP
   Finish
-  Select your timezone and click Close
-  On detectd display, click Ok
+  Select your time zone and click Close
+  On detected display, click Ok
   On display properties, click Ok
   Click No on viewing the log file
   Remove the installation ISO from the drive
@@ -115,7 +115,7 @@ Windows NT Server Setup
    Default of Administrator and no password is fine, then click OK
   Close the Welcome Screen
   Insert the installation ISO into the drive
-    (Close the Auostart window when it pops up)    
+    (Close the Autostart window when it pops up)    
   Click Start Installation to install service pack 3
     OK
     Next
@@ -358,7 +358,7 @@ Remoteboot | New Profile
   Ok
 
 Start up the DOS RPL VM
-After 20 seconds or so, in the RPL Manager, choose View | Refres
+After 20 seconds or so, in the RPL Manager, choose View | Refresh
 Select the entry in the table in the top
 Remoteboot | Convert Adapters...
   Wksta Name: DOS
@@ -454,7 +454,7 @@ Install Windows 95
   Computer name: WIN95
   Workgroup: WORKGROUP
   Close
-  Choose your timezone and click close  
+  Choose your time zone and click close  
   Cancel when asked to set up a printer
   Ok to restart
   Username: Administrator
@@ -591,7 +591,7 @@ At this point, get the full MAC address from the DOS RPL VM
 On the NT 4.0 VM
   Start | run -> command
   edit C:\win95.sbs\machines.ini
-  Add the below, substituing in the DOS RPL machine's MAC address accordingly
+  Add the below, substituting in the DOS RPL machine's MAC address accordingly
     [<12-digit-mac>]
     SysDatPath=G:\VM
     G=\\NTSERVER\WIN95.MAC
