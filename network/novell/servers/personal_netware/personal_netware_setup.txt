@@ -1,0 +1,204 @@
+=====================================================================
+Items to Locate
+=====================================================================
+Locate your licensed copy of Novell Personal NetWare 1.0 (1993) (3.5-1.44mb)
+
+Obtain drivers:
+  AMD PCNet network card client drivers (lan.zip): https://www.helpjet.net/Fs-80528992-89055134-94629108.html
+  -- unzip to folder named lan
+  AMD PCNet client32 drivers (client32.zip) (we will only need this for an updated version of lsl.com): https://www.helpjet.net/Fs-43321125-89055134-88652830.html
+  -- unzip to folder named client32
+
+Download Oracle VM VirtualBox (suggested version 6.0.18 or lower) https://download.virtualbox.org/virtualbox/6.0.18/VirtualBox-6.0.18-136238-Win.exe  
+Download WinImage
+Download MS-DOS 6.22 Boot ISO: https://www.allbootdisks.com/downloads/ISO/AllBootDisks_ISO_Image_Downloads25/DOS6.22_bootdisk.iso
+
+
+====================================
+Installations
+====================================
+Install Oracle VM VirtualBox
+Install WinImage
+
+  
+=====================================================================
+Set Up The "Base Image" to be used for Personal NetWare
+=====================================================================
+Create a new VirtualBox VM
+  New
+  Name: Personal NetWare DOS
+  Type: Other
+  Version: DOS
+  Memory size: 16MB
+  Hard Disk: Create a virtual hard disk now
+  Hard disk file type: VMDK (this is important so that WinImage can open your hard disk file!!)
+  Storage on physical hard disk: Dynamically allocated
+  File location and size: defaults are fine
+
+Once created
+ Settings
+ Network
+ Adapter 1
+   Enable Network Adapter
+   Attached to: Bridged Adapter
+   Name: (if planning to host "real" machines, choose your wired network adapter... wireless will NOT work.  Otherwise, wireless is fine)
+
+
+Start the new VM
+Insert the DOS 6.22 ISO into the drive
+Use FDISK to set up the partition
+  fdisk
+  1 to create DOS partition
+  1 to create primary DOS partition
+  Y for max size and making active
+  Any key to reboot
+
+format C: /s
+y to confirm
+ENTER when asked about volume label
+
+mkdir C:\msdos
+copy *.* C:\msdos
+
+Create a config.sys file that optimizes memory
+  edit C:\config.sys
+    DEVICE=C:\MSDOS\HIMEM.SYS /TESTMEM:OFF
+    DEVICEHIGH=C:\MSDOS\EMM386.EXE NOEMS
+    DOS=HIGH,UMB
+    
+Create an autoexec.bat with a DOS path statement
+  edit C:\autoexec.bat
+    PATH=C:\MSDOS
+
+Eject the DOS 6.22 ISO from the drive
+
+Power down the virtual machine
+
+At this point, it's time to inject some files into the image
+Using WinImage
+  -- Open the vmdk file (C:\users\<your user name\VirtualBox VMS\Personal NetWare DOS.vmdk)
+  -- From lan\netware\dos, inject pcntnw.com and pcntnw.ins into a directory named net
+    -- Click on \ folder
+    -- Image | Create Folder | net
+    -- Click on net
+    -- Image | Inject | pcntnw.com | Yes
+    -- Image | Inject | pcntnw.ins | Yes
+  -- from client32, inject lsl.com into a directory named nwclient
+    -- Click on \ folder
+    -- Image | Create Folder | nwclient
+    -- Click on nwclient
+    -- Image | Inject | lsl.com | Yes
+    
+Close WinImage
+
+
+=====================================================================
+Set up Additional "Base" Personal NetWare Machines
+=====================================================================
+Decide how many clients you would like to have
+
+Just 1? You are done, proceed to next section
+More than 1?  Create some clones! 
+  Right Click on Personal NetWare DOS in VirtualBox
+  Select "Clone"
+  Create a new name to your liking
+  Next
+  Clone
+
+
+=====================================================================
+Configure All Personal NetWare Machines
+=====================================================================
+Repeat this process for the base machine and all clones created above, but keep the following in mind:
+* Choose different installation serial numbers
+* Choose different usernames
+
+    
+Insert Personal NetWare Disk 1 into the Floppy Drive
+
+A:
+install
+Continue with installation
+
+Name: Your Name
+Company: Anything You'd Like
+Serial Number: <some unique number, each machine and clone needs its own number>
+Accept the above and continue
+Continue
+
+Primary Network Interface Card: OEM Supplied Driver
+Source path for driver file(s): C:\net
+Accept the above and continue
+
+Share this computer's resources: 
+  Your choice
+    * more resident memory usage if you check the box, but more capability.  
+    * At least one machine must have this enabled for sharing!!
+    * If setting up first machine, enable this!
+User of this computer: <something unique, each machine should be different>
+
+Select server types to connect to: 
+  Your choice, but at least have Personal NetWare Desktop Servers or the "net" program does not get installed 
+  More options = more resident memory used
+Accept the above and continue
+
+Optimize/Network Management
+  Unchecking items here (except DPMS) will save resident memory if that is a concern, especially the cache
+  None of these items are required, so you can uncheck them all
+Accept the above and continue
+
+Accept the above and continue (no need to configure the primary interface card)
+Start Installation
+
+Insert disks as prompted
+When prompted to overwrite lsl.com, CHOOSE NO!!!
+
+Installation is Complete
+Press Enter
+
+Accept the Above and Continue (third party driver screen)
+Restart Operating System
+(remove the floppy disk from the drive, then press enter)
+
+
+After Restart:
+Continue With First Time Setup (IF THIS IS NOT THE FIRST MACHINE YOU ARE SETTING UP, MAKE SURE THE FIRST MACHINE IS UP AND RUNNING!)
+
+If this is the first machine you are setting up
+  Specify a Workgroup Name, your choice
+  Accept the above and continue
+  For the drive/port share page, select Accept the above and continue (you can uncheck the LPT1 port if you don't want to share it)
+  Save Changes and Exit
+  Enter
+  Enter
+      
+If this is not the first machine you are setting up
+  Join Selected Workgroup (the workgroup will be the one you set up on the first machine)
+  For the drive/port share page, select Accept the above and continue (you can uncheck the LPT1 port if you don't want to share it)
+  Save Changes and Exit
+  Enter
+  Enter
+   
+Now, if you don't want to type your username every time you boot:
+  edit C:\nwclient\startnet.bat
+  Add your username to end of the "net login" line of the file, i.e.
+    C:\NWCLIENT\NET LOGIN YOURUSER  
+
+But if you don't do this, or if you forgot your username, it should be the server name minus the extension, which is shown on boot up!
+    Example: in the output prior to login prompt, I see NWUSER_PC, so my username is NWUSER
+  
+Great!  Want to see what the state of the world is?
+  net
+    here you can map drivers and printers
+    when done, you can choose File | Save Script and your settings will be preserved for future logins!
+    Want to see non Personal NetWare Servers? go to View | Include and check "Bindery Servers" and "Directory Services Tree"
+      ^^ I have NO IDEA why this isn't the default...
+  
+=====================================================================
+Command Line Examples For Mapping Drives and Printers
+=====================================================================
+
+So, maybe you prefer the command line?  Here are some examples on how to connect to a server, map a drive, and map a printer port
+  net connect netware/supervisor
+  net map E: SYS:LOGIN\OS2\NETWARE NETWARE
+  net capture lpt1 hp_laserjet_4
