@@ -180,7 +180,17 @@ For laser printers, the HP LaserJet 4 is a good choice. But be warned that this 
   Choose whether or not you want to print a test page and click Finish.
   Remove the NT Server ISO from the Optical Drive
   
-  
+Change all default printing to be raw
+  I've noticed that the default print method from the Windows NT version of capture.exe is TEXT, which cause problems if you want to print graphics
+  Here's how to fix that
+  Start | run | regedit <enter>
+  Navigate to  HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\FPNW\Parameters
+  Right click on the panel and the right and choose New -> String Value
+  Name it DefaultTextDatatype
+  Then double click on it and set its value: RAW
+  OK
+  Close Registry Editor
+ 
 ----------------------------------------------------------------------------------
 (Optional) Connecting the NetWare Client to the Printer
 ----------------------------------------------------------------------------------
