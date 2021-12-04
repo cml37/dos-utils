@@ -190,6 +190,13 @@ Change all default printing to be raw
   Then double click on it and set its value: RAW
   OK
   Close Registry Editor
+
+Change the internal network number to be nonzero (otherwise, some NetWare clients won't connect!)
+  Settings | Control Panel | Network | Protocols
+  Double click on NWLink IPX/SXP Properties
+  Internal Network Number: 00000123
+  OK
+  Reboot!
  
 ----------------------------------------------------------------------------------
 (Optional) Connecting the NetWare Client to the Printer
