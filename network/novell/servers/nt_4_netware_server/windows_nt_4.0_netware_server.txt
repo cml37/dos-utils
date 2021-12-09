@@ -143,6 +143,13 @@ In the box under "Network Service:", select Have Disk...
   Click Close.
   Click Yes to restart.
 
+Change the internal network number to be nonzero (otherwise, some NetWare clients won't connect!)
+  Settings | Control Panel | Network | Protocols
+  Double click on NWLink IPX/SPX Compatible Transport
+  Internal Network Number: 00000123
+  OK
+  Close
+  Yes to Reboot!
 
 At this point, once the NT server finishes restarting, you can connect up a NetWare client and login as supervisor!!
 
@@ -191,12 +198,26 @@ Change all default printing to be raw
   OK
   Close Registry Editor
 
-Change the internal network number to be nonzero (otherwise, some NetWare clients won't connect!)
-  Settings | Control Panel | Network | Protocols
-  Double click on NWLink IPX/SXP Properties
-  Internal Network Number: 00000123
+(Optional) Add support for printer queues if you want to allow other NetWare servers to access the printer
+  Start | Programs | Administrative Tools (Common) | Server Manager
+  FPNW | Print Servers
+  Add
+  Print Server: NTPRINT
   OK
-  Reboot!
+  Printers
+  Add
+  Printer: Printer 0
+  Port: 0
+  Type: Defined elsewhere
+  Ok
+  Queues 
+  (Choose your printer from the Available Queues)
+  Add >>
+  OK
+  Close
+  Close
+  Click the "X" to close Server Manager
+ 
  
 ----------------------------------------------------------------------------------
 (Optional) Connecting the NetWare Client to the Printer
