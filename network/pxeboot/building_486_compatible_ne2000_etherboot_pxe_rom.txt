@@ -1,0 +1,144 @@
+=================================================================
+Building A 486 Compatible Version of Etherboot for NE2000 Cards
+=================================================================
+
+============================================================
+Virtual Machine Setup
+============================================================
+Download Ubuntu Jammy Desktop: https://cdimage.ubuntu.com/daily-live/current/jammy-desktop-amd64.iso
+
+Create a Linux Virtual Machine using Oracle VM Virtualbox
+ * Name: Linux 
+ * Memory Size: 4096MB
+ * Hard Disk: VMDK, Dynamically Allocated, 16GB 
+
+Then enable clipboard sharing to make it easier to copy commands later on
+ * Select your new Linux Virtual Machine
+ * Click Settings
+ * Click General
+ * Click Advanced tab
+ * Shared Clipboard: Bidirectional
+ * Drag and Drop: Bidirectional
+
+Start the Linux Virtual Machine
+
+Insert the Ubuntu Jammy Desktop ISO into the Virtual DVD Drive
+Proceed through installing Ubuntu, all of the defaults are fine!
+  Enter to boot "Ubuntu"
+  Install Ubuntu
+  Continue
+  Continue
+  Install Now
+  Continue
+  <set your timezone and Continue>
+  Fill in your name and add a password, I also choose "log in automatically"
+    Don't forget your password after you set it!
+  Continue
+  <Restart when complete>
+
+On reboot after install , do the following to correct booting issues 
+(derived from https://askubuntu.com/questions/38780/how-do-i-set-nomodeset-after-ive-already-installed-ubuntu)
+  * Hold down shift on startup
+  * Press e to edit first line
+  * On the linux line, before "quiet" add nomodeset
+  * CTRL + X to boot
+  * After boot, make the change permanent
+    launch a terminal window
+    sudo nano /etc/default/grub
+    Add nomodeset to GRUB_CMDLINE_LINUX_DEFAULT, i.e.
+     GRUB_CMDLINE_LINUX_DEFAULT="nomodeset quiet splash"
+    CTRL + X and then y, then ENTER to save and exit
+  * Run sudo update-grub to make the changes permanent
+
+============================================================
+Preparing the Ubuntu Environment to Build Etherboot
+============================================================
+Install the guest additions to get clipboard support (some of it will fail, but it is ok)
+ Devices -> Insert Guest Additions CD Image
+ Run
+ Press Return to close window when prompted
+ 
+Add "old-releases to installer
+  sudo nano /etc/apt/sources.list.d/archive_uri-http_old-releases_ubuntu_com_ubuntu_-jammy.list 
+  deb-src [trusted=yes] http://old-releases.ubuntu.com/ubuntu/ hardy universe
+  deb [trusted=yes] http://old-releases.ubuntu.com/ubuntu/ hardy universe 
+
+sudo apt update
+  Ignore the GPG errors, it's fine
+sudo apt install gcc gcc-3.4 g++-3.4 libc6-i386 zlib1g:i386 git make
+  Yes when prompted about libc6
+
+wget https://launchpad.net/~ubuntu-mozilla-security/+archive/ubuntu/ppa/+build/12064523/+files/binutils-2.26_2.26.1-1ubuntu1~14.04_i386.deb
+wget https://launchpad.net/~ubuntu-mozilla-security/+archive/ubuntu/ppa/+build/12064523/+files/binutils-2.26-dev_2.26.1-1ubuntu1~14.04_i386.deb
+
+sudo dpkg -i binutils-2.26_*
+sudo dpkg -i binutils-2.26-dev*
+
+============================================================
+Build the 486 Compatible Version of NE2000 Etherboot
+============================================================
+Download the Etherboot source
+  git clone https://github.com/zhubr/etherboot
+  cd etherboot
+
+Edit the patched etherboot src/Config file to use gcc-3.4 and that binutils ld-2.26 (this is bottom section of it)
+  cd ./src
+  nano Config
+  
+  You will want to change the following lines (towards the bottom of the file)
+    CPP=       gcc-3.4 -m32 -E -Wp,-Wall
+    CC=        gcc-3.4
+    AS=        as --32
+    LD=        ld-2.26 -m elf_i386
+
+    CFLAGS+=    -Os -ffreestanding -m32
+    
+  CTRL + X, then y, then ENTER to save and exit
+
+Build the software
+  make ARCH=i386 bin/ne.zrom bin/ne.zdsk
+
+Find the built binaries!
+  cd bin
+  (you should have a ne.zdrom and ne.zdsk file)
+
+At this point, you can write the .zdsk file to a floppy disk, or use a ROM imager to burn ne.zdrom
+  For floppy disk writing in Linux:
+     cat ne.zdsk > /dev/fd0
+  For floppy disk writing in, say, Windows 95, you can use RAWRITE, the Windows version can be downloaded here:
+    http://www.chrysocome.net/rawwrite
+  Need to copy the files off of the Virtual Machine?
+    Use SCP to copy to a host on your network running SSH
+      scp ~/etherboot/src/bin/ne.zdsk host:~
+      scp ~/etherboot/src/bin/ne.zrom host:~
+    Or you could use WinImage together with a virtual floppy drive!
+      Power down the VM
+      Settings
+      Storage
+      At the bottom of the window, click on the green icon with the green "+"
+      Choose "Add Floppy Controller"
+      In the window, select "Controller: Floppy" and click on the icon
+      Choose "Leave Empty"
+      Ok
+    Now launch WinImage
+      File | New | 1.44 MB
+      File | Save As
+        Click "Desktop" to save it on the desktop
+        File Name: MyDisk
+        Save as Type: Image file (*.ima)
+        Save
+      Close WinImage
+    Back to VirtualBox
+      Start the VM
+      Devices | Floppy Drives | Choose Disk Image
+      Choose MyDisk.ima
+      Once Ubuntu boots, click on the "floppy" icon on the left bar (this will "mount" the disk)
+      launch a terminal window
+      sudo cp ~/etherboot/src/bin/ne.zdsk /media/*/disk
+      sudo cp ~/etherboot/src/bin/ne.zrom /media/*/disk
+      Shut down the VM
+    Now launch WinImage
+      File | Open 
+      Choose MyDisk.ima
+      Drag the copied files out to the desktop!
+      Close WinImage
