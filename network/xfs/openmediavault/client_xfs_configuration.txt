@@ -18,44 +18,37 @@ If you want to run on a newer system (i.e on a VM or a system > 200 Mhz), you ne
   Copy it to the xfs directory
   (We'll proceed to patch this here in just a few minutes)
 
-Copy the xfs directory to your retro PC
 
 In the xfs directory, modify the "hosts" file
  * Set the gateway, broadcast and netmask addresses to those of your network
- * Add an IP address and alias for the Raspberry Pi server
+ * Add an IP address and alias for the OpenMediaVault server (you can find this by doing a "ping openmediavault" from your modern computer)
  * Add an IP address and alias for your client computer (just pick a new address on your network)
  
- Example Config file:
+ Example Config file (be sure to replace with settings from your configuration!!):
   
  192.168.1.1     gateway
  192.168.1.255   broadcast
  255.255.255.0   netmask
  
- 192.168.1.140   nfspi
+ 192.168.1.140   openmediavault
  192.168.1.111   client
 
 In the xfs directory, modify the "init" file
   * modify the init line to initialize the client using the netmask and gateway from above, i.e.
       init client sm=255.255.255.0 gw=192.168.1.1 csum=off
-  * modify the "pcnfsd line" to specify the pcnfsd server, which will be the "server" that you placed in the "hosts" file, i.e. 
-      pcnfsd nfspi
+  * remove the "pcnfsd" line 
   * remove the "login" line
   * modify the drive letter "mount" lines to mount a share, specifying a drive letter, the "server" name, 
-    and the full path on the server of the share, i.e. 
-      mount E: nfspi:/mnt/nfsshare
+    and the full path on the server of the share, keeping in mind that OpenMediaVault shares start with /export by default 
+      mount E: openmediavault:/export/test
     (NOTE: if you want to user a drive letter that is further in the alphabet, add LASTDRIVE=Z to your config.sys)
-  * modify the printer "mount" lines (i.e. lpt2) to map a printer, using the printer name as specified on the "server", i.e.
+  * remove the printer "mount" lines
       mount lpt2 nfspi:test
-  * and if you did the extra credit assignment and want to add your own laser printer, add a new mount line for that
-      mount lpt3 nfspi:jetprint
-  * comment out the rdate line
+  * remove the rdate line
     
   Here's my complete init file:  
     init client sm=255.255.255.0 gw=192.168.1.1 csum=off
-    pcnfsd nfspi
-    mount E: nfspi:/mnt/nfsshare
-    mount lpt2 nfspi:test
-    mount lpt3 nfspi:jetprint
+    mount E: openmediavault:/export/test
     show
 
 In the xfs directory, modify xfs.bat
@@ -67,6 +60,8 @@ In the xfs directory, modify xfs.bat
   pcntpk INT=0x60
   xfskrnl 0x60
   xfstool @init
+
+Copy the xfs directory to your retro PC or to a virtual machine instance
 
 If you are running on a newer system (i.e on a VM or a system > 200 Mhz), you need to patch C:\xfs\xfstool.exe
   In the xfs directory, run the utility:
@@ -80,11 +75,9 @@ Run and connect!
   cd xfs
   xfs.bat  
   
-If you want to mount a new directory or printer, or execute a command to "show connections", you can do this from the command line, i.e.:
-  * xfstool mount Q: nfspi:/some/other/path
-  * xfstool umount lpt2
-  * xfstool mount lpt2 nfspi:anotherprinter
+If you want to mount a new directory, or execute a command to "show connections", you can do this from the command line, i.e.:
+  * xfstool mount Q: openmediavault:/some/other/path
   * xfstool show
 
-If you want to make a new directory or printer permanent, add it to the C:\xfs\init file without the "xsftool" portion of the command 
+If you want to make a new directory permanent, add it to the C:\xfs\init file without the "xsftool" portion of the command 
   * See configuration performed in an above step for examples

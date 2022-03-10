@@ -1,0 +1,127 @@
+====================================================================
+Preconditions
+====================================================================
+You have Oracle VM VirtualBox installed on your host system
+
+====================================================================
+Installing OpenMediaVault
+====================================================================
+Download OpenMediaVault
+  Navigate to https://www.openmediavault.org/
+  Download Stable ISO
+
+Create a VM for OpenMediaVault (skip this section if you are installing on real hardware)
+  Launch Oracle VM VirtualBox
+  New
+  Name: OpenMediaVault
+  Type: Linux
+  Version: Other Linux (64-bit)
+  Next
+  Memory Size: 1024 MB
+  Next
+  Create a virtual hard disk now
+  Create
+  VMDK (Virtual Machine Disk)
+  Next
+  Dynamically Allocated
+  Next
+  Create (defaults are fine)
+
+  Select your OpenMediaVault virtual machine
+  Settings
+  Network
+  Attached to: Bridged Adapter
+  Name: <Choose your network card>
+  Storage
+  Click the Hard Disk Icon with a green plus
+  Create New Disk
+  VMDK
+  Next
+  Dynamically Allocated
+  Next
+  (since this will be your file storage disk, change the size to something that suits you)
+  Create
+  Select the "Empty" optical disc
+  Click on the icon to the right of the optical drive
+  Choose virtual optical file
+  <select your OpenMediaVault ISO image>
+  Open
+  Ok
+
+Install OpenMediaVault
+  Select your OpenMediaVault virtual machine
+  Start
+  Enter to Install
+  Enter on English <or choose another language if desired>
+  Enter on United States <or choose another country if desired>
+  Enter on American English keymap <or choose another keymap if desired>
+  Some time later, Enter on hostname 
+  Enter on domain name
+  Choose a root password, be sure to remember it, then press enter.  Enter it again to verify, then press enter
+  Choose your timezone and press enter
+  Continue on "more than one storage device has been detected"
+  Enter to partition first disk
+  Enter on Configure the package manager <or choose a country closer to you>
+  Enter on second screen for Configure the package manager
+  Enter on configuring a proxy
+  Enter to finish the installation
+
+At this point the system will reboot and you can log in to OpenMedia Vault
+  Username: root
+  Password: <your password>
+
+Perform some steps to make OpenMediaVault compatible with NFS 2.0
+
+  nano /srv/salt/omv/deploy/nfs/files/etc-default-nfs-kernel-server.j2
+   add quotes around {{ rpc_nfsd_count }} like you see on the next line:
+     RPCNFSDCOUNT="{{ rpc_nfsd_count }}"
+   CTRL-X, y, ENTER to save the file
+  
+  nano /etc/default/openmediavault
+   add this line:
+     OMV_NFSD_COUNT="8 -V 2"
+   CTRL-X, y, ENTER to save the file
+
+  Run these two commands
+   omv-salt stage run prepare
+   omv-salt deploy run nfs
+
+
+Now back in a web browser, navigate to http://openmediavault
+  Username: admin
+  Password: openmediavault
+  
+Now let's set up NFS
+  Services -> NFS
+  Enable -> On
+  Save
+  Click Apply at the top of the screen, then Yes
+
+  Storage -> File Systems
+  Create
+  Device: VBOX HARDDISK [/dev/sdb]
+  Ok
+  Yes
+  When it says "the filesystem has completed successfully", click "Yes"
+
+  Storage -> File Systems
+  Click on /dev/sdb1
+  Click Mount
+  Click Apply at the top of the screen, then Yes
+
+  Services -> NFS
+  Click the "Shares" tab
+  Click "+Add"
+  Shared Folder: Click the Plus
+  Name: test
+  Device: /dev/sdb1
+  path: test/
+  Permissions: Everyone: read/write
+  Save
+  Client: *
+  Privilege: Read/Write
+  Extra options: all_squash,insecure,async,no_subtree_check,anonuid=0,anongid=0
+  Save
+  Click Apply at the top of the screen, then Yes
+
+That's it!  The server is set up
