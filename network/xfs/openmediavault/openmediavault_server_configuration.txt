@@ -86,6 +86,11 @@ Perform some steps to make OpenMediaVault compatible with NFS 2.0
    omv-salt stage run prepare
    omv-salt deploy run nfs
 
+If you want to test if this was successful, you can run the following command and check for "+2" in the output:
+  Command:
+    cat /proc/fs/nfsd/versions
+  Expected Output (+2 means NFSv2 enabled, -2 means NFSv2 not enabled): 
+    +2 +3 +4 +4.1 +4.2
 
 Now back in a web browser, navigate to http://openmediavault
   Username: admin
