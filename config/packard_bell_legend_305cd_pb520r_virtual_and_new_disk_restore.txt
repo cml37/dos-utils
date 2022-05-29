@@ -1,0 +1,309 @@
+================================================================
+Procedure Purpose
+================================================================
+
+This procedure really serves two purposes:
+ * Creating a "virtual" Packard Bell Legend 305CD (or basically any PB520R based Packard Bell)
+ * Demonstrating how to do a system restore to a PB520R based Packard Bell when the original hard drive is not available
+   * Packard bell puts System Credentials on the drive needed for the restore, sometimes called a "Tattoo"
+     * This procedure helps with restoring that "Tattoo" to allow system restore to succeed
+   
+Now, if you are just trying to do a system restore on, say, a Packard Bell Legend 305CD with the original hard drive, the process is much easier
+  * All you should need is the Packard Bell Multimedia Master CD and the Packard Bell Restore floppy disk image version 2.2 for MS-DOS
+  * That said, if you have a replacement CD-ROM installed, this procedure may come in handy for "modifying the Packard Bell Restore floppy disk image
+
+
+================================================================
+Files to Download
+================================================================
+
+Download Packard Bell Multimedia Master CD 170272 Rev 4 from the Internet Archive:
+  * https://archive.org/details/pb-170263-r-1-v-4
+
+Download Packard Bell Restore floppy disk image version 2.2 for MS-DOS
+  * https://ryan.thoryk.com/pb-restore/
+  * Download 142417.exe 
+
+Download a Legend 305CD (PB520R) track 0 file: 
+  * https://github.com/cml37/dos-utils/raw/master/config/resources/legend_305cd_pb520r_track_zero.128
+
+Download MBR Tool
+  * https://www.softpedia.com/get/System/Hard-Disk-Utils/MBRtool.shtml
+
+Download a DOS 6.22 Boot Disk from allbootdisks.com
+  * https://www.allbootdisks.com/downloads/Disks/MS-DOS_Boot_Disk_Download47/Diskette%20Images/Dos6.22.img
+
+Download PCemV15Win
+  * Also configure PCem with ROM Images for the Packard Bell PB520R
+
+Download BootIt Bare Metal
+  * https://www.terabyteunlimited.com/bootit-bare-metal/
+
+Download and install VirtualBox
+
+
+================================================================
+PCem Setup
+================================================================
+
+Configure PCem with the following options
+  * Add a new system, call it "PB" or whatever you like
+  * Edit Machine
+    * Machine
+      * Machine Type: [Socket 4] Packard Bell PB520R
+      * CPU: Pentium OverDrive 133
+      * Memory: 128MB 
+    * Display
+       * Device: Cirrus Logic CL-GD5434
+    * Sound
+      * Sound Blaster 16
+    * Drives:
+      * HDD: [IDE] Standard IDE
+      * FDD1: 3.5" 1.44M
+      * CD-ROM: 24X
+      * Drive 0 Primary Master: 
+        * Type: Hard drive
+        * Create new File
+          * File: pb_hdd.img
+          * 63 sectors, 16 heads, 1057 cylinders
+
+
+================================================================
+Modify the Packard Bell Restore Floppy
+================================================================
+
+Use WinImage to extract cd1.sys from the DOS 6.22 Boot Disk
+
+Use a program like WinZip or Universal Extractor to extract the Packard Bell Restore Floppy from the 142417.exe file that you downloaded earlier
+  * The extracted file will be 142417.IMA
+
+Use WinImage to modify the Packard Bell Restore Floppy
+  * Delete det-cd.exe from the disk
+  * Copy cd1.sys to the disk
+    * image | inject... | cd1.sys | yes
+  * Extract autoexec.bat from the disk
+  * Make the following changes to autoexec.bat
+    * Add rem in front of the A:\DET-CD.EXE line
+      * REM A:\DET-CD.EXE
+    * Add the following below that line
+      * goto CR_IDE
+    * Search for :CR_IDE and make the following changes underneath it
+      * Change CR_ATAPI.SYS to CD1.sys
+        * A:\DEVICE.COM A:\CD1.SYS /D:MSCD0001
+    * Copy the modified autoexec.bat back to the disk
+      * image | inject... | autoexec.bat | yes | yes to replace
+  * Close WinImage and save the image
+
+
+================================================================
+Create a Disk to Support Restoring the System Credentials
+================================================================
+
+Open WinImage
+ * Create a new 1.44MB floppy disk
+   * File | New | 1.44MB
+ * From the MBRTOOL.ZIP file, extract MBRTOOL.EXE
+ * Copy MBRTOOL.EXE to the disk 
+    * image | inject... | MBRTOOL.EXE | yes
+ * Rename legend_305cd_pb520r_track_zero.128 to track0.128
+ * Copy track0.128 to the disk
+    * image | inject... | track0.128 | yes
+ * Close WinImage and save the Image
+    * File | Save | File Name: track0.img | Save as type: Image file (*.ima)
+
+
+================================================================
+Perform the Restore
+================================================================
+
+Start PCem
+  * Insert the Dos 6.22 boot disk 
+    * Disc | Change Drive A... | Dos6.22.img
+  * Reboot the system
+    * System | Hard Reset
+
+Prepare the disk
+  * fdisk
+    * 1 to Create DOS Partition
+    * 1 to Create Primary DOS Partition 
+    * Y to confirm
+    * any key to restart
+  * format C: 
+
+Restore System Credentials
+  * Insert the track0 disk
+    * Disc | Change Drive A... | track0.ima
+  * mbrtool
+  * Select option 5 to work with track 0
+  * Select 2 to restore
+    * Enter 0 for disk number
+    * enter TRACK0 for backup filename
+  * Verify successful restore!
+
+Start the factory image restore
+  * Insert the Packard Bell Multimedia Master CD 170272 Rev 4
+    * CD-ROM | Load Image... | PB_170263R1_v4.ISO
+  * Insert the "modified" Packard Bell restore floppy
+    * Disc | Change Drive A... | 142417.IMA
+  * Reboot the system
+    * System | Hard Reset
+
+Follow the steps to execute the restore
+  * When prompted to put in the Packard Bell Master CD, press any key
+  * Restore hard drive files from the Master CD
+  * When complete
+    * Disc | Eject drive A:
+  * System | Hard Reset
+  
+Power up to make the System Credential Utility populate (not required, but nice to have)
+ * The system will boot DOS and then reboot once or twice to finish setup
+ * Press any key when you get the VSGLX16.386 Initialization Error
+ * Then press OK
+ * You should now be at the Packard Bell Navigtor
+ * Click the Windows Icon
+ * From the Main group, click on System Credentials
+ * System Credentials should pop up
+ * Exit System Credentials and exit Windows
+
+
+At this Point, if you merely want to use this image in PCem, proceed to "Option 1: VIRTUALIZED PACKARD BELL - Customizing"
+Otherwise, if you want to use this image in a REAL machine, proceed to "Option 2: REAL SYSTEM RESTORE - Restored Image to CF Card" 
+
+
+================================================================
+Option 1: VIRTUALIZED PACKARD BELL - Customizing
+================================================================
+
+Power Up the pb virtual machine in PCem
+ * Press any key when you get the VSGLX16.386 Initialization Error
+ * Then press OK
+ * You should now be at the Packard Bell Navigtor
+
+Adjust 16 bit audio drivers
+ * Click the Windows icon to exit Packard Bell Navigator
+ * From the Main group, double click Control Panel, then double click Drivers
+ * Click on 16-Bit Audio Driver, then Remove
+ * Yes
+ * Don't Restart Now
+ * Click Add
+ * Selet Creative Labs Sound Blaster 1.5
+ * OK
+ * Change path to C:\windrvs
+ * OK
+ * Select Port 220 and Interrupt 7, then click OK
+ * Don't Restart Now
+ * Close Drivers and Control Panel
+ * From the Main group, select File Manager
+ * Navigate to C:\Windows, then find and double click on system.ini
+ * This will launch notepad.  Search | Find... | VSGLX
+ * Put a semicolon in front of the line where VSGLX is found
+   * i.e ;device=VSGLX16.386
+ * File | Exit | Yes to save
+ * File | Exit on File Manager
+ * Delete the Sound144AM Group in Program Manager
+ * File | Exit Windows | Ok
+ * Win to restart windows
+ * Audio should now be better!
+
+If desired, you can try a more fancy fix like installing Sound Blaster 16 drivers, but audio support is poor in PCem anyway... 
+
+
+================================================================
+Option 2: REAL SYSTEM RESTORE - Restored Image to CF Card
+================================================================
+
+DISCLAIMER: There may be a better way here, but this is what we have for now.  To be continued?
+
+Create a BootIt Bare Metal Boot ISO using the makedisk.exe command associated with it
+ * Unzip the BootIt Bare Metal Download
+ * Click on makedisk.exe
+ * Next
+ * Select PC Platform (BIOS)
+ * Next
+ * Next
+ * I accept the license agreement
+ * Next
+ * Uncheck "Image for DOS"
+ * Next
+ * Next
+ * Next
+ * Next
+ * Next
+ * Next
+ * Next
+ * Next
+ * Next
+ * Select ISO File
+ * Put in a path and file name (i.e. D:\bootit.iso)
+ * Finish
+ * Close
+
+ 
+Convert the PCem hard drive image to VHD: 
+  * Launch a command prompt
+  * Change to the VirtualBox directory (usually c:\Program Files\Oracle\VirtualBox)
+    * cd c:\Program Files\Oracle\VirtualBox 
+  * vboxmanage convertfromraw --format vhd <path to PCem image file> <path to new VirtualBox image file>
+    * i.e vboxmanage convertfromraw --format vhd C:\Users\chris\Downloads\PCemV15Win\pb_hdd.img D:\pb.vhd
+
+Insert and prepare the CF card
+  * Use Disk Management to remove any old partitions off of the CF Card
+    * Otherwise, the CF card will be locked by Windows
+  * Once deleted, remove the CF card from the computer and reinsert it to clear any locking
+
+Prepare the CF card to be mounted in VirtualBox
+  * Start a command prompt with admin rights
+    * wmic diskdrive list brief
+      * identify your cf-card’s DeviceID (it should look something like \\.\PHYSICALDRIVE1)
+    * Change to the VirtualBox directory (usually c:\Program Files\Oracle\VirtualBox)
+      * cd c:\Program Files\Oracle\VirtualBox 
+    * Type the following to create a raw virtual machine (.vmdk) (replace <path> with a good path and N in \\.\PHYSICALDRIVE1 with DeviceID)
+      * vboxmanage internalcommands createrawvmdk -filename <path>\CFCard.vmdk -rawdisk \\.\PhysicalDrive1
+    * Exit the command prompt
+
+Launch VirtualBox in Admin mode
+  * Create a new virtual machine
+    * New
+      * Name: DOS
+      * Next
+      * Next
+      * Do not add a virtual hard disk
+      * Create
+      * Continue
+  * Edit the virtual machine
+    * Click on the virtual machine in the list
+    * Settings | Storage
+    * Under Controller: IDE, click the CD-ROM
+    * Attributes: Optical Drives => Click the CD ROM Icon | Choose Optical Virtual Disk File..
+      * Select the BootIt Bare Metal ISO file that you made earlier
+    * Click on Controller: IDE
+      * Click on the "Hard Disk with a plus" ICON
+        * Choose existing disk
+        * Select your converted PCem hard drive (i.e. pb.vhd)
+      * Click on the "Hard Disk with a plus" ICON
+        * Choose existing disk
+        * Select your CFCard.vmdk image
+     * Click Ok to close settings
+
+Use BootIt Bare Metal to copy the virtual hard disk partition to the CF card
+  * Start the virtual machine
+  * Choose "Cancel" from the BootIt setup screen
+  * Click OK
+  * Click Partition Work
+  * Select "MBR 0" and click "Copy"
+  * Using the "Drives" Dropdown, switch to your second drive (drive 1)
+  * Click "Paste"
+    * Name: MBR 0
+    * Ok
+
+Make the CF card bootable
+  * Still on drive 1, View MBR
+  * Set Active 
+  * Apply
+
+You can also use BootIt Bare Metal to expand the partition size on the CF card as needed
+  * Still on drive 1, select Resize
+  * Change the size accordingly!
+    * Be careful, don't exceed 2048 MB or the drive won't boot!!
+
+All set! You can now use the CF image in a real system!
