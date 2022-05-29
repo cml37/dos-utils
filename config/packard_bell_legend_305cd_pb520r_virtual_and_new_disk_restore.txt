@@ -307,3 +307,6 @@ You can also use BootIt Bare Metal to expand the partition size on the CF card a
     * Be careful, don't exceed 2048 MB or the drive won't boot!!
 
 All set! You can now use the CF image in a real system!
+  * On first boot, you might get a warning about a corrupt swap file, that's fine
+  * I also suggest running C:\pbtools\backup\fixsys.bat since that is what gets run on first boot and detects hardware!
+    * Not sure it is required, but couldn't hurt
