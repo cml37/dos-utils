@@ -4,9 +4,9 @@ Items to Locate
 Locate your licensed copy of Novell Personal NetWare 1.0 (1993) (3.5-1.44mb)
 
 Obtain drivers:
-  AMD PCNet network card client drivers (lan.zip): https://www.helpjet.net/Fs-80528992-89055134-94629108.html
+  AMD PCNet network card client drivers (lan-amd-pc-net.zip): https://github.com/cml37/dos-utils/blob/master/config/resources/lan-amd-pc-net.zip
   -- unzip to folder named lan
-  AMD PCNet client32 drivers (client32.zip) (we will only need this for an updated version of lsl.com): https://www.helpjet.net/Fs-43321125-89055134-88652830.html
+  AMD PCNet client32 drivers (client32-Novell-Drivers.zip) (we will only need this for an updated version of lsl.com): https://github.com/cml37/dos-utils/blob/master/config/resources/client32-Novell-Drivers.zip
   -- unzip to folder named client32
 
 Download Oracle VM VirtualBox (suggested version 6.0.18 or lower) https://download.virtualbox.org/virtualbox/6.0.18/VirtualBox-6.0.18-136238-Win.exe  

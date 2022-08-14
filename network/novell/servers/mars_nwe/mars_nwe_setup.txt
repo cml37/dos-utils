@@ -23,11 +23,11 @@ You have set up a Raspberry Pi and enabled SSH.
   Also, be sure to set up "Wait for network" at boot!
 
 For the client, find and download the following:
-  AMD PCNet network card client drivers (lan.zip): https://www.helpjet.net/Fs-80528992-89055134-94629108.html
+  AMD PCNet network card client drivers (lan-amd-pc-net.zip): https://github.com/cml37/dos-utils/blob/master/config/resources/lan-amd-pc-net.zip
   -- unzip to folder named lan
-  AMD PCNet client32 drivers (client32.zip) (we will only need this for an updated version of lsl.com): https://www.helpjet.net/Fs-43321125-89055134-88652830.html
+  AMD PCNet client32 drivers (client32-Novell-Drivers.zip) (we will only need this for an updated version of lsl.com): https://github.com/cml37/dos-utils/blob/master/config/resources/client32-Novell-Drivers.zip
   -- unzip to folder named client32
-  Xircom PE3 Drivers (pe3drv.exe) (we will only use this to get a copy of netx and ipxodi): https://www.helpjet.net/Fs-72579889-75843699-73056547-extract.html
+  Xircom PE3 Drivers (pe3drv.exe) (we will only use this to get a copy of netx and ipxodi): http://vogonsdrivers.com/getfile.php?fileid=1829&menustate=0
 
 Also, locate your licensed copy of MS-DOS 6.22 install disks
 

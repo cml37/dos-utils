@@ -135,7 +135,7 @@ NOTE: We will copy these drivers over to the thin client after we install Window
 * Chipset
   Main Chipset Drivers: https://www.philscomputerlab.com/uploads/3/7/2/3/37231621/via_hyperionpro_v524a.zip
   -- suggest unzipping this in the install directory on the USB stick
-  PCI to ISA Bridge Drivers: https://www.helpjet.net/Fs-53896395-25837635-10448444-devices.html
+  PCI to ISA Bridge Drivers: https://github.com/cml37/dos-utils/blob/master/config/resources/WIN98-VIA%20Tech%20Standard%20CPU%20to%20PCI%20Bridge.ZIP
   -- suggest unzipping this in the install directory on the USB stick
 
 Copy your Windows 98 SE installer to a directory called "install" on the USB stick
@@ -284,7 +284,7 @@ Install the PCI to ISA Bridge Chipset Drivers
 -- Choose Specify the Location of the driver (Advanced)
 -- Next
 -- Click Specify a Location
--- Browse to the PCI to ISA Bridge Chipset Drivers (most likely in a folder called Win98 under Drivers on the desktop)
+-- Browse to the PCI to ISA Bridge Chipset Drivers (most likely in a folder called "WIN98-VIA Tech Standard CPU to PCI Bridge" under Drivers on the desktop)
 -- Next
 -- Next
 -- Finish

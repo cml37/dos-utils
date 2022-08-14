@@ -28,11 +28,11 @@ Download the following drivers
   * First, make a folder named "drivers"
   * Chipset drivers: https://www.philscomputerlab.com/uploads/3/7/2/3/37231621/via_hyperionpro_v524a.zip
     - unzip to folder named "drivers\chipset"
-  * Network drivers (Via Rhine II): https://www.helpjet.net/Fs-61735172-25837635-73977955-extract.html
+  * Network drivers (Via Rhine II): https://github.com/cml37/dos-utils/blob/master/config/resources/via_rhine_ndis5_v384a.zip
     - unzip to folder named "drivers\network"
   * Audio: https://m.majorgeeks.com/files/details/via_ac97_vinyl_audio_driver.html
     - unzip to folder named "drivers\audio"
-  * Video: https://www.helpjet.net/Fs-63470350-25837635-56305107.html
+  * Video: https://github.com/cml37/dos-utils/blob/master/config/resources/VGA_RageXL-Win98-Win2K-WinNT.zip
     - unzip to folder named "drivers\video"
   * DirectX 9.0c: http://falconfly.3dfx.pl/directx.htm
     - move to "drivers" folder

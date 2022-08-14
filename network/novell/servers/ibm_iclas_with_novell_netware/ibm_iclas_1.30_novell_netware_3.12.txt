@@ -22,11 +22,11 @@ Obtain drivers:
   AMD PCNet NetWare 3.12 Server drivers (odi_ahsm_svr3x.zip): https://virtuallyfun.com/wordpress/2011/03/25/amd-pcnet-with-netware-3-12/
   -- unzip to folder named odi_ahsm_svr3x
   NetWare Idle drivers (nw4-idle.nlm): https://virtuallyfun.com/wordpress/2011/03/25/amd-pcnet-with-netware-3-12/
-  AMD PCNet network card client drivers (lan.zip): https://www.helpjet.net/Fs-80528992-89055134-94629108.html
+  AMD PCNet network card client drivers (lan-amd-pc-net.zip): https://github.com/cml37/dos-utils/blob/master/config/resources/lan-amd-pc-net.zip
   -- unzip to folder named lan
-  AMD PCNet client32 drivers (client32.zip) (we will only need this for an updated version of lsl.com): https://www.helpjet.net/Fs-43321125-89055134-88652830.html
+  AMD PCNet client32 drivers (client32-Novell-Drivers.zip) (we will only need this for an updated version of lsl.com): https://github.com/cml37/dos-utils/blob/master/config/resources/client32-Novell-Drivers.zip
   -- unzip to folder named client32
-  Xircom PE3 Drivers (pe3drv.exe) (we will only use this to get a copy of netx and ipxodi): https://www.helpjet.net/Fs-72579889-75843699-73056547-extract.html
+  Xircom PE3 Drivers (pe3drv.exe) (we will only use this to get a copy of netx and ipxodi): http://vogonsdrivers.com/getfile.php?fileid=1829&menustate=0
 
 Download Oracle VM VirtualBox (suggested version 6.0.18 or lower) https://download.virtualbox.org/virtualbox/6.0.18/VirtualBox-6.0.18-136238-Win.exe  
 Download WinImage
