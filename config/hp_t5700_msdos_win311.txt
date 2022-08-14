@@ -129,7 +129,7 @@ Driver goodies
 
 * Windows 3.11 
   * Network 
-    NDIS2 driver (VIA Technologies, Inc. VT6102/VT6103 [Rhine-II]): https://www.helpjet.net/Fs-74456791-25837635-89225421-extract.html
+    NDIS2 driver (VIA Technologies, Inc. VT6102/VT6103 [Rhine-II]): https://github.com/cml37/dos-utils/blob/master/config/resources/Lan-VIA%20Technologies%2C%20Inc.%20VT6102VT6103%20%5BRhine-II%5D.zip
     -- suggest unzipping this in the install directory on the USB stick
     -- you only really need the lan\wfw311 directory out of this
     tcp32b: http://www.mywindowspage.com/index.php/download/tcp32b-exe/
