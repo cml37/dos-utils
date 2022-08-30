@@ -1,0 +1,125 @@
+---------------------------------------------------
+Known Limitations of This Seup
+---------------------------------------------------
+
+So, this concept is really a "gee whiz" concept.  In practice, there are better ways to get data to your retro system.  
+
+Here are some limitations:
+1) If you copy files to the network share on the USB Pi, you will need to do the following to see file changes
+   A) Unload and reload the g_mass_storage driver
+      sudo modprobe -r g_mass_storage 
+      sudo modprobe g_mass_storage file=/dev/mmcblk0p3 removable=1
+   B) Remove/reinsert the USB Pi
+   C) Insert/Eject the USB Pi stick programmatically (or reboot the computer)
+2) The whole thing is rather flaky really.
+   A) Unrecognized USB device in Windows on startup
+   B) Data copying can be inconsistent
+   C) Memory card in Raspberry Pi can be prone to corruption
+   D) No real "proper way" to power off the Raspberry Pi
+   
+The good news: taking the above into account, if you can get past it, files copied to the USB Pi will show up on the network immediately!
+
+
+---------------------------------------------------
+Raspberry Pi Imager
+---------------------------------------------------
+Use Raspberry Pi Imager to install raspbian
+1) Download Raspberry Pi Imager 
+2) Under Operating System, select Erase, choose your SD card, then choose WRITE, then YES
+3) Under Operating System, select Raspberry Pi OS (other), Raspbery Pi OS Lite (32-bit)
+4) Click the settings wheel
+   A) Select "Set hostname" and set it to usbpi
+   B) Select "Enable SSH", then select "Use password authentication"
+   C) Select "Set username and password", Username is pi, password is your choice
+   D) If using wireless, select "Configure wireless LAN," and this should auto configure for you
+     i) You may need to set your Wireless LAN country if not in the UK 
+        (suggest typing it in, the dropdown to choose a country is horrible)
+   E) Click "Set locale settings" and set your Time zone and keyboard layout 
+      (though you don't need to connect a keyboard for this procedure)
+   F) Click Save
+5) Under storage, select "CHOOSE STORAGE", choose your SD card, then choose WRITE, then YES
+6) Once complete edit cmdline.txt and remove the command "init=/usr/lib/raspi-config/init_resize.sh"
+
+
+------------------------------------------------------------------------------------------------------
+Installation
+------------------------------------------------------------------------------------------------------
+Place SD card in Raspberry Pi and power on Raspberry Pi
+After a few minutes, you should be able to SSH into usbpi
+
+
+------------------------------------------------------------------------------------------------------
+Configure Disk Partitions
+------------------------------------------------------------------------------------------------------
+Note: Procedure derived from https://community.home-assistant.io/t/howto-raspberry-with-custom-partition-size/16875
+
+Resize the main partition to make it a little bigger
+  sudo fdisk /dev/mmcblk0
+  Print partition info: 
+    p <enter>
+  Note the start sector of partition 2
+  Delete partition 2
+    d <enter> 2 <enter>
+  Create a new primary partition and make it 4GB, set the start sector noted above, and the end sector to 4GB bigger.
+    n <enter> p <enter> 2 <enter> (start sector number from above) <enter> +4G <enter> y to remove signature <enter>
+  Confirm the new partition and write the changes
+  p <enter> w <enter>
+
+Make the kernel aware of the bigger disk size and resize the main disk
+  sudo partprobe
+  sudo resize2fs /dev/mmcblk0p2
+
+Create a second disk partition
+  sudo fdisk /dev/mmcblk0
+  Print partition info: p <enter>
+  Note the end sector of partition 2 
+  Create a new primary partition and make it 500MB, set the start sector to the end sector of partition 2 plus 1, and the end sector to 500MB bigger.
+    n <enter> p <enter> 3 <enter> end of partition 2 <enter> +500M <enter>
+  Confirm the new partition and write the changes
+  p <enter> w <enter>
+
+Format second disk partition as FAT
+  sudo mkfs -t exfat /dev/mmcblk0p3
+
+Add the new partition to fstab
+  sudo nano /etc/fstab
+  add the following line to the bottom of the file
+    /dev/mmcblk0p3  /mnt/fs               exfat   rw,users,dmask=000,fmask=000 0 0
+
+
+------------------------------------------------------------------------------------------------------
+Configure USB Mass Storage Sharing
+------------------------------------------------------------------------------------------------------
+sudo nano /boot/config.txt
+add the following under the [all] section
+  dtoverlay=dwc2
+
+sudo nano /etc/rc.local
+Add this line above "exit 0"
+  modprobe g_mass_storage file=/dev/mmcblk0p3 removable=1
+
+sudo reboot
+
+
+------------------------------------------------------------------------------------------------------
+Configure Samba to easily copy files to the USB stick across the network
+------------------------------------------------------------------------------------------------------
+sudo apt-get update
+sudo apt-get install samba samba-common-bin
+
+sudo nano /etc/samba/smb.conf
+add these lines under [global]
+  lanman auth=yes
+  ntlm auth = yes
+  server min protocol = LANMAN2
+
+add these lines at the bottom of the file:
+
+  [data]
+    path = /mnt/fs
+    read only = no
+    guest ok = yes
+    guest account = root
+
+
+Now from there, you should be able to mount and copy files to \\usbpi\data  
