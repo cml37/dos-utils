@@ -16,8 +16,17 @@ Here are some limitations:
    B) Data copying can be inconsistent
    C) Memory card in Raspberry Pi can be prone to corruption
    D) No real "proper way" to power off the Raspberry Pi
+   E) The USB connector on the USB-A Pi adapter can be flaky
    
 The good news: taking the above into account, if you can get past it, files copied to the USB Pi will show up on the network immediately!
+
+
+---------------------------------------------------
+Hardware Needed
+---------------------------------------------------
+Raspberry P Zero W
+Raspberry Pi Zero W USB-A Addon Board V1.1 (with protective acrylic case)
+MicroSD card (for DOS system access, 8GB should be more than sufficient)
 
 
 ---------------------------------------------------
@@ -52,6 +61,9 @@ After a few minutes, you should be able to SSH into usbpi
 Configure Disk Partitions
 ------------------------------------------------------------------------------------------------------
 Note: Procedure derived from https://community.home-assistant.io/t/howto-raspberry-with-custom-partition-size/16875
+
+SSH into the host usbpi
+  * I use Putty for Windows
 
 Resize the main partition to make it a little bigger
   sudo fdisk /dev/mmcblk0
