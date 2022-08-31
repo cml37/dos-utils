@@ -86,7 +86,7 @@ Create a second disk partition
   Print partition info: p <enter>
   Note the end sector of partition 2 
   Create a new primary partition and make it 500MB, set the start sector to the end sector of partition 2 plus 1, and the end sector to 500MB bigger.
-    n <enter> p <enter> 3 <enter> end of partition 2 <enter> +500M <enter>
+    n <enter> p <enter> 3 <enter> end of partition 2 plus 1 <enter> +500M <enter>
   Confirm the new partition and write the changes
   p <enter> w <enter>
 
