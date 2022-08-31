@@ -97,7 +97,7 @@ Add the new partition to fstab
   sudo nano /etc/fstab
   add the following line to the bottom of the file
     /dev/mmcblk0p3  /mnt/fs               exfat   rw,users,dmask=000,fmask=000 0 0
-
+CTRL+X, then y, then <ENTER> to write the file and exit
 
 ------------------------------------------------------------------------------------------------------
 Configure USB Mass Storage Sharing
@@ -105,10 +105,12 @@ Configure USB Mass Storage Sharing
 sudo nano /boot/config.txt
 add the following under the [all] section
   dtoverlay=dwc2
+CTRL+X, then y, then <ENTER> to write the file and exit
 
 sudo nano /etc/rc.local
 Add this line above "exit 0"
   modprobe g_mass_storage file=/dev/mmcblk0p3 removable=1
+CTRL+X, then y, then <ENTER> to write the file and exit
 
 sudo reboot
 
@@ -116,6 +118,8 @@ sudo reboot
 ------------------------------------------------------------------------------------------------------
 Configure Samba to easily copy files to the USB stick across the network
 ------------------------------------------------------------------------------------------------------
+SSH into the host usbpi
+
 sudo apt-get update
 sudo apt-get install samba samba-common-bin
 
@@ -132,6 +136,7 @@ add these lines at the bottom of the file:
     read only = no
     guest ok = yes
     guest account = root
+CTRL+X, then y, then <ENTER> to write the file and exit
 
 
 Now from there, you should be able to mount and copy files to \\usbpi\data  
