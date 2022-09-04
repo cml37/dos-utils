@@ -1,0 +1,192 @@
+--------------------------------------------------------------------------
+Files to Download
+--------------------------------------------------------------------------
+Download ide_386.bin from https://www.xtideuniversalbios.org/binaries/r623/
+ * Place it at C:\serial\ide_386.bin
+
+Download XTIDE_Universal_BIOS_v2.0.0_beta3.zip from https://code.google.com/archive/p/xtideuniversalbios/downloads
+* Extract serdrive.exe from it and place serdrive at C:\serial\serdrive.exe
+
+Download Qemu for Windows (can just grab latest version from here)
+* https://qemu.weilnetz.de/w64/2022/
+
+Download a Dos 6.22 boot disk from allbootdisks.com: https://www.allbootdisks.com/download/dos.html
+ * Place it at C:\serial\Dos6.22.img
+
+
+--------------------------------------------------------------------------
+Image Configuration Procedure
+--------------------------------------------------------------------------
+Install Qemu for Windows
+  Just accept all of the defaults, they are fine
+
+Now use serdrive to create a 30mb image
+ Start | command prompt
+ cd \serial
+ serdrive.exe -n 30M
+ (you'll get a connectivity error, but that's fine)
+
+Partition and setup image to be bootable using Qemu
+  Start | command prompt (right click and run as administrator)
+  cd "\Program Files\Qemu"
+  qemu-system-i386.exe -blockdev driver=file,node-name=f0,filename=C:\serial\Dos6.22.img -blockdev driver=file,filename=C:\serial\myimage.ima,node-name=hdd -device floppy,drive=f0 -global isa-fdc.bootindexA=1 -device ide-hd,drive=hdd,bootindex=2
+  Create partition with fdisk
+    fdisk
+    1
+    1
+    Y
+  reboot
+  format C: /s
+  exit qemu
+
+
+--------------------------------------------------------------------------
+Virtual Environment Procedure
+--------------------------------------------------------------------------
+Download Oracle VM VirtualBox (suggested version 6.0.18 or lower) https://download.virtualbox.org/virtualbox/6.0.18/VirtualBox-6.0.18-136238-Win.exe
+ * Newer versions of VirtualBox have removed supported for setting this feature to false: <HardwareVirtEx enabled="false"/> 
+   * Not an issue for a DOS VM, but best to be safe
+
+Install VirtualBox and create a DOS VM without a hard drive attached to it (I named mine "DOS")
+  In Oracle VM VirtualBox Manager, click "New"
+    Name: DOS
+    Next
+    Next
+    Do not add a virtual hard disk
+    Create
+    Continue
+    
+COMPLETELY CLOSE anything related to VirtualBox before continuing
+
+Set up your DOS VM to use the XT IDE 386 BIOS
+  Start | command prompt
+  cd "\Program Files\Oracle\VirtualBox"
+  VBoxManage.exe setextradata "DOS"  VBoxInternal/Devices/pcbios/0/Config/LanBootRom C:\serial\ide_386.bin
+
+Configure VirtualBox image to use named pipe for serial port
+  In Oracle VirtualBox VM Manager, click on the "DOS" virtual machine
+  Click Settings
+  Click Serial Ports
+  For Port 1
+    Enable Serial Port
+    Port Number: COM1
+    Port Mode: Host Pipe
+    Path/Address: \\.\pipe\xtide
+
+Launch serdrive start serving the image
+  Start | command prompt (DO NOT LAUNCH AS ADMINISTRATOR!!)
+  cd \serial
+  serdrive.exe -p \\.\pipe\xtide myimage.ima
+
+Start virtual machine
+  Cancel when prompted to Select start-up disk
+
+When you see the XTIDE banner, press F6
+
+
+--------------------------------------------------------------------------
+Real Hardware Procedure
+--------------------------------------------------------------------------
+Prerequisites: 
+* Your retro PC has a XTIDE card installed
+* Your retro PC does not have any CF cards or IDE hard drives installed
+* Your modern PC has a serial port or a serial port adapter (i.e. USB to Serial Converter)
+* You have a null modem cable
+
+Connect a null modem cable from your modern computer to your retro PC 
+  If your modern PC does not have a serial port, you can use a USB to Serial Converter
+    I recommend a converter with a Prolific chipset like the "StarTech.com 1 Port USB to Serial RS232 Adapter"
+
+Decide which serial port to use from the modern PC
+  If unsure, you can go to Device Manager to see your options
+  
+Launch serdrive to start serving the image
+  Start | command prompt (DO NOT LAUNCH AS ADMINISTRATOR!!)
+  cd \serial
+  serdrive.exe -c <serial_port_number> myimage.ima -t
+    For example, if your serial port is on COM6: 
+      serdrive -c 6 myimage.ima -t
+
+Start your retro PC
+
+When you see the XTIDE banner, press F6
+
+
+--------------------------------------------------------------------------
+Setting up Serial Booting to be detected by default - Virtual Environment
+--------------------------------------------------------------------------
+Download xtidecfg.com from https://www.xtideuniversalbios.org/binaries/r623/
+ * Place it at C:\serial\xtidecfg.com
+
+Download and install WinImage from https://www.winimage.com/download.htm
+
+Launch WinImage
+File | New | 1.44MB | OK
+
+Image | Inject | C:\serial\xtidecfg.com | Open | Yes
+Image | Inject | C:\serial\ide_386.bin | Open | Yes
+
+File | Save As 
+  File name: C:\serial\xt.ima
+  Save as type: Image file (*.ima)
+  Save
+  Exit WinImage
+  
+If the DOS VirtualBox VM is not running, start it, and press F6 to boot when the XTIDE banner appears
+Devices | Floppy Drives | Choose disk image... | C:\serial\xt.ima 
+A:
+xtidecfg
+Load BIOS from file
+  ide_386.bin
+  Enter
+Configure XTIDE Universal BIOS
+Boot Settings
+Scan for Serial Drives: Yes
+Esc
+Esc
+Save BIOS back to original file
+Enter
+Esc
+Yes (to exit)
+
+Eject the disk from the DOS Virtual Machine
+  Device | Floppy Drives | Remove disk from virtual drive
+
+Launch WinImage
+File | Open | xt.ima
+Click on ide_386.bin
+Image | Extract | C:\serial | Ok | Yes to overwrite
+
+Now whenever you boot the DOS virtual machine, assuming no hard disks are present, serial booting will be automatic!
+
+
+--------------------------------------------------------------------------
+Setting up Serial Booting to be detected by default - Real Hardware
+--------------------------------------------------------------------------
+
+Download xtidecfg.com from https://www.xtideuniversalbios.org/binaries/r623/
+ * Place it at C:\serial\xtidecfg.com
+
+Copy the following files to a floppy disk: 
+  C:\serial\xtidecfg.com
+  C:\serial\ide_386.bin
+
+Start the retro PC, press F6 to boot when the XTIDE banner appears
+A:
+xtidecfg
+Load BIOS from file
+  ide_386.bin
+  Enter
+Configure XTIDE Universal BIOS
+Boot Settings
+Scan for Serial Drives: Yes
+Esc
+Esc
+Save BIOS back to original file
+Enter
+Flash EEPROM
+Start Flashing
+Enter
+Enter
+
+Now whenever you boot the Retro machine, assuming no hard disks are present, serial booting will be automatic!
