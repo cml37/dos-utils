@@ -140,8 +140,13 @@ Load BIOS from file
   ide_386.bin
   Enter
 Configure XTIDE Universal BIOS
-Boot Settings
-Scan for Serial Drives: Yes
+IDE Controllers 
+1
+Primary IDE Controller
+Device Type
+Serial port virtual device
+Baud Rate
+115.2K
 Esc
 Esc
 Save BIOS back to original file
@@ -157,7 +162,7 @@ File | Open | xt.ima
 Click on ide_386.bin
 Image | Extract | C:\serial | Ok | Yes to overwrite
 
-Now whenever you boot the DOS virtual machine, assuming no hard disks are present, serial booting will be automatic!
+Now whenever you boot the DOS virtual machine, serial booting will be automatic!
 
 
 --------------------------------------------------------------------------
@@ -166,12 +171,14 @@ Setting up Serial Booting to be detected by default - Real Hardware
 WARNING: This procedure will PROBABLY upgrade the XTIDE Universal BIOS software version on your card, which in some cases has resulted in CF cards no longer booting
 WARNING: Be extra careful in choosing the right XTIDE Universal BIOS type (i.e. XT, XT+, AT, 386, and normal vs. large for any of these types)
 NOTE: Be sure to enable the "write enable" jumper or DIP switch on your XTIDE card prior to running this procedure
+NOTE: You will need to identify your EEPROM type before running this procedure!!  This could involve physically opening the computer to identify the type of EEPROM chip
 
 Download xtidecfg.com from https://www.xtideuniversalbios.org/binaries/r623/
  * Place it at C:\serial\xtidecfg.com
 Download the proper XTIDE Universal BIOS for your system from https://www.xtideuniversalbios.org/binaries/r623/
  * BE CAREFUL to select the right version
  * If you choose the "wrong" version, make sure you have an alternate way to start up the system (i.e. floppy disk) to reflash the XTIDE BIOS
+ * Also, if you choose the "wrong" version, you may need to hold down the CTRL key at startup to bypass XTIDE BIOS (or possibly "flip" a switch/jumper, then boot, then flip it back)
 
 Copy the following files to a floppy disk: 
   C:\serial\xtidecfg.com
@@ -186,15 +193,20 @@ Load BIOS from file
 Load old settings from EEPROM
 Enter
 Configure XTIDE Universal BIOS
+  NOTE: AT THIS POINT, you will still want to confirm the old settings.  When in doubt, you can always do "AUTO Configure"
+  NOTE: Make particular note of your Primary IDE Controller Device Type
 Boot Settings
 Scan for Serial Drives: Yes
 Esc
 Esc
-Save BIOS back to original file
-Enter
 Flash EEPROM
+EEPROM type
+<choose your type>
 Start Flashing
 Enter
 Enter
 
 Now whenever you boot the Retro machine, assuming no hard disks are present, serial booting will be automatic!
+
+Alternatively, if you want serial booting to be the default, you can load up xtidecfg and choose "Serial port virtual device" for the Primary IDE Controller
+  * This is actually what we did for the "virtual setup" above, you can refer to the procedure there
