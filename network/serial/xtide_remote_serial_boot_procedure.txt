@@ -23,7 +23,7 @@ Install Qemu for Windows
 Now use serdrive to create a 30mb image
  Start | command prompt
  cd \serial
- serdrive.exe -n 30M
+ serdrive.exe -n 30M myimage.ima
  (you'll get a connectivity error, but that's fine)
 
 Partition and setup image to be bootable using Qemu
