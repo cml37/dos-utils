@@ -163,20 +163,28 @@ Now whenever you boot the DOS virtual machine, assuming no hard disks are presen
 --------------------------------------------------------------------------
 Setting up Serial Booting to be detected by default - Real Hardware
 --------------------------------------------------------------------------
+WARNING: This procedure will PROBABLY upgrade the XTIDE Universal BIOS software version on your card, which in some cases has resulted in CF cards no longer booting
+WARNING: Be extra careful in choosing the right XTIDE Universal BIOS type (i.e. XT, XT+, AT, 386, and normal vs. large for any of these types)
+NOTE: Be sure to enable the "write enable" jumper or DIP switch on your XTIDE card prior to running this procedure
 
 Download xtidecfg.com from https://www.xtideuniversalbios.org/binaries/r623/
  * Place it at C:\serial\xtidecfg.com
+Download the proper XTIDE Universal BIOS for your system from https://www.xtideuniversalbios.org/binaries/r623/
+ * BE CAREFUL to select the right version
+ * If you choose the "wrong" version, make sure you have an alternate way to start up the system (i.e. floppy disk) to reflash the XTIDE BIOS
 
 Copy the following files to a floppy disk: 
   C:\serial\xtidecfg.com
-  C:\serial\ide_386.bin
+  XTIDE Universal BIOS that you chose above
 
 Start the retro PC, press F6 to boot when the XTIDE banner appears
 A:
 xtidecfg
 Load BIOS from file
-  ide_386.bin
+  <selected XTIDE Universal BIOS from above>
   Enter
+Load old settings from EEPROM
+Enter
 Configure XTIDE Universal BIOS
 Boot Settings
 Scan for Serial Drives: Yes
