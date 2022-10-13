@@ -35,7 +35,7 @@ Enable Device support in BIOS
 Partition and Format your DOS disk
 --------------------------------------------------------------
 Download unetbootin: http://unetbootin.github.io/
-Download DOS 6.22 floppy image: https://www.allbootdisks.com/downloads/Disks/MS-DOS_Boot_Disk_Download47/Diskette%20Images/Dos6.22.img
+Download DOS 6.22 floppy image: https://www.allbootdisks.com/disk_images/Dos6.22.img
 
 Insert a USB stick into your computer
 
@@ -85,7 +85,7 @@ Fixing your Disk's MBR
 --------------------------------------------------------------
 NOTE: THIS SECTION IS ONLY REQUIRED IF THERE WERE ISSUES ENCOUTERED IN THE PREVIOUS SECTION.  OTHERWISE, SKIP THIS SECTION
 
-Download this Windows 95 image: https://www.allbootdisks.com/downloads/Disks/Windows_95_Boot_Disk_Download48/Diskette%20Images/Windows95b.img
+Download this Windows 95 image: https://www.allbootdisks.com/disk_images/Windows95b.img
 
 Insert a USB stick into your computer
 
@@ -120,7 +120,7 @@ Launch Rufus:
 -- Start
 
 Copy xxcopy16 to the root of the USB drive
--- Download http://www.xxcopy.com/download/xxcopy16.zip
+-- Download https://web.archive.org/web/20210729154903/http://www.xxcopy.com/download/xxcopy16.zip
 -- unzip and put xxcopy16.exe in the root of the USB drive
 
 Copy all of your goodies to the drive in a subfolder on the USB stick (call it install)

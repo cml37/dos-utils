@@ -20,7 +20,7 @@ Fix95CPU: http://lonecrusader.x10host.com/fix95cpu.html
         * Most likely, this is true on earlier versions as well
       * As such, using this utility is the "easy button"
   
-Bootable ISO Image for DOS 6.22: https://www.allbootdisks.com/downloads/ISO/AllBootDisks_ISO_Image_Downloads25/DOS6.22_bootdisk.iso
+Bootable ISO Image for DOS 6.22: https://www.allbootdisks.com/disk_images/DOS6.22_bootdisk.iso
 LANtastic 7 installer
 
 Windows 95 Installer

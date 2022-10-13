@@ -6,7 +6,7 @@ Oracle VM VirtualBox (suggested version 6.0.18 or lower) https://download.virtua
    * Not an issue for a DOS VM, but best to be safe
 WinImage: http://www.winimage.com/download.htm
   
-Bootable ISO Image for DOS 6.22: https://www.allbootdisks.com/downloads/ISO/AllBootDisks_ISO_Image_Downloads25/DOS6.22_bootdisk.iso
+Bootable ISO Image for DOS 6.22: https://www.allbootdisks.com/disk_images/DOS6.22_bootdisk.iso
 Artisoft LANtastic 6.0 (3.5-1.44mb) installation disks
 
 AMD PCNET III NDIS Drivers: https://www.lazybrowndog.net/freedos/virtualbox/downloads/drivers/pcntnd.zip

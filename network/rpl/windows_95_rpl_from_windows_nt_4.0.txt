@@ -414,7 +414,7 @@ Settings
       (Note: Newer versions of VirtualBox may not have these settings.
        This could result in problems for second boot of Windows 95.)
 
-Download a DOS 6.22 Boot disk: https://www.allbootdisks.com/downloads/Disks/MS-DOS_Boot_Disk_Download47/Diskette%20Images/Dos6.22.img
+Download a DOS 6.22 Boot disk: https://www.allbootdisks.com/disk_images/Dos6.22.img
 
 Insert the Windows 95 Retail Upgrade ISO into the drive of the Windows 95 VM
 Insert the DOS 6.22 boot disk into the virtual floppy drive of the Windows 95 VM

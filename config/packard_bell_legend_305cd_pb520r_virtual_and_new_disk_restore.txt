@@ -31,7 +31,7 @@ Download MBR Tool
   * https://www.softpedia.com/get/System/Hard-Disk-Utils/MBRtool.shtml
 
 Download a DOS 6.22 Boot Disk from allbootdisks.com
-  * https://www.allbootdisks.com/downloads/Disks/MS-DOS_Boot_Disk_Download47/Diskette%20Images/Dos6.22.img
+  * https://www.allbootdisks.com/disk_images/Dos6.22.img
 
 Download PCemV15Win
   * Also configure PCem with ROM Images for the Packard Bell PB520R
