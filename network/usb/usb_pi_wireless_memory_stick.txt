@@ -91,12 +91,14 @@ Create a second disk partition
   p <enter> w <enter>
 
 Format second disk partition as FAT
-  sudo mkfs -t exfat /dev/mmcblk0p3
+  (NOTE: This is a change I made since releasing the video for greater compatibility.  The original procedure used exfat.)
+  sudo mkfs -t fat /dev/mmcblk0p3
 
 Add the new partition to fstab
   sudo nano /etc/fstab
   add the following line to the bottom of the file
-    /dev/mmcblk0p3  /mnt/fs               exfat   rw,users,dmask=000,fmask=000 0 0
+    (NOTE: This is a change I made since releasing the video for greater compatibility.  The original procedure used exfat.)
+    /dev/mmcblk0p3  /mnt/fs               vfat   rw,users,dmask=000,fmask=000 0 0
 CTRL+X, then y, then <ENTER> to write the file and exit
 
 ------------------------------------------------------------------------------------------------------
