@@ -32,7 +32,7 @@ Download the following drivers
     - unzip to folder named "drivers\network"
   * Audio: https://m.majorgeeks.com/files/details/via_ac97_vinyl_audio_driver.html
     - unzip to folder named "drivers\audio"
-  * Video: https://github.com/cml37/dos-utils/blob/master/config/resources/VGA_RageXL-Win98-Win2K-WinNT.zip
+  * Video: https://github.com/cml37/dos-utils/blob/master/config/resources/WIN98-ME-VIA-S3-Unichrome-IGP.zip
     - unzip to folder named "drivers\video"
   * DirectX 9.0c: http://falconfly.3dfx.pl/directx.htm
     - move to "drivers" folder
