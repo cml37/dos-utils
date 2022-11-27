@@ -52,7 +52,7 @@ Configure PCem with the following options
     * Machine
       * Machine Type: [Socket 4] Packard Bell PB520R
       * CPU: Pentium OverDrive 133
-      * Memory: 128MB 
+      * Memory: 16MB 
     * Display
        * Device: Cirrus Logic CL-GD5434
     * Sound
@@ -185,13 +185,6 @@ Adjust 16 bit audio drivers
  * Click on 16-Bit Audio Driver, then Remove
  * Yes
  * Don't Restart Now
- * Click Add
- * Selet Creative Labs Sound Blaster 1.5
- * OK
- * Change path to C:\windrvs
- * OK
- * Select Port 220 and Interrupt 7, then click OK
- * Don't Restart Now
  * Close Drivers and Control Panel
  * From the Main group, select File Manager
  * Navigate to C:\Windows, then find and double click on system.ini
@@ -202,11 +195,22 @@ Adjust 16 bit audio drivers
  * File | Exit on File Manager
  * Delete the Sound144AM Group in Program Manager
  * File | Exit Windows | Ok
- * Win to restart windows
- * Audio should now be better!
 
-If desired, you can try a more fancy fix like installing Sound Blaster 16 drivers, but audio support is poor in PCem anyway... 
-
+Install SB16 drivers
+ * Download https://archive.org/details/creativelabssoundblaster16awe
+ * In PCem
+  * Insert install.IMA
+    * Disc | Change Drive A... | install.IMA
+  * A:
+  * Install
+  * Enter
+  * Enter
+  * Enter
+  * Enter
+  * Backup
+  * Disc | Eject Drive A...
+  * F10 to reboot
+  
 
 ================================================================
 Option 2: REAL SYSTEM RESTORE - Restored Image to CF Card
