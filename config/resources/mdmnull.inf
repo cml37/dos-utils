@@ -1,0 +1,49 @@
+; Windows Modem Setup File
+; Copyright (c) 1993-1999 Microsoft Corporation
+; Manufacturers: RetroTech Chris Null Modem Configuration
+
+[Version]
+Signature="$CHICAGO$"
+Class=Modem
+ClassGUID={4D36E96D-E325-11CE-BFC1-08002BE10318}
+Provider=%MS%
+DriverVer=10/29/1999,5.00.2167.1
+
+[Manufacturer]
+%M27% = M27
+
+[M27]
+%M2703% = M2703, PNPC034
+
+[M2703]
+AddReg=All, M2700Reg, 115200, SERIAL
+
+[All]
+HKR,,FriendlyDriver,,Unimodem.vxd
+HKR,,DevLoader,,*VCOMM
+HKR,,PortSubClass,1,02
+HKR,,ConfigDialog,,modemui.dll
+HKR,,EnumPropPages,,"modemui.dll,EnumPropPages"
+
+; DeviceTypes
+[SERIAL]
+HKR,, DeviceType, 1, 00
+
+[M2700Reg] ; Null-Modem
+HKR, Init, 1,, "None"
+HKR, Init, 2,, "NoResponse"
+HKR, Monitor, 1,, "None"
+HKR, Answer, 1,, "CLIENTSERVER"
+HKR, Answer, 2,, "NoResponse"
+HKR, Settings, DialPrefix,, "CLIENT"
+HKR,, Properties, 1, 00,00,00,00, 00,00,00,00, 00,00,00,00, 00,00,00,00, 00,00,00,00, 30,00,00,00, 00,c2,01,00, 00,c2,01,00
+HKR, Responses, "CLIENT",       1, 08, 00, 00, 00, 00, 00, 00,00,00,00 ; Server side - the client is requesting a connection
+HKR, Responses, "<h00>CLIENT",  1, 08, 00, 00, 00, 00, 00, 00,00,00,00 ; Server side - the client is requesting a connection
+HKR, Responses, "~",  1, 08, 00, 00, 00, 00, 00, 00,00,00,00 ; Server side - the client is requesting a connection
+HKR, Responses, "<h00>~",  1, 08, 00, 00, 00, 00, 00, 00,00,00,00 ; Server side - the client is requesting a connection
+HKR, Responses, "CLIENTSERVER", 1, 02, 00, 00, 00, 00, 00, 00,00,00,00 ; Client side - the server has acknowledged and the connection is completed
+
+[Strings]
+MS = "Microsoft"
+M2703 = "Null Modem for epppd for DOS"
+M27 = "(Standard Modem Types)"
