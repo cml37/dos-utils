@@ -1,0 +1,107 @@
+;============start of text for mdmnullw9598.inf =============
+
+
+[Version]
+Signature="$CHICAGO$"
+Class=Modem
+ClassGUID={4D36E96D-E325-11CE-BFC1-08002BE10318}
+Provider=%MC%
+LayoutFile=LAYOUT.INF
+
+[Manufacturer]
+%Man% = Null
+
+[Null]
+%MC00% = MC00, RAS-SERIAL
+%MC01% = MC01, RAS-PARALLEL
+%MC02% = MC02, RAS-GENERIC
+
+[MC00]
+AddReg=All, Common, MC00Reg, 115200, EXTERNAL
+
+[MC01]
+AddReg=All, Common, MC00Reg, PARALLEL
+
+[MC02]
+AddReg=All, Common, MC02Reg, 115200, EXTERNAL
+
+[All]
+HKR,,FriendlyDriver,,Unimodem.vxd
+HKR,,DevLoader,,*VCOMM
+HKR,,PortSubClass,1,02
+HKR,,ConfigDialog,,modemui.dll
+HKR,,EnumPropPages,,"modemui.dll,EnumPropPages"
+
+[EXTERNAL]
+HKR,, DeviceType, 1, 01
+
+[PARALLEL]
+HKR,, DeviceType, 1, 04
+HKR,,Override,,Paralink.vxd
+HKR,, DCB, 1, 1C,00,00,00, 00,00,06,00, 15,20,00,00, 00,00, 0a,00, 0a,00, 08, 00, 00, 11, 13, 00, 00, 00
+
+[Common]
+HKR, Answer, 1,,""
+HKR, Hangup, 1,, "Bye"
+HKR, Hangup, 2,, "NoResponse"
+HKR, Settings, DialSuffix,, ""
+
+; DCB's - dwords and words are byte reversed
+;                                                                         ByteSize (Number of bits/byte, 4-8)
+;                                                                         Parity  (0-4=None,Odd,Even,Mark,Space)
+;                                                                         StopBits (0,1,2 = 1, 1.5, 2)
+;            |DCBLength   |BaudRate    |Bit Mask    |Rsvd  |XonLim|XofLim|   |   |   |Xon |Xof|Err|Eof|Evt
+
+[115200]
+HKR,, DCB, 1, 1C,00,00,00, 00,c2,01,00, 15,20,00,00, 00,00, 0a,00, 0a,00, 08, 00, 00, 11, 13, 00, 00, 00
+
+
+[MC00Reg] ; RAS Null-Modem
+HKR, Init, 1,, "<cr>"
+HKR, Init, 2,, "NoResponse"
+HKR, Settings, Prefix,,""
+HKR, Settings, DialPrefix,, "CLIENT<cr>"
+HKR, Settings, Terminator,, "<cr>"
+HKR, Monitor, 1,, "None"
+HKR, Answer, 1,, "CLIENTSERVER"
+HKR, Answer, 2,, "NoResponse"
+; Properties - dwords and words are byte reversed
+;                   |Dial Options             |InactivityTimeout        |Speaker Mode              |Max DTE Rate
+;                                |CallSetupFailTimeout     |Speaker Volume           |Modem Options |Max DCE Rate
+
+HKR,, Properties, 1, 00,00,00,00, 00,00,00,00, 00,00,00,00, 00,00,00,00, 00,00,00,00,  30,00,00,00, 00,c2,01,00, 00,c2,01,00
+
+HKR, Responses, "CLIENT",       1, 08, 00, 00, 00, 00, 00, 00,00,00,00 ; Server side - the client is requesting a connection
+HKR, Responses, "<h00>CLIENT",  1, 08, 00, 00, 00, 00, 00, 00,00,00,00 ; Server side -  the client is requesting a connection
+HKR, Responses, "CLIENTSERVER", 1, 02, 00, 00, 00, 00, 00, 00,00,00,00 ; Client side -  the server has acknowledged and the connection is completed
+
+
+[MC02Reg] ; Null-Modem
+HKR, Init, 1,, "<cr><cr>"
+HKR, Init, 2,, "NoResponse"
+HKR, Settings, Prefix,,""
+HKR, Settings, DialPrefix,, "HELLO<cr>"
+HKR, Settings, Terminator,, "<cr>"
+HKR, Monitor, 1,, "None"
+HKR, Answer, 1,, "HELLO"
+HKR, Answer, 2,, "NoResponse"
+; Properties - dwords and words are byte reversed
+;                   |Dial Options             |InactivityTimeout        |Speaker Mode             |Max DTE Rate
+;                                |CallSetupFailTimeout     |Speaker Volume           |Modem Options            |Max DCE Rate
+
+HKR,, Properties, 1, 00,00,00,00, 00,00,00,00, 00,00,00,00, 00,00,00,00, 00,00,00,00,30,00,00,00, 00,c2,01,00, 00,c2,01,00
+HKR, Responses, "<h00>", 1, 02, 00, 00, 00, 00, 00, 00,00,00,00 ; Accept any recvd data as CONNECTED.
+HKR, Responses, "<hff>", 1, 02, 00, 00, 00, 00, 00, 00,00,00,00 ; Accept any recvd data as CONNECTED.
+HKR, Responses, "<cr>", 1, 02, 00, 00, 00, 00, 00, 00,00,00,00 ; Accept any recvd data as CONNECTED.
+HKR, Responses, "<lf>", 1, 02, 00, 00, 00, 00, 00, 00,00,00,00 ; Accept any recvd data as CONNECTED.
+HKR, Responses, "<cr><lf>", 1, 02, 00, 00, 00, 00, 00, 00,00,00,00 ; Accept any recvd data as CONNECTED.
+
+
+[Strings]
+MC = "Mark Crossley"
+Man = "(NULL Modem Types)"
+MC00 = "RAS Serial Cable between 2 PCs"
+MC01 = "RAS Parallel Cable between 2 PCs"
+MC02 = "Generic NULL Modem" 
+
+;=====end of text for mdmnullw9598.inf=================
