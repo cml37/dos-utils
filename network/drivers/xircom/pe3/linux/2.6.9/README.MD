@@ -16,6 +16,6 @@ DEVICE=pe0
 BOOTPROTO=none
 TYPE=Ethernet
 ```
- * modprobe `pe3.ko`
+ * `modprobe pe3.ko`
  * `ifup pe0`
  * check `/var/log/messages` for messages that contain `pe3`
