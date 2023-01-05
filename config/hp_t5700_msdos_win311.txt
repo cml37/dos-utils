@@ -176,6 +176,10 @@ edit autoexec.bat
   add this line AFTER the above driver
   C:\viaudio\viafmtsr
 
+NOTE: One other suggestion that I discovered after making the video
+* Edit autoexec.bat and move the SET BLASTER line to the top of the file (or at least above the viasbcfg line)
+* Change I5 to I7 (rumor has it that the USB controller uses IRQ5)
+
 That's it! Configure your applications to use SB PRO sound
 
 
@@ -192,7 +196,7 @@ Put your Via network card drivers in a directory called C:\lan
 
 Put your PC speaker MIDI drivers in a directory called C:\smididr3
 
-Edit config sys add add call to himem.sys
+Edit config sys and add call to himem.sys
   DEVICE=C:\MSDOS\HIMEM.SYS /TESTMEM:OFF
 
 Reboot 
@@ -280,7 +284,7 @@ Install Sound Drivers for wave sound
   Put in path to disk 5
   Click Ok
   Port: 220
-  Interrupt: 5
+  Interrupt: 7 (NOTE: this is a change from what I showed in the video)
   Click Ok
   Click Ok
   Restart Now
