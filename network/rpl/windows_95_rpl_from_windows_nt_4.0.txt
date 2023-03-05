@@ -180,7 +180,7 @@ Configure RPL Boot Manager
       Enter disks 2 and 3 when prompted, you get the idea
       Remove all disks and restart when      
     Boot up using my DOS LAN Manager disk Image: 
-      Download image from here: https://github.com/cml37/dos-utils/blob/master/config/resources/virtualbox-amd-pcnet-iii-lanman.ima
+      Download image from here: https://github.com/cml37/dos-utils/blob/master/network/smb/lanman/resources/virtualbox-amd-pcnet-iii-lanman.ima
       Place image in the virtual floppy drive
       Press enter (or wait for timeout) when presented with the DOS 6.22 selection menu
       Press enter when prompted for password

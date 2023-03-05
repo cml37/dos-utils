@@ -37,7 +37,7 @@ Download the following drivers
   * DirectX 9.0c: http://falconfly.3dfx.pl/directx.htm
     - move to "drivers" folder
 
-Download my Windows 95b LAN Manager Disk Image: https://github.com/cml37/dos-utils/blob/master/config/resources/rhineii-lanman.ima
+Download my Windows 95b LAN Manager Disk Image: https://github.com/cml37/dos-utils/blob/master/network/smb/lanman/resources/rhineii-lanman.ima
     
 Use a program like BurnAware Free to create a bootable Windows 95b Boot/Drivers ISO
  * Use my Windows 95b LAN Manager Disk image as the bootable image
