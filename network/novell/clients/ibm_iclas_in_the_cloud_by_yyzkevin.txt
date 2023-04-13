@@ -28,7 +28,7 @@ Click File | Preferences | Network
   Ok
   Ok
 
-Select your new VM
+Select your new VM and click the "Settings Wheel" Icon
   Click Network  
     Enable Network Adapter
     Attached to: NAT Network
