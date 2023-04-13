@@ -1,0 +1,55 @@
+----------------------------------------------------------------------------------
+Prerequisites
+----------------------------------------------------------------------------------
+Oracle VM VirtualBox 5.2.44 installed
+A copy of the IBM ICLAS boot disk that will connect you to yyzkevin's IBM ICLAS network:
+  https://ipx.network/files/virtual.img 
+
+
+----------------------------------------------------------------------------------
+Create DOS Virtual Machine
+----------------------------------------------------------------------------------
+Create a New VM
+  Name: DOS ICLAS
+  Type: Other
+  Version: DOS
+  Next
+  Memory Size: 32MB
+  Next
+  Hard Disk: Do not add a virtual hard disk
+  Create
+  Continue
+
+Click File | Preferences | Network
+  Add new NAT Network (Network card graphic with a "plus")
+  Edit Selected NAT Network (Network card graphic with a "settings" wheel)
+  Make sure the Network CIDR Is 10.0.2.0/24
+  Make a note of the network name (should be NatNetwork)
+  Ok
+  Ok
+
+Select your new VM
+  Click Network  
+    Enable Network Adapter
+    Attached to: NAT Network
+    Name: <choose name from above, most likely NatNetwork)
+  Click Storage
+    Click on the "empty" floppy disk
+    Click the floppy disk icon under "Attributes"
+      Choose Virtual Floppy Disk File
+      Navigate to the virtual.img file that you downloaded
+  Ok
+
+
+----------------------------------------------------------------------------------
+Connect to the Network
+----------------------------------------------------------------------------------
+Launch VirtualBox
+
+The system will boot and you will be presented with an IBM Classroom 
+LAN Administration System Screen
+
+Press ENTER to start the login process
+Enter your user ID: guest
+
+That's it!  Congrats, you are now connected to IBM ICLAS!  Navigate around and explore
