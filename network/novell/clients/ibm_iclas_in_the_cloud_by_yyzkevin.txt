@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------
 Prerequisites
 ----------------------------------------------------------------------------------
-Oracle VM VirtualBox 5.2.44 installed
+Oracle VM VirtualBox installed
 A copy of the IBM ICLAS boot disk that will connect you to yyzkevin's IBM ICLAS network:
   https://ipx.network/files/virtual.img 
 
