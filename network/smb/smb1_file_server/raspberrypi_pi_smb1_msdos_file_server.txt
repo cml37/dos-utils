@@ -147,8 +147,8 @@ Update the service start script to support our Samba installation
 
 Start up Samba and configure it to start on boot!
   systemctl daemon-reload
-  service smbd start
-  service nmbd start
+  service smb start
+  service nmb start
   systemctl enable smb.service
   systemctl enable nmb.service
 
