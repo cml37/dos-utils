@@ -20,7 +20,6 @@ Configuring SMB1 (Raspbian Bullseye and Below)
 Install packages
   sudo apt-get install samba samba-common-bin
   sudo apt-get install libpcap-dev libnss-winbind tcl
-    When asked about WINS, choose "Yes"
 
 Configure samba to allow anyone to access and modify files on the share
   sudo nano /etc/samba/smb.conf
