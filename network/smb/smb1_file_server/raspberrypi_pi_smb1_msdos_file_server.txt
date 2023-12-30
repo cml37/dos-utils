@@ -5,15 +5,22 @@ You have set up a Raspberry Pi and enabled SSH
   See my instructions here for an example: https://github.com/cml37/dos-utils/blob/master/config/my_raspberrypi_setup_instructions.txt
   For purposes of this procedure, we will be using the hostname "filepi"
 
-------------------------------------------------------------------
-Configuring SMB1
-------------------------------------------------------------------
-Install packages
-  sudo apt-get install samba samba-common-bin
-
 Create a directory for sharing files
   sudo mkdir /data
   sudo chmod 777 /data
+
+Now, depending on the version of Raspbian you have installed, you will execute one of the below procedures
+ * For Bullseye and below, execute the first procedure below
+ * For Bookworm and above, execute the second procedure below
+
+
+------------------------------------------------------------------
+Configuring SMB1 (Raspbian Bullseye and Below)
+------------------------------------------------------------------
+Install packages
+  sudo apt-get install samba samba-common-bin
+  sudo apt-get install libpcap-dev libnss-winbind tcl
+    When asked about WINS, choose "Yes"
 
 Configure samba to allow anyone to access and modify files on the share
   sudo nano /etc/samba/smb.conf
@@ -33,6 +40,117 @@ Configure samba to allow anyone to access and modify files on the share
 
   CTRL+X, then y, then <ENTER> to save
         
+All set! Time to test
+* To access your server, from another computer you can navigate to: \\filepi\data
+* To map to, say, drive E:, from a command prompt, you can type "net use E: \\filepi\data"
+
+
+------------------------------------------------------------------
+Configuring SMB1 (Raspbian Bookworm and Above)
+------------------------------------------------------------------
+Note: The below procedure was derived from these two sources:
+ * https://wiki.samba.org/index.php/Build_Samba_from_Source#Manually_Starting_and_Stopping_the_Samba_AD_DC_Service_2
+ * https://doc.owncloud.com/server/next/admin_manual/installation/manual_installation/compile_samba.html
+
+Change to the root user
+  sudo su
+
+Obtain the Samba source for the last version to support SMB1
+  wget https://download.samba.org/pub/samba/stable/samba-4.15.13.tar.gz
+  tar -zxf samba-4.15.13.tar.gz
+
+Fix an issue in bootstrap.sh related to a library update in Bookworm
+  cd samba-4.15.13/bootstrap/generated-dists/debian11
+  nano bootstrap.sh
+    change libtracker-sparql-2.0-dev to libtracker-sparql-3.0-dev
+  
+    CTRL+X, then y, then <ENTER> to save
+
+Run bootstrap to download needed dependencies to build Samba
+  ./bootstrap.sh
+
+Configure Samba to be built!
+  cd ../../../..
+  cd samba-4.15.13
+  ./configure \
+	--prefix=/usr \
+	--enable-fhs \
+	--sysconfdir=/etc \
+	--localstatedir=/var \
+	--with-privatedir=/var/lib/samba/private \
+	--with-smbpasswd-file=/etc/samba/smbpasswd \
+	--with-piddir=/var/run/samba \
+	--with-pammodulesdir=/lib/x86_64-linux-gnu/security \
+	--libdir=/usr/lib/x86_64-linux-gnu \
+	--with-modulesdir=/usr/lib/x86_64-linux-gnu/samba \
+	--datadir=/usr/share \
+	--with-lockdir=/var/run/samba \
+	--with-statedir=/var/lib/samba \
+	--with-cachedir=/var/cache/samba \
+	--with-socketpath=/var/run/ctdb/ctdbd.socket \
+	--with-logdir=/var/log/ctdb \
+	--systemd-install-services \
+	--without-ad-dc
+
+Build Samba!
+  make -j 4
+
+Once Samba finishes building, install it!
+  make -j 4 install 
+
+Configure Samba to support SMB1 and to support your share at /data
+  nano /etc/samba/smb.conf
+  Insert the lines below:
+
+  [global]
+  lanman auth=yes
+  ntlm auth = yes
+  server min protocol = LANMAN2
+  workgroup = WORKGROUP
+  server role = standalone server
+  map to guest = bad user
+
+  log file = /var/log/samba/log.%m
+  max log size = 1000
+  dns proxy = no
+
+  [data]
+      path = /data
+      read only = no
+      guest ok = yes
+      guest account = root
+
+  CTRL+X, then y, then <ENTER> to save
+
+Update the service start script to support our Samba installation
+  nano /lib/systemd/system/smb.service 
+  Replace entire file contents with those below:
+
+  [Unit]
+  Description=Samba SMB Daemon
+  Documentation=man:smbd(8) man:samba(7) man:smb.conf(5)
+  Wants=network-online.target
+  After=network.target network-online.target nmb.service winbind.service
+
+  [Service]
+  Type=notify
+  PIDFile=/run/samba/smbd.pid
+  LimitNOFILE=16384
+  EnvironmentFile=-/etc/default/samba
+  ExecStart=/usr/sbin/smbd --foreground --no-process-group $SMBDOPTIONS
+  ExecReload=/bin/kill -HUP $MAINPID
+  LimitCORE=infinity
+
+  [Install]
+  WantedBy=multi-user.target
+
+  CTRL+X, then y, then <ENTER> to save
+
+Start up Samba and configure it to start on boot!
+  systemctl daemon-reload
+  service smbd start
+  systemctl enable smb.service
+
 All set! Time to test
 * To access your server, from another computer you can navigate to: \\filepi\data
 * To map to, say, drive E:, from a command prompt, you can type "net use E: \\filepi\data"

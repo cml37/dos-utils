@@ -3,8 +3,9 @@ Raspberry Pi Imager
 ---------------------------------------------------
 Use Raspberry Pi Imager to install raspbian
 1) Download Raspberry Pi Imager 
-2) Under Operating System, select Erase, choose your SD card, then write, then yes
-3) Under Operating System, select Raspberry Pi OS (32-BIT), choose your SD card, then write, then yes
+2) Choose your device (e.g. Raspberry Pi 5)
+3) Under Operating System, select Erase, choose your SD card, then write, then yes
+4) Under Operating System, select Raspberry Pi OS, choose your SD card, then write, then yes
 
 ------------------------------------------------------------------------------------------------------
 Installation
@@ -53,8 +54,11 @@ Restart
 ------------------------------------------------------------------------------------------------------
 Configure Bootup to Wait for Network Configuration, Pi Name, and enable SSH
 ------------------------------------------------------------------------------------------------------
+NOTE: "Wait for network" has been removed in Raspbian Bullseye
+
 Preferences | Raspberry Pi configuration
 Network at Boot: check "Wait for network"
+
 Hostname: <your choice or as specified in my other directions>
 Click on the Interfaces tab
   SSH => enabled
@@ -66,8 +70,6 @@ At this point you can ssh into the pi for the rest of the install if desired!
 Packages to install
 ------------------------------------------------------------------------------------------------------
 sudo apt-get update
-sudo apt-get install libpcap-dev libnss-winbind tcl
-  When asked about WINS, choose "Yes"
 sudo apt-get autoremove
 
 ------------------------------------------------------------------------------------------------------
