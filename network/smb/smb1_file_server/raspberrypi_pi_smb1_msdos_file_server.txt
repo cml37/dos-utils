@@ -149,7 +149,9 @@ Update the service start script to support our Samba installation
 Start up Samba and configure it to start on boot!
   systemctl daemon-reload
   service smbd start
+  service nmbd start
   systemctl enable smb.service
+  systemctl enable nmb.service
 
 All set! Time to test
 * To access your server, from another computer you can navigate to: \\filepi\data
