@@ -1,0 +1,340 @@
+-----------------------------------------------------
+Getting Started
+-----------------------------------------------------
+Go to https://www.debian.org/CD/netinst/ and download the amd64 version of the "netinst CD image"
+
+Download and install Oracle VM VirtualBox (suggested version 6.0.18 or lower) https://download.virtualbox.org/virtualbox/6.0.18/VirtualBox-6.0.18-136238-Win.exe
+ * Newer versions of VirtualBox have removed supported for setting this feature to false: <HardwareVirtEx enabled="false"/> 
+   * Not an issue for a DOS VM, but best to be safe
+
+
+-----------------------------------------------------
+NetDrive Server Setup
+-----------------------------------------------------
+Create a Debian virtual machine in VirtualBox
+New
+Name: Debian
+Memory size: 1024MB
+Hard Disk: Create a virtual hard disk now
+Hard disk file type: VMDK
+Storage on physical hard disk: Dynamically allocated
+File location and size: defaults are fine
+
+Once created
+ Settings
+ Network
+ Adapter 1
+   Enable Network Adapter
+   Attached to: Bridged Adapter
+   Name: (Choose your network card)
+
+
+-----------------------------------------------------
+Launch Virtual Machine
+-----------------------------------------------------
+On launch choose the Debian Netinst ISO image
+
+Install Debian
+  * Choose Graphical Install
+  * Choose Language, and Continue
+  * Choose Location, and Continue
+  * Choose Keyboard Layout, and Continue
+  * For hostname, type netdrive, and Continue
+  * For domain, leave blank, and Continue
+  * Choose a root password (root is the "super user"), type it and confirm it, and Continue
+  * Create a user name, call it "user", and Continue
+  * Continue on next screen, the account will be called "user"
+  * Choose a password for user, type it and confirm it, and Continue
+  * Choose your time zone, and Continue
+  * Choose "guided - use entire disk", and Continue
+  * On partition screen, choose Continue
+  * Choose "all files in one partition", and Continue
+  * Choose "Finish partitioning and write changes to disk", and Continue
+  * Choose "yes", and Continue
+  * For scanning more media, choose "No", and Continue
+  * For Package Manager, choose the country closest to you, and Continue
+  * Choose the first mirror on the list, and Continue
+  * For HTTP proxy, leave blank, and Continue
+  * For the "popularity contest", choose No and Continue
+  * For Software selection, I suggest unchecking Debian Desktop Environment and Gnome, then check SSH Server, and Continue
+    * This procedure is going to rely on just using the command line shell... if you prefer graphical, you can leave Debian Desktop Environment and Gnome checked
+  * For installing the GRUB boot loader, choose Yes and Continue
+  * For location, choose /dev/sda and continue
+  * For installation complete, choose Continue!
+
+At the console, log in as root
+  * Use the password you created during setup
+
+Install sudo and add the "user" user to the sudo group  
+  apt-get install sudo
+  adduser user sudo
+
+At this point, you might be best off using your favorite SSH client, but you can also use the console that appears after reboot.
+ * I prefer SSH clients since it is easier to copy and paste
+ * You can ssh as user@netdrive and use the password you created during setup
+
+Create a directory for sharing files
+  sudo mkdir /data
+  sudo chmod 777 /data
+
+At this point you also have a decision to make
+ * Keep in mind that NetDrive only allows writing to the image by one computer at a time, and this procedure chooses the server to be the "writer"
+   * As such, we can write to the drive, but need to do so by accessing the image as a Windows share, which requires LAN Manager for DOS
+   * If you want to use MS-DOS LAN Manager from a DOS PC, you need to build a compatible version of Samba (not easy, but not hard)
+   * Otherwise, you can just install the Samba packages (easy)
+
+   
+------------------------------------------------------------------
+Installing Samba Packages 
+(do this if you don't plan to use MS-DOS LAN Manager)
+------------------------------------------------------------------
+Install packages
+  sudo apt-get install samba samba-common-bin
+  sudo apt-get install libpcap-dev libnss-winbind tcl
+
+Configure samba to allow anyone to access and modify files on the share
+  sudo nano /etc/samba/smb.conf
+
+  add these lines at the bottom of the file:
+
+    [data]
+        path = /data
+        read only = no
+        guest ok = yes
+        guest account = root
+
+  CTRL+X, then y, then <ENTER> to save
+        
+
+------------------------------------------------------------------
+Building Samba Instead of Installing It
+(do this if you do plan to use MS-DOS LAN Manager)
+------------------------------------------------------------------
+Note: The below procedure was derived from these two sources:
+ * https://wiki.samba.org/index.php/Build_Samba_from_Source#Manually_Starting_and_Stopping_the_Samba_AD_DC_Service_2
+ * https://doc.owncloud.com/server/next/admin_manual/installation/manual_installation/compile_samba.html
+
+Change to the root user
+  sudo su
+
+Obtain the Samba source for the last version to support SMB1
+  wget https://download.samba.org/pub/samba/stable/samba-4.15.13.tar.gz
+  tar -zxf samba-4.15.13.tar.gz
+
+Fix an issue in bootstrap.sh related to a library update in Debian
+  cd samba-4.15.13/bootstrap/generated-dists/debian11
+  nano bootstrap.sh
+    change libtracker-sparql-2.0-dev to libtracker-sparql-3.0-dev
+  
+    CTRL+X, then y, then <ENTER> to save
+
+Run bootstrap to download needed dependencies to build Samba
+  ./bootstrap.sh
+
+Configure Samba to be built!
+  cd ../../../..
+  cd samba-4.15.13
+  ./configure \
+	--prefix=/usr \
+	--enable-fhs \
+	--sysconfdir=/etc \
+	--localstatedir=/var \
+	--with-privatedir=/var/lib/samba/private \
+	--with-smbpasswd-file=/etc/samba/smbpasswd \
+	--with-piddir=/var/run/samba \
+	--with-pammodulesdir=/lib/x86_64-linux-gnu/security \
+	--libdir=/usr/lib/x86_64-linux-gnu \
+	--with-modulesdir=/usr/lib/x86_64-linux-gnu/samba \
+	--datadir=/usr/share \
+	--with-lockdir=/var/run/samba \
+	--with-statedir=/var/lib/samba \
+	--with-cachedir=/var/cache/samba \
+	--with-socketpath=/var/run/ctdb/ctdbd.socket \
+	--with-logdir=/var/log/ctdb \
+	--systemd-install-services \
+	--without-ad-dc
+
+Build Samba!
+  make -j 4
+
+Once Samba finishes building, install it!
+  make -j 4 install 
+
+Configure Samba to support SMB1 and to support your share at /data
+  nano /etc/samba/smb.conf
+  Insert the lines below:
+
+  [global]
+  lanman auth=yes
+  ntlm auth = yes
+  server min protocol = LANMAN2
+  workgroup = WORKGROUP
+  server role = standalone server
+  map to guest = bad user
+
+  log file = /var/log/samba/log.%m
+  max log size = 1000
+  dns proxy = no
+
+  [data]
+      path = /data
+      read only = no
+      guest ok = yes
+      guest account = root
+
+  CTRL+X, then y, then <ENTER> to save
+
+Update the service start script to support our Samba installation
+  nano /lib/systemd/system/smb.service 
+  Replace entire file contents with those below:
+
+  [Unit]
+  Description=Samba SMB Daemon
+  Documentation=man:smbd(8) man:samba(7) man:smb.conf(5)
+  Wants=network-online.target
+  After=network.target network-online.target nmb.service winbind.service
+
+  [Service]
+  Type=notify
+  PIDFile=/run/samba/smbd.pid
+  LimitNOFILE=16384
+  EnvironmentFile=-/etc/default/samba
+  ExecStart=/usr/sbin/smbd --foreground --no-process-group $SMBDOPTIONS
+  ExecReload=/bin/kill -HUP $MAINPID
+  LimitCORE=infinity
+
+  [Install]
+  WantedBy=multi-user.target
+
+  CTRL+X, then y, then <ENTER> to save
+
+Start up Samba and configure it to start on boot!
+  systemctl daemon-reload
+  service smb start
+  service nmb start
+  systemctl enable smb.service
+  systemctl enable nmb.service
+
+
+------------------------------------------------------------------
+Installing NetDrive
+------------------------------------------------------------------
+Copy netdrive executable to netdrive server
+  sudo su
+  mkdir /netdrive
+  cd /netdrive
+  wget http://www.brutman.com/mTCP/download/mTCP_NetDrive_2024-01-21_Servers.zip
+  apt-get install unzip
+  unzip mTCP_NetDrive_2024-01-21_Servers.zip
+  mv mTCP_NetDrive_2024-01-21_Servers/linux_x86/netdrive .
+  rm mTCP_NetDrive_2024-01-21_Servers.zip
+  rm -rf mTCP_NetDrive_2024-01-21_Servers 
+
+Create a directory for storing NetDrive images
+  mkdir /images
+  chmod -R 777 /images
+
+Create an image, let's make it 1GB
+  cd /images
+  /netdrive/netdrive create hd 1000 FAT16B hdd.img
+  chmod 777 /images/hdd.img
+
+Let's prepare to mount the image
+  nano /etc/fstab
+  Add this line to the bottom of the file:
+  
+  /images/hdd.img /data/mount vfat loop,rw,user,exec,umask=000 0 0
+
+  CTRL + X, Y, <Enter> to save file
+
+Now let's mount the image manually (it will auto mount on future boots)
+  mount /data
+
+Let's add netdrive server to startup
+  apt-get install screen
+  nano /etc/rc.local
+  Add the following lines (be sure that there are no spaces at the beginning of the lines):
+
+  #!/bin/sh -e
+  screen -dm -S netdrive /netdrive/netdrive serve -image_dir /images
+  exit 0
+
+  CTRL + X, Y, <Enter> to save file
+
+Let's make /etc/rc.local executable
+  chmod 777 /etc/rc.local
+
+Now let's reboot!
+  reboot
+  
+After reboot, log back in, either via SSH, or via the console
+
+Let's attach to netdrive to confirm it is running
+  screen -r netdrive
+
+If you get an error about "there is no screen to be resumed matching netdrive", then you made an error.  Retrace your steps above.
+  To get out of the attached screen, you do a CTRL + a, then d
+  Or if you want to watch the screen for the next series of steps, just leave it up!  It does print out good debug info
+
+
+------------------------------------------------------------------
+Create a DOS client virtual machine
+------------------------------------------------------------------
+Create a DOS virtual machine in VirtualBox
+New
+Name: DOS
+Memory size: 32MB
+Hard Disk: Do not add a virtual hard disk
+Continue to create
+
+Once created
+ Settings
+ Network
+ Adapter 1
+   Enable Network Adapter
+   Attached to: Bridged Adapter
+   Name: (Choose your network card)
+
+
+------------------------------------------------------------------
+Installing LAN Manager in MS DOS
+(do this if you do plan to use MS-DOS LAN Manager)
+------------------------------------------------------------------
+This one is easy, just download my LAN Manager preconfigured disk: 
+https://github.com/cml37/dos-utils/blob/master/network/smb/lanman/resources/virtualbox-amd-pcnet-iii-lanman.ima
+
+Click on the virtual machine in Virtualbox
+Click Settings
+Click Storage
+Click on the "empty" floppy
+Click the floppy icon on the right, and navigate to the image you downloaded above
+Click Ok, then click Ok again to close the dialogue box
+
+Start the virtual machine!
+
+For password, just press <Enter>
+
+You can then map a network drive
+  net use Z: \\netdrive\data
+
+From there you can copy files to drive Z: as you desire!
+
+
+------------------------------------------------------------------
+Installing NetDrive in MS DOS
+------------------------------------------------------------------
+This one is easy, just download my NetDrive preconfigured disk: 
+<LINK>
+
+Click on the virtual machine in Virtualbox
+Click Settings
+Click Storage
+Click on the "empty" floppy
+Click the floppy icon on the right, and navigate to the image you downloaded above
+Click Ok, then click Ok again to close the dialogue box
+
+Start the virtual machine!
+
+From there, you can access files on drive C: as you desire
+To "refresh" files on drive C: after you copy files to the Windows share, just type "r"
+And if you left the NetDrive console up, you should see activity as you connect and disconnet to the server!
