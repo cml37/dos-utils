@@ -324,7 +324,7 @@ From there you can copy files to drive Z: as you desire!
 Installing NetDrive in MS DOS
 ------------------------------------------------------------------
 This one is easy, just download my NetDrive preconfigured disk: 
-<LINK>
+https://github.com/cml37/dos-utils/blob/master/network/netdrive/resources/virtualbox-netdrive.ima
 
 Click on the virtual machine in Virtualbox
 Click Settings
