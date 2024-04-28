@@ -2,6 +2,8 @@
 Preconditions
 ====================================================================
 You have Oracle VM VirtualBox installed on your host system
+   * When you create your VM, if you get a "VERR_SUPDRV_NO_RAW_MODE_HYPERV_V_ROOT" error on launch, 
+     you might need to run through this procedure: https://appuals.com/raw-mode-is-unavailable-hyper-v/
 
 
 ====================================================================

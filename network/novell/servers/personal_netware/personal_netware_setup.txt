@@ -10,6 +10,8 @@ Obtain drivers:
   -- unzip to folder named client32
 
 Download Oracle VM VirtualBox (suggested version 6.0.18 or lower) https://download.virtualbox.org/virtualbox/6.0.18/VirtualBox-6.0.18-136238-Win.exe  
+   * When you create your VM, if you get a "VERR_SUPDRV_NO_RAW_MODE_HYPERV_V_ROOT" error on launch, 
+     you might need to run through this procedure: https://appuals.com/raw-mode-is-unavailable-hyper-v/
 Download WinImage
 Download MS-DOS 6.22 Boot ISO: https://www.allbootdisks.com/disk_images/DOS6.22_bootdisk.iso
 

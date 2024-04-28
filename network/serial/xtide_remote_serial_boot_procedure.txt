@@ -46,6 +46,8 @@ Virtual Environment Procedure
 Download Oracle VM VirtualBox (suggested version 6.0.18 or lower) https://download.virtualbox.org/virtualbox/6.0.18/VirtualBox-6.0.18-136238-Win.exe
  * Newer versions of VirtualBox have removed supported for setting this feature to false: <HardwareVirtEx enabled="false"/> 
    * Not an issue for a DOS VM, but best to be safe
+   * When you create your VM, if you get a "VERR_SUPDRV_NO_RAW_MODE_HYPERV_V_ROOT" error on launch, 
+     you might need to run through this procedure: https://appuals.com/raw-mode-is-unavailable-hyper-v/
 
 Install VirtualBox and create a DOS VM without a hard drive attached to it (I named mine "DOS")
   In Oracle VM VirtualBox Manager, click "New"

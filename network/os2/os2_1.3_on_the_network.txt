@@ -4,6 +4,8 @@ For a video walkthrough of this procedure, see https://www.youtube.com/watch?v=d
 Items to Locate
 ====================================
 Oracle VM VirtualBox (suggested version 6.0.18 or lower) https://download.virtualbox.org/virtualbox/6.0.18/VirtualBox-6.0.18-136238-Win.exe
+   * When you create your VM, if you get a "VERR_SUPDRV_NO_RAW_MODE_HYPERV_V_ROOT" error on launch, 
+     you might need to run through this procedure: https://appuals.com/raw-mode-is-unavailable-hyper-v/
 WinImage: http://www.winimage.com/download.htm
 
 Microsoft OS/2 1.30.1
