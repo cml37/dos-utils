@@ -1,0 +1,146 @@
+Download arch Linux from https://www.archlinux32.org/download/ (I downloaded archlinux32-2024.07.10-i686.iso)
+Burn it to a DVD
+
+Using my boot manager BootIt Bare Metal, I created three partitions:
+* Boot - 1GB - 131: Linux Native
+* Root - 12GB - 131: Linux Native
+* Swap - 8GB  - 130: Linux Swap/Solaris
+
+
+From there, I loosely followed this guide: https://wiki.archlinux.org/title/Installation_guide
+
+# Check network connectivity and set the clock
+ip link
+timedatectl
+
+# Create ext4 partitions for boot and root
+mkfs.ext4 /dev/sda1
+mkfs.ext4 /dev/sda2
+
+# Configure Swap 
+mkswap /dev/sda3
+swapon /dev/sda3
+
+# Mount root partition and bootstrap Linux install!
+mount /dev/sda2 /mnt
+pacstrap -K /mnt base Linux Linux-firmware
+
+# Create an fstab, and change root to use your bootstrapped Linux
+genfstab -U /mnt >> /mnt/etc/fstab
+arch-chroot /mnt
+
+# Set your localtime, for me it is America/New_York.  And sync the clock
+ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
+hwclock --systohc
+
+# Populate keys for pacman and install vi editor
+pacman-key --populate
+pacman -S vi
+
+# Set the locale 
+vi /etc/locale.conf
+LANG=en_US.UTF-8
+
+# Set the hostname, I set mine to "obsolete"
+vi /etc/hostname
+obsolete
+
+# Create a new initramfs, though I hear it is not required
+mkinitcpio -P
+
+# Move boot files from the root partition to the boot partition
+# (There is probably a better way to do this, but it works)
+mkdir /boot2
+mv /boot/* /boot2
+mount /dev/sda1 /boot
+mv /boot2/* /boot
+rmdir boot2
+
+# Add the boot partition to /etc/fstab
+vi /etc/fstab
+/dev/sda1	/boot	ext4	rw,relatime	0 1
+
+# Set the root password to one of your choosing
+passwd
+
+
+Now it is time to install grub. I loosely followed this guide: https://wiki.archlinux.org/title/GRUB#Configuration
+NOTE: We're installing grub to the /boot partition as opposed to the master boot record, etc., since I use BootIt Bare Metal and I have multiple OSes on my system
+
+# Install and configure grub
+pacman -S grub
+grub-install --target=i386-pc /dev/sda1 --force
+grub-mkconfig -o /boot/grub/grub.cfg
+
+# Leave chroot that we entered several steps ago and reboot
+exit 
+reboot
+
+
+Now it is time to configure network and install the X server, and create a user!
+
+# After reboot, enable network and name resolution
+systemctl enable systemd-networkd
+systemctl enable systemd-resolved
+
+# Add configuration for your network card.  When I do an "ip link", mine shows up as enp0s14, so I configure accordingly
+vi /etc/systemd/network/1-enp0s14.network
+
+[Match]
+Name=enp0s14
+
+[Network]
+DHCP=ipv4
+
+
+# Enable network and name resolution
+systemctl start systemd-networkd
+systemctl start systemd-resolved
+
+# Check the status of networkd, make sure you can ping sites!
+ping google.com
+
+# Install the X Server
+# Depending on your video hardware, you can choose different drivers, we will just use Frame Buffer drivers
+sudo pacman -S xorg xorg-server xf86-video-fbdev
+(Select the first provider for man when asked)
+
+# Create a user and add them to the wheel group, my user is chris
+useradd -mG wheel chris
+passwd chris
+
+
+Now let's install Xfce, I loosely followed this guide, and embellished a bit: https://wiki.archlinux.org/title/Xfce
+
+# Install xfce, some goodies, a web browser, some apps, and the lxdm greeter
+pacman -S xfce4 xfce4-goodies dillo kwrite kcalc lxdm
+
+# Enable the lxdm greeter and enter graphical mode
+systemctl enable --now lxdm 
+
+
+Now let's configure sound!  I loosely followed these guides :
+* https://wiki.archlinux.org/title/Advanced_Linux_Sound_Architecture
+* https://wiki.archlinux.org/title/PulseAudio
+
+# Install alsa, and PulseAudio too
+pacman -S alsa-utils xfce4-mixer pavucontrol pulseaudio mpv
+
+# Now you should really check out the mpv audio/video player, pretty cool stuff!
+
+
+Now let's configure Samba network access 
+
+# Add WINS resolution to the types of name resolutions
+vi /etc/nsswitch.conf
+hosts: .... dns wins
+
+# Install gvfs, samba, and required libraries
+pacman -S gvfs-smb samba icu74
+
+# Reboot for good measure
+reboot
+
+When the system comes back up, you should be able to use the file browser to access Windows shares by using the format smb://server/share
+
+That's all for now!
