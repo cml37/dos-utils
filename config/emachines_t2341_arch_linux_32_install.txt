@@ -102,7 +102,7 @@ ping google.com
 
 # Install the X Server
 # Depending on your video hardware, you can choose different drivers, we will just use Frame Buffer drivers
-sudo pacman -S xorg xorg-server xf86-video-fbdev
+pacman -S xorg xorg-server xf86-video-fbdev
 (Select the first provider for man when asked)
 
 # Create a user and add them to the wheel group, my user is chris
