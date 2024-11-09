@@ -125,8 +125,12 @@ Now let's configure sound!  I loosely followed these guides:
 * https://wiki.archlinux.org/title/PulseAudio
 
 # Install alsa, and PulseAudio too
-pacman -S alsa-utils xfce4-mixer pavucontrol pulseaudio
+pacman -S alsa-utils xfce4-mixer pulseaudio
 
+# Update the mixer used by xfce
+Right click on the audio icon in the top right of the screen
+Click Properties
+Sound Settings: Audio Mixer: xfce4-mixer
 
 Now let's configure Samba network access 
 
