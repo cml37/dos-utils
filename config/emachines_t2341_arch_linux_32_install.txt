@@ -118,8 +118,9 @@ pacman -S xfce4 xfce4-goodies dillo kwrite kcalc lxdm
 # Enable the lxdm greeter and enter graphical mode
 systemctl enable --now lxdm 
 
+IMPORTANT: When the login screen launches, be sure to change the Desktop: from "Default" to "Xfce Session", or xfce it won't launch!!
 
-Now let's configure sound!  I loosely followed these guides :
+Now let's configure sound!  I loosely followed these guides:
 * https://wiki.archlinux.org/title/Advanced_Linux_Sound_Architecture
 * https://wiki.archlinux.org/title/PulseAudio
 
