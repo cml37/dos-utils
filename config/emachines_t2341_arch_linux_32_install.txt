@@ -58,7 +58,7 @@ rmdir boot2
 
 # Add the boot partition to /etc/fstab
 vi /etc/fstab
-/dev/sda1	/boot	ext4	rw,relatime	0 1
+/dev/sda1	/boot	ext4	rw,relatime	0 2
 
 # Set the root password to one of your choosing
 passwd
