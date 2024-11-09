@@ -4,7 +4,7 @@ Burn it to a DVD
 Using my boot manager BootIt Bare Metal, I created three partitions:
 * Boot - 1GB - 131: Linux Native
 * Root - 12GB - 131: Linux Native
-* Swap - 8GB  - 130: Linux Swap/Solaris
+* Swap - 8GB - 130: Linux Swap/Solaris
 
 
 From there, I loosely followed this guide: https://wiki.archlinux.org/title/Installation_guide
@@ -23,7 +23,7 @@ swapon /dev/sda3
 
 # Mount root partition and bootstrap Linux install!
 mount /dev/sda2 /mnt
-pacstrap -K /mnt base Linux Linux-firmware
+pacstrap -K /mnt base linux linux-firmware
 
 # Create an fstab, and change root to use your bootstrapped Linux
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -124,9 +124,7 @@ Now let's configure sound!  I loosely followed these guides :
 * https://wiki.archlinux.org/title/PulseAudio
 
 # Install alsa, and PulseAudio too
-pacman -S alsa-utils xfce4-mixer pavucontrol pulseaudio mpv
-
-# Now you should really check out the mpv audio/video player, pretty cool stuff!
+pacman -S alsa-utils xfce4-mixer pavucontrol pulseaudio
 
 
 Now let's configure Samba network access 
@@ -144,3 +142,34 @@ reboot
 When the system comes back up, you should be able to use the file browser to access Windows shares by using the format smb://server/share
 
 That's all for now!
+
+
+I also wanted to set up the ability to play streaming audio!  Here is my procedure for that
+
+# Install the audacious media player and links browser
+pacman -S audacious links
+
+# Run links browser and configure for ProtoWeb and SHOUTCast
+Setup -> Network Options
+  HTTP Proxy: wayback.protoweb.org:7851
+
+Setup -> Associations -> Add
+  Label: playlist
+  Content-Type: audio/x-scpls
+  program: audacious %
+
+  Check
+   * Run in X-Window
+   * Accepts HTTP URLs
+  Uncheck 
+   * <everything else>
+
+Setup -> Save options   
+
+# Create a shortcut on the desktop for Retro SHOUTCast
+Right click on desktop, Create Launcher
+Name: SHOUTCast
+Command: xlinks -g http://www.shoutcast.com/index.phtml
+Icon: search icon for links and choose it
+
+At this point you should be good to go!  If any issues, restart the computer
