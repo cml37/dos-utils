@@ -185,4 +185,5 @@ That said, I have found audio it to be problematic.  Some tips if audio gives yo
     pacman -R pulseaudio && pacman -S pulseaudio
   2) As the logged in user, stop pulseaudio, delete configs, and restart pulseaudio
     pulseaudio --kill || rm -rf ~/.config/pulse || pulseaudio --start
-  3) Use the mixer to adjust the audio waay down, then adjust the audio in audacious
+  3) With audacious running and playing music, use the xfce mixer to adjust the audio waay down, then use the audio control in audacious to adjust the audio
+     a) Basically, seems there is a bug where you have to adjust the volume in another mixer prior to adjusting it in audacious
