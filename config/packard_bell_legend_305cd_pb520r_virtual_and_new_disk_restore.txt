@@ -5,8 +5,8 @@ Procedure Purpose
 This procedure really serves two purposes:
  * Creating a "virtual" Packard Bell Legend 305CD (or basically any PB520R based Packard Bell)
  * Demonstrating how to do a system restore to a PB520R based Packard Bell when the original hard drive is not available
-   * Packard bell puts System Credentials on the drive needed for the restore, sometimes called a "Tattoo"
-     * This procedure helps with restoring that "Tattoo" to allow system restore to succeed
+   * Packard bell puts System Credentials on the drive that are helpful for the restore
+     * This procedure helps with restoring the System Credentials (otherwise, I believe you'd have to enter a format number on system restore)
    
 Now, if you are just trying to do a system restore on, say, a Packard Bell Legend 305CD with the original hard drive, the process is much easier
   * All you should need is the Packard Bell Multimedia Master CD and the Packard Bell Restore floppy disk image version 2.2 for MS-DOS
