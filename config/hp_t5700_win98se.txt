@@ -122,11 +122,11 @@ Copy Windows 98 USB drivers to the root of the USB drive
 Copy all of your driver goodies into a subfolder on the USB stick called "drivers"
 NOTE: We will copy these drivers over to the thin client after we install Windows 98 and have installed Windows 98 USB drivers
 
-* Network driver (VIA Technologies, Inc. VT6102/VT6103 [Rhine-II]): https://files.aoaforums.com/I3934-via_rhine_ndis5_v384a.zip.html
+* Network driver (VIA Technologies, Inc. VT6102/VT6103 [Rhine-II]): https://www.philscomputerlab.com/uploads/3/7/2/3/37231621/via_rhine_ndis5_v384a.zip
   -- suggest unzipping this in the install directory on the USB stick
   -- you only really need the X86 directory out of this
 * Video 
-  DirectX (Download the 08 Dec 2006 version of DirectX 9.0c) : http://falconfly.3dfx.pl/directx.htm
+  DirectX (Download the 08 Dec 2006 version of DirectX 9.0c) : https://archive.org/details/directx9-dec2006-redist
   -- suggest unzipping this in the install directory on the USB stick
   Drivers (Advanced Micro Devices, Inc. [AMD/ATI] Rage XL PCI): https://download.cnet.com/VGA-RageXL-zip/3000-2108_4-198069.html
   -- suggest unzipping this in the install directory on the USB stick
