@@ -66,7 +66,7 @@ Run this command to get information about the disk number and size.  Make a note
   <get size and number of the disk>
 
 Run fdisk command to create a primary partition on the disk  
-  fdisk <disk number> /PRI:<size of disk>
+  fdisk <disk number> /PRIO:<size of disk>
 
 reboot
 
